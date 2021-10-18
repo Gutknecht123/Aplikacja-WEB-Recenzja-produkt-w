@@ -7,9 +7,17 @@
 <div class="createpost">
 
 
-<p><textarea rows="10" cols="100" id="createpost" v-model="text"></textarea></p>
+<p><b-form-textarea
+      id="textarea"
+      v-model="text"
+      placeholder="Enter something..."
+      rows="3"
+      max-rows="6"
+    ></b-form-textarea></p>
+
 <div class="createpost-flex">
-<p>Kategoria: <input type="text" v-model="category" id="category"></p>
+
+<p>Kategoria: <b-form-input v-model="category" placeholder="Enter category"></b-form-input></p>
 <div v-if="!media">
     <input type="file" v-on:change="onFileChange">
   </div>
@@ -20,7 +28,7 @@
 <p>Ocena: <input type="text" v-model="stars" id="stars"></p>
 
 </div>
-<button v-on:click="createPost">ADD</button>
+<b-button variant="outline-dark" v-on:click="createPost">ADD</b-button>
 </div>
 
 <p class="error" v-if="error">{{error}}</p>
