@@ -1,9 +1,15 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongodb = require('mongodb');
+const mongoose = require('mongoose');
+const Posts = require('./models/test');
 
+mongoose.connect('mongodb://localhost:27017/posts');
 
 const router = express.Router();
+
+
+
 
 /*
 var mongoose = require('mongoose');

@@ -40,7 +40,7 @@ h2{
     align-items: center;
     color: white;
     height: 1000px;
-    margin-top: -25%;
+    
 
 }
 .login-section > button{

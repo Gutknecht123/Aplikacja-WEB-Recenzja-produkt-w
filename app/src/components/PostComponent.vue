@@ -17,7 +17,7 @@
 
 <div class="createpost-flex">
 
-<p>Kategoria: <b-form-input v-model="category" placeholder="Enter category"></b-form-input></p>
+<p><b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input></p>
 <div v-if="!media">
     <input type="file" v-on:change="onFileChange">
   </div>
@@ -25,6 +25,7 @@
     <p><img :src="media" class="post-img" /></p>
     <button v-on:click="removeImage">Remove image</button>
   </div>
+  <br>
 <p>Ocena: <input type="text" v-model="stars" id="stars"></p>
 
 </div>
@@ -130,8 +131,11 @@ a {
 
 .createpost{
 
+  width: 60%;
   border: 3px solid blue;
   color: white;
+  margin-left: auto;
+  margin-right: auto;
   
 }
 .post{
@@ -151,14 +155,6 @@ a {
   flex-direction: column-reverse;
   justify-content: space-between;
   
-
-}
-
-.category{
-
-
-  margin-left: 50%;
-  margin-bottom: 5%;
 
 }
 .post-flex{
@@ -209,8 +205,18 @@ a {
   display: grid;
   grid-template-columns: auto auto auto auto;
 }
-textarea {
+#textarea {
     resize: none;
     border-radius: 10px;
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+}
+#category{
+
+  width: 40%;
+  margin-left: auto;
+  margin-right: auto;
+
 }
 </style>
