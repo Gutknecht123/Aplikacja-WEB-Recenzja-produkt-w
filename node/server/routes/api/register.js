@@ -32,6 +32,15 @@ router.post('/', async (req,res) => {
 
 });
 */
+const router = express.Router();
+
+router.get('/', async (req, res) => {
+
+    const posts = await dbconnect();
+    res.send(await posts.find({}).toArray());
+
+});
+
 
 router.post('/', async (req,res) => {
 
@@ -47,7 +56,7 @@ router.post('/', async (req,res) => {
     res.status(201).send();
 
 });
-fdgfdgffgd
+
 
 async function dbconnect(){
 

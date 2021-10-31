@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "start": "node server/index.js"
   },
   "author": "Robert",
   "license": "ISC",
@@ -16,9 +15,7 @@
     "express": "^4.17.1",
     "hbs": "^4.1.2",
     "mongodb": "^3.6.9",
-    "mongoose": "^5.12.13"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7"
+    "mongoose": "^5.12.13",
+    "nodemon": "^2.0.14"
   }
 }
