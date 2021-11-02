@@ -173,7 +173,7 @@ a {
 }
 
 .container{
-  background-color: #2c3e50;
+  background-color: #2e363f;
 }
 .media-img{
 

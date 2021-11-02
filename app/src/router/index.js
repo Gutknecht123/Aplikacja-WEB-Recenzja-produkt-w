@@ -15,7 +15,7 @@ export default new Router({
 
         path: '/',
         name: 'main',
-        component: PostComponent
+        component: RegisterComponent
 
     },
     {
@@ -27,9 +27,9 @@ export default new Router({
     },
     {
 
-        path: '/register',
-        name: 'register',
-        component: RegisterComponent
+        path: '/mainpage',
+        name: 'mainpage',
+        component: PostComponent
 
     },
     {

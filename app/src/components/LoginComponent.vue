@@ -1,7 +1,7 @@
 <template>
 <div>
 
-    <h2>Login Page...</h2>
+    
     <div class="login-section">
     <div class="login-text">Login:</div>
     <div class="login-input"><input type="text"></div>
@@ -20,8 +20,11 @@
 </template>
 
 <script>
+
+
+
 export default { 
-     
+     name: 'LoginSection'
 }
 </script>
 
@@ -39,7 +42,7 @@ h2{
     justify-content: center;
     align-items: center;
     color: white;
-    height: 1000px;
+    
     
 
 }
