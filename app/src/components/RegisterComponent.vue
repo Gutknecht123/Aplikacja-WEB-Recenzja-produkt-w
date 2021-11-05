@@ -4,7 +4,7 @@
     <br>
     <br>
     <br>
-    <b-form id="register-form" @submit.prevent="Register">
+    <b-form id="register-form" @submit="Register">
     
     <div class="register-section">
 
@@ -12,33 +12,43 @@
     <b-tab title="Register" active>
     <b-form-group id="login-group" label="Your login" label-for="login-input">
 
-    <b-form-input id="login-input" placeholder="Enter loginx"  v-model="login"></b-form-input>
+    
+
+    
+    <b-form-input id="login-input" placeholder="Enter login"  v-model="login" ></b-form-input>
+    <div v-if="v$.login.$error">Login field has an error</div>
+    
+    
     
     </b-form-group>
 
     <br>
 
     <b-form-group id="password-group" label="Your password" label-for="password-input">
+    
 
     <b-form-input id="password-input" placeholder="Enter password" type="password"  v-model="password"></b-form-input>
+    <div v-if="v$.password.$error">Password field has an error</div>
 
     </b-form-group>
     <br>
     <b-form-group id="repassword-group">
 
     <b-form-input id="repassword-input" placeholder="Re-enter password" type="password" v-model="repassword"></b-form-input>
-
+    <div v-if="v$.repassword.$error">Passwords are not the same</div>
     </b-form-group>
     <br>
     <b-form-group id="email-group" label="Your E-mail" label-for="email-input">
 
     <b-form-input id="email-input" placeholder="Enter e-mail" type="email"  v-model="email"></b-form-input>
+    <div v-if="v$.email.$error">E-mail field has an error</div>
 
     </b-form-group>
     <br>
     <b-form-group id="name-group" label="*Your name" label-for="name-input">
 
     <b-form-input id="name-input" placeholder="Enter your name"  v-model="name"></b-form-input>
+    
 
     </b-form-group>
     <br>
@@ -76,71 +86,54 @@
 import AccountService from '../AccountService';
 import LoginSection from './LoginComponent';
 import useVuelidate from '@vuelidate/core'
-import { required, email } from '@vuelidate/validators'
-import { reactive } from '@vue/composition-api'
+import { required, email, sameAs } from '@vuelidate/validators'
+
+
 
 export default {
  name: 'RegisterComponent',
  components:{
-     LoginSection
- },
-
- setup () {
-     const state = reactive({
-
-         login: '',
-         password: '',
-         email: '',
-         name: '',
-         surname: ''     
-
-     })
-
-     const rules = {
-
+     LoginSection,
      
-     login: { required },
-     password: { required },
-     repassword: { required },
-     email: { required, email }
-     
- }
-
- const v$ = useVuelidate(rules, state)
-
- return { state, v$ }
-
-
  },
-
- data(){
+setup: () => ({ v$: useVuelidate() }),
+data(){
      return { 
 
          login: '',
          password: '',
+         repassword: '',
          email: '',
          name: '',
          surname: ''
 
      }
  },
+validations(){
+     return{
+        login: { required },
+        password: { required },
+        repassword: {required, sameAsPassword: sameAs('password')},
+        email: { required, email }
+     }
+ },
 
  methods: {
 
+    async Register(){
 
-     validationStatus(validation){
-         return typeof validation != "undefined" ? validation.$error : false;
-     },
+        
 
-     Register(event){
-
-        event.preventDefault();
-
-        if(this.$v.$pendding || this.$v.$error) return;
-
+        const isFormCorrect = await this.v$.$validate()
+     
+        if (!isFormCorrect){ 
+            alert("Blad");   
+            return;
+        }
+        
         AccountService.createAccount(this.login, this.password, this.email, this.name, this.surname);
         alert("Konto utworzone");
-         
+        
      }
 
 
