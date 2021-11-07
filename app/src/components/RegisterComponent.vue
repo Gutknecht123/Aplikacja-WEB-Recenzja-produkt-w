@@ -4,12 +4,19 @@
     <br>
     <br>
     <br>
-    <b-form id="register-form" @submit="Register">
+    <b-form id="register-form" @submit.prevent="Register">
     
     <div class="register-section">
 
     <b-tabs content-class="mt-3" fill>
-    <b-tab title="Register" active>
+    <b-tab title="Login"  active>
+    <div class="Login">
+
+    <LoginSection/>
+
+    </div>
+    </b-tab>
+    <b-tab title="Register">
     <b-form-group id="login-group" label="Your login" label-for="login-input">
 
     
@@ -64,13 +71,7 @@
     <br>
      <img src="https://cdn.betterttv.net/emote/5b554609c0c5fe4072478d04/3x" alt="">
     </b-tab>
-    <b-tab title="Login">
-    <div class="Login">
 
-    <LoginSection/>
-
-    </div>
-    </b-tab>
     </b-tabs>
     </div>
 
@@ -86,7 +87,7 @@
 import AccountService from '../AccountService';
 import LoginSection from './LoginComponent';
 import useVuelidate from '@vuelidate/core'
-import { required, email, sameAs } from '@vuelidate/validators'
+import { required, email } from '@vuelidate/validators'
 
 
 
@@ -113,7 +114,7 @@ validations(){
      return{
         login: { required },
         password: { required },
-        repassword: {required, sameAsPassword: sameAs('password')},
+        repassword: {required },
         email: { required, email }
      }
  },
@@ -122,17 +123,19 @@ validations(){
 
     async Register(){
 
-        
 
+        
         const isFormCorrect = await this.v$.$validate()
      
         if (!isFormCorrect){ 
-            alert("Blad");   
+           
             return;
         }
         
         AccountService.createAccount(this.login, this.password, this.email, this.name, this.surname);
-        alert("Konto utworzone");
+
+        this.$router.go();
+
         
      }
 

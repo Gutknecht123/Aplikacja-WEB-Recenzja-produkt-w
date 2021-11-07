@@ -3,13 +3,25 @@
 
     
     <div class="login-section">
-    <div class="login-text">Login:</div>
-    <div class="login-input"><input type="text"></div>
+    <b-form id="login-form" @submit.prevent="Login">
+    <b-form-group id="login-group2" label="Your login" label-for="login-input">
+
+    <b-form-input id="login-input2" placeholder="Enter login"  v-model="login" ></b-form-input>
+    
+
+
+    </b-form-group>
     <br>
-    <div class="password-text">Password:</div>
-    <div class="password-input"><input type="password"></div>
+    <b-form-group id="password-group2" label="Your password" label-for="password-input">
+    
+
+    <b-form-input id="password-input2" placeholder="Enter password" type="password"  v-model="password"></b-form-input>
+    
+
+    </b-form-group>
     <br>
-    <a href="#/"><button>Login</button></a>
+    <b-button type="submit" variant="primary">Login</b-button>
+    </b-form>
     <br>
     <br>
     <img src="https://cdn.betterttv.net/emote/5b554609c0c5fe4072478d04/3x" alt="">
@@ -21,10 +33,27 @@
 
 <script>
 
-
+import AccountService from '../AccountService';
 
 export default { 
-     name: 'LoginSection'
+     name: 'LoginSection',
+     data(){
+     return { 
+
+         login: '',
+         password: '',
+
+     }
+ },
+    methods: {
+
+        async Login(){
+
+            AccountService.loginAccount();
+
+        }
+
+    }
 }
 </script>
 

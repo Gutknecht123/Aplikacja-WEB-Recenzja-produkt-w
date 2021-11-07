@@ -5,7 +5,7 @@ const url = "http://localhost:3000/api/register/";
 class AccountService{
 //create
 
-async createAccount(login, password, email, name, surname){
+static createAccount(login, password, email, name, surname){
 
     return axios.post(url,{
 
@@ -16,6 +16,19 @@ async createAccount(login, password, email, name, surname){
         surname,
        
     });
+
+}
+
+static loginAccount(){
+
+
+    return axios.get(url,{
+
+
+
+
+    });
+
 
 }
 
