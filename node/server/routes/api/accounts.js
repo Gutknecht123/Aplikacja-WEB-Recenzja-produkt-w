@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongodb = require('mongodb');
 const bcrypt = require('bcrypt');
+const { query } = require('express');
 
 /*
 const mongoose = require('mongoose');
@@ -35,23 +36,13 @@ router.post('/', async (req,res) => {
 */
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.post('/register', async (req,res) => {
 
-    const posts = await dbconnect();
-    res.send(await posts.find({}).toArray());
-
-});
-
-
-router.post('/', async (req,res) => {
-
-    const saltRounds = 10;
-    const myPlaintextPassword = req.body.password;
+    const saltRounds = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, saltRounds);
     
     const posts = await dbconnect();
 
-    const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
- 
     await posts.insertOne({
         login: req.body.login,
         password: hash,
@@ -63,6 +54,22 @@ router.post('/', async (req,res) => {
     res.status(201).send();
 
     
+});
+
+//getacc
+
+router.post('/login', async (req, res) => {
+
+
+
+    const accs = await dbconnect();
+    const login = req.query.login;
+    //const password = req.query.password; 
+
+    
+
+    res.send(await accs.find({login}).toArray());
+
 });
 
 

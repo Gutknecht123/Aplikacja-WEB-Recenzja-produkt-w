@@ -39,7 +39,7 @@ export default {
      name: 'LoginSection',
      data(){
      return { 
-
+         
          login: '',
          password: '',
 
@@ -49,8 +49,16 @@ export default {
 
         async Login(){
 
-            AccountService.loginAccount();
+            
 
+             try{
+                 const response = await AccountService.loginAccount(this.login, this.password);
+                 console.log(response);
+             }catch(error){
+                 this.error = error.message;
+             }
+
+            
         }
 
     }

@@ -12,8 +12,8 @@ const posts = require('./routes/api/posts');
 
 app.use('/api/posts', posts);
 
-const accounts = require('./routes/api/register');
+const accounts = require('./routes/api/accounts');
 
-app.use('/api/register', accounts);
+app.use('/api/accounts', accounts);
 
 app.listen(3000);
