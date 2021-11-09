@@ -7,7 +7,7 @@ class AccountService{
 
 static createAccount(login, password, email, name, surname){
 
-    return axios.post(url,{
+    return axios.post(url+"register",{
 
         login,
         password,
@@ -23,7 +23,7 @@ static loginAccount(login, password){
 
     //return axios.get(url,{ params })
 
-    return axios.post(url,{
+    return axios.post(url+"login",{
 
         login,
         password
