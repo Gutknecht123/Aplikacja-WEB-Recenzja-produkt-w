@@ -102,9 +102,7 @@ router.get('/user', async (req,res) => {
 
 router.post("/logout", async (req,res) =>{
 
-    res.cookie("jwt", '', {
-        maxAge: 0
-    })
+    res.clearCookie('jwt');
 
     res.send({
         message: "Successful logout!"

@@ -60,6 +60,7 @@
 import PostService from '../PostService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
+//import useStore from 'vuex';
 export default {
   name: 'PostComponent',
    components:{
@@ -78,9 +79,10 @@ export default {
     }
   },
   async created(){
-    try{
 
-      
+    
+
+    try{
 
       this.posts = await PostService.getPosts();
 
@@ -88,8 +90,15 @@ export default {
 
       this.user = response.data.login;
 
+      this.$store.dispatch('setAuth', true);
+
+      console.log(this.$store.state.authenticated);
+
+      //await store.dispatch('setAuth', true);
 
     }catch(error){
+      this.$store.dispatch('setAuth', false);
+      //await store.dispatch('setAuth', false);
       this.error = error.message;
     }
   },

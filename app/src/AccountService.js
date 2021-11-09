@@ -49,5 +49,19 @@ static getuserAccount(){
 
 }
 
+static logoutAccount(){
+
+    return axios(url+'logout',
+    {
+        method: 'POST',
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+          },
+        credentials: 'include'
+    });
+
+}
+
 }
 export default AccountService;

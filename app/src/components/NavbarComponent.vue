@@ -14,13 +14,49 @@
       <b-nav-item-dropdown text="User" right>
         <b-dropdown-item href="#">Account</b-dropdown-item>
         <b-dropdown-item href="#">Settings</b-dropdown-item>
+        <b-dropdown-item v-if="getAuth" @click="logout">Logout</b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
   </b-navbar>
 </template>
 
 <script>
+import AccountService from '../AccountService';
+
 export default { 
      name: 'NavbarSection',
+
+    data() {
+        return {
+
+            auth: ''
+            
+        }
+    },
+    async mounted() {
+        
+    },
+
+    computed: {
+    
+        getAuth(){
+
+        const auth = this.$store.state.authenticated;
+        console.log(auth);
+        return auth;
+
+        }
+
+    },
+    methods: {
+        
+        async logout(){
+
+            await AccountService.logoutAccount();
+            this.$router.push('/');
+        }
+
+    },
+
 }
 </script>
