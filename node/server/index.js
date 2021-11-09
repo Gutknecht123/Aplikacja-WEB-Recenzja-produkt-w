@@ -4,6 +4,18 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
+const mongoose = require('mongoose');
+try{
+    mongoose.connect("mongodb+srv://user:12345@cluster0.rorub.mongodb.net/mongodb?retryWrites=true&w=majority", {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    }, () => {
+        console.log("Connected");
+    });
+}
+catch (error) {
+    handleError(error);
+}
 
 const app = express();
 

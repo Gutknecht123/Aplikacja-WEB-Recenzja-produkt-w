@@ -4,15 +4,7 @@ const mongodb = require('mongodb');
 const bcrypt = require('bcrypt');
 const { query } = require('express');
 const jwt = require('jsonwebtoken');
-const User = require('../../../models/User');
-const mongoose = require('mongoose');
-
-mongoose.connect("mongodb://localhost/accounts", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}, () =>{
-    console.log("Connected");
-});
+const accounts = require('../../../models/accounts');
 
 const router = express.Router();
 
@@ -22,7 +14,7 @@ router.post('/register', async (req,res) => {
     const saltRounds = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, saltRounds);
     
-    const user = new User({
+    const user = new accounts({
         login: req.body.login,
         password: hash,
         email: req.body.email,
@@ -33,7 +25,7 @@ router.post('/register', async (req,res) => {
 
     const result = await user.save();
 
-    const {password, ...data} = result.toJSON();
+    const {password, ...data} = await result.toJSON();
 
     res.send(data);
 
@@ -45,13 +37,8 @@ router.post('/register', async (req,res) => {
 router.post('/login', async (req, res) => {
 
     
-
-    const accs = await dbconnect();
-
-    const user = await accs.findOne({login: req.body.login})
+    const user = await accounts.findOne({login: req.body.login})
     
-   
-
 
     if(!user){
         return res.status(404).send({
@@ -88,8 +75,6 @@ router.get('/user', async (req,res) => {
 
     try{
     
-    const accs = await dbconnect();
-
     const cookie = req.cookies['jwt'];
 
     const claims = jwt.verify(cookie, 'brek');
@@ -100,7 +85,7 @@ router.get('/user', async (req,res) => {
         })
     }
 
-    const user = await accs.findOne({_id: claims._id});
+    const user = await accounts.findOne({_id: claims._id});
 
     const {password, ...data} = await user.toJSON();
 
@@ -126,7 +111,7 @@ router.post("/logout", async (req,res) =>{
     })
 })
 
-
+/*
 async function dbconnect(){
 
     const client = await mongodb.MongoClient.connect('mongodb+srv://user:12345@cluster0.rorub.mongodb.net/mongodb?retryWrites=true&w=majority', {
@@ -137,6 +122,6 @@ async function dbconnect(){
 return client.db('mongodb').collection('accounts');
 
 }
-
+*/
 
 module.exports = router;
