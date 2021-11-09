@@ -163,7 +163,7 @@ h2{
 
     background-color: #2e363f;
     height: 1000px;
-    width: 50%;
+    width: 80%;
     margin-left: auto;
     margin-right: auto;
 }

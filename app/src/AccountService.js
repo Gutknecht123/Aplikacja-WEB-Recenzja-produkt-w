@@ -31,13 +31,23 @@ static loginAccount(login, password){
     },{
         withCredentials: true
     });
-    
-
-
-    
 
 }
 
+static getuserAccount(){
+
+    //return axios.get(url,{ params })
+
+    return axios.get(url+"user",
+    {
+        withCredentials: true,
+        headers:{
+            'Content-Type': 'application/json'
+        }
+    });
+
+
+}
 
 }
 export default AccountService;
