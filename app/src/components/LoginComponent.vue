@@ -4,18 +4,18 @@
     
     <div class="login-section">
     <b-form id="login-form" @submit.prevent="Login">
-    <b-form-group id="login-group2" label="Your login" label-for="login-input">
+    <b-form-group id="login-group2" label="Your login" label-for="login-input2">
 
-    <b-form-input id="login-input2" placeholder="Enter login"  v-model="login" ></b-form-input>
+    <b-form-input id="login-input2" placeholder="Enter login"  v-model="llogin" ></b-form-input>
     
 
 
     </b-form-group>
     <br>
-    <b-form-group id="password-group2" label="Your password" label-for="password-input">
+    <b-form-group id="password-group2" label="Your password" label-for="password-input2">
     
 
-    <b-form-input id="password-input2" placeholder="Enter password" type="password"  v-model="password"></b-form-input>
+    <b-form-input id="password-input2" placeholder="Enter password" type="password"  v-model="lpassword"></b-form-input>
     
 
     </b-form-group>
@@ -35,13 +35,14 @@
 
 import AccountService from '../AccountService';
 
+
 export default { 
      name: 'LoginSection',
      data(){
      return { 
          
-         login: '',
-         password: '',
+         llogin: '',
+         lpassword: '',
 
      }
  },
@@ -51,12 +52,12 @@ export default {
 
             
 
-             try{
-                 const response = await AccountService.loginAccount(this.login, this.password);
-                 console.log(response);
-             }catch(error){
-                 this.error = error.message;
-             }
+         
+                await AccountService.loginAccount(this.llogin, this.lpassword);
+
+                this.$router.push('/mainpage');
+                 
+    
 
             
         }

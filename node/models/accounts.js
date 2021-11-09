@@ -6,7 +6,7 @@ const AccountsSchema = new mongoose.Schema({
     password: { type: String, required: true },
     email: { type: String, required: true, unigue: true },
     name: { type: String },
-    surname: { tpye: String },
+    surname: { type: String },
     createdAt: { type: Date }
 
 

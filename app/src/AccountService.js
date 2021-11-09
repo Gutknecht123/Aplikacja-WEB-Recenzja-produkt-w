@@ -13,7 +13,7 @@ static createAccount(login, password, email, name, surname){
         password,
         email,
         name,
-        surname,
+        surname
        
     });
 
@@ -28,6 +28,8 @@ static loginAccount(login, password){
         login,
         password
 
+    },{
+        withCredentials: true
     });
     
 
