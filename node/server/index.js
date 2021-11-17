@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 
 const mongoose = require('mongoose');
 try{
@@ -18,6 +19,10 @@ catch (error) {
 }
 
 const app = express();
+
+app.use(express.static('public'));
+
+app.use(fileUpload());
 
 app.use(bodyParser.json());
 

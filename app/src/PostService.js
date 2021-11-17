@@ -26,7 +26,7 @@ class PostService{
 
 //create
 
-static createPost(text, category, stars, media){
+static createPost(creator, text, category, stars, media, formData){
 
     return axios.post(url,{
 
@@ -34,8 +34,9 @@ static createPost(text, category, stars, media){
         category,
         likes: 0,
         media,
+        formData,
         stars,
-        creator: "Robert"
+        creator
 
     });
 

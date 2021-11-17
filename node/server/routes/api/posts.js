@@ -39,13 +39,30 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req,res) => {
 
+
     const posts = await dbconnect();
+    /*
+    if (!req.files) {
+        return res.status(500).send({ msg: "file is not found" })
+    }
+
+    const myFile = req.files.file;
+
+    
+    myFile.mv(`${__dirname}/public/${myFile.name}`, (err) => {
+        if(err){
+            console.log(err);
+            return res.status(500).send({ msg: "Error occured" });
+        }
+        return res.send({name: myFile.name, path: `/${myFile.name}`});
+    });
+    */
     await posts.insertOne({
         text: req.body.text,
         category: req.body.category,
         likes: req.body.likes,
         //comms: 0,
-        media: req.body.media,
+        //media: req.body.media,
         stars: req.body.stars,
         creator: req.body.creator,
         createdAt: new Date()

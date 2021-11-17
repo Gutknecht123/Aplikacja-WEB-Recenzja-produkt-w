@@ -2,21 +2,19 @@
 
 <div id="container">
 <NavbarSection/>
-{{user}}
-<div class="createpost">
 
+<b-card bg-variant="dark" text-variant="white" border-variant="info">
 
-<p><b-form-textarea
+<b-form-textarea
       id="textarea"
       v-model="text"
       placeholder="Enter something..."
       rows="3"
       max-rows="6"
-    ></b-form-textarea></p>
+></b-form-textarea>
 
-<div class="createpost-flex">
 
-<p><b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input></p>
+<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
 <div v-if="!media">
     <input type="file" v-on:change="onFileChange">
   </div>
@@ -24,33 +22,54 @@
     <p><img :src="media" class="post-img" /></p>
     <button v-on:click="removeImage">Remove image</button>
   </div>
-  <br>
-<p>Ocena: <input type="text" v-model="stars" id="stars"></p>
+ 
 
-</div>
+<b-card-text>
+Ocena: <input type="text" v-model="stars" id="stars">
+</b-card-text>
+
 <b-button variant="outline-dark" v-on:click="createPost">ADD</b-button>
-</div>
+
+</b-card>
+
 
 <p class="error" v-if="error">{{error}}</p>
 
-<div class="posts"> 
+<div class="posts shadow-none p-3 mb-5 bg-dark rounded">
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
+<b-card :img-src="post.media" img-alt="Card image" img-middle bg-variant="dark" text-variant="white" border-variant="info">
 
+<b-card-header header-tag="header" header-bg-variant="secondary">
+<b-card-text align="left">
+<a href="#/user"><img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD"></a> {{post.creator}}
+</b-card-text>
+<b-card-text align="right">
 {{`${post.createdAt.getDate()}/${post.createdAt.getMonth()}/${post.createdAt.getFullYear()}`}}
-<div class="post-flex">
-<p class="media"><a href="#/user"><img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD"></a></p>
-<p class="creator">{{post.creator}}</p>
-<p class="category">Category: {{post.category}}</p>
+</b-card-text>
+</b-card-header>
+
+
+<b-card-text>
+{{post.category}}
+</b-card-text>
+<b-card-text>
+{{post.text}}
+</b-card-text>
+<b-card-text>
+{{post.stars}}
+</b-card-text>
+
+
+<footer>
+<b-card-text align="right">
+{{post.likes}}
+</b-card-text>
+</footer>
+
+</b-card>
 </div>
-<p class="content">{{post.text}}</p>
-<p class="likes">{{post.likes}}</p>
-<p class="stars">{{post.stars}}</p>
-<p><img class="media-img" :src="post.media" alt="XD"></p>
-<button v-on:click="deletePost(post._id)">DELETE</button>
 </div>
-</div>
-<button>SHOW MORE</button>
 </div>
 
 
@@ -75,7 +94,8 @@ export default {
       media: '',
       category: '',
       stars: '',
-      user: ''
+      user: '',
+      filedata: ''
     }
   },
   async created(){
@@ -94,17 +114,22 @@ export default {
 
       console.log(this.$store.state.authenticated);
 
-      //await store.dispatch('setAuth', true);
+      
 
     }catch(error){
       this.$store.dispatch('setAuth', false);
-      //await store.dispatch('setAuth', false);
+      
       this.error = error.message;
     }
   },
   methods: {
     async createPost(){ 
-      await PostService.createPost(this.text, this.category, this.stars, this.media);
+
+      const formData = new FormData();
+
+      formData.append("file", this.filedata);
+
+      await PostService.createPost(this.user, this.text, this.category, this.stars, this.media, formData);
       this.posts = await PostService.getPosts();
       this.media='';
     },
@@ -113,6 +138,7 @@ export default {
       this.posts = await PostService.getPosts();
     },
      async onFileChange(e) {
+      this.filedata = e.target.files[0];
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
         return;
@@ -121,10 +147,10 @@ export default {
     async createImage(file) {
       //var media = new Image();
       var reader = new FileReader();
-      var vm = this;
+      //var vm = this;
 
       reader.onload = (e) => {
-        vm.media = e.target.result;
+        this.media = e.target.result;
       };
       reader.readAsDataURL(file);
     },
@@ -156,7 +182,6 @@ a {
 .createpost{
 
   width: 60%;
-  border: 3px solid blue;
   color: white;
   margin-left: auto;
   margin-right: auto;
@@ -165,29 +190,11 @@ a {
 .post{
   
   margin: auto;
-  border: 3px solid blue;
-  background-color: #0066CC;
   width: 60%;
   margin-top: 5%;
-  border-radius: 20px;
 
 }
-.posts{
 
-  height: 100%;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: space-between;
-  
-
-}
-.post-flex{
-
-  display: flex;
-  flex-direction: row;
-  margin-left: 15%;
-
-}
 .content{
 
   margin: auto;

@@ -11,8 +11,8 @@
         <b-dropdown-item href="#">FA</b-dropdown-item>
       </b-nav-item-dropdown>
 
-      <b-nav-item-dropdown text="User" right>
-        <b-dropdown-item href="#">Account</b-dropdown-item>
+      <b-nav-item-dropdown :text="lUser" right>
+        <b-dropdown-item href="#">Profile</b-dropdown-item>
         <b-dropdown-item href="#">Settings</b-dropdown-item>
         <b-dropdown-item v-if="getAuth" @click="logout">Logout</b-dropdown-item>
       </b-nav-item-dropdown>
@@ -29,11 +29,17 @@ export default {
     data() {
         return {
 
-            auth: ''
+            auth: '',
+            lUser: ''
             
         }
     },
-    async mounted() {
+    async created() {
+
+      const response = await AccountService.getuserAccount();
+
+      this.lUser = response.data.login;
+      
         
     },
 

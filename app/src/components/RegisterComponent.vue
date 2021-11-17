@@ -1,13 +1,12 @@
 <template>
 <div id="container">
-    <h2>Register Page...</h2>
     <br>
     <br>
     <br>
     <b-form id="register-form" @submit.prevent="Register">
     
     <div class="register-section">
-
+    
     <b-tabs content-class="mt-3" fill>
     <b-tab title="Login"  active>
     <div class="Login">
@@ -17,6 +16,7 @@
     </div>
     </b-tab>
     <b-tab title="Register">
+    <b-card bg-variant="dark" text-variant="white" border-variant="info">
     <b-form-group id="login-group" label="Your login" label-for="login-input">
 
     
@@ -66,6 +66,7 @@
     </b-form-group>
     <br>
     <b-button type="submit" variant="primary">Register</b-button>
+    </b-card>
     <br>
     <br>
     <br>
