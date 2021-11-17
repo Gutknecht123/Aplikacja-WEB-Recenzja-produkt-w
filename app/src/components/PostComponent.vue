@@ -3,7 +3,7 @@
 <div id="container">
 <NavbarSection/>
 
-<b-card bg-variant="dark" text-variant="white" border-variant="info">
+<b-card class="createpost shadow-lg p-3 mb-5 bg-secondary rounded" bg-variant="secondary" text-variant="white" border-variant="light">
 
 <b-form-textarea
       id="textarea"
@@ -28,17 +28,17 @@
 Ocena: <input type="text" v-model="stars" id="stars">
 </b-card-text>
 
-<b-button variant="outline-dark" v-on:click="createPost">ADD</b-button>
+<b-button variant="primary" v-on:click="createPost">ADD</b-button>
 
 </b-card>
 
 
 <p class="error" v-if="error">{{error}}</p>
 
-<div class="posts shadow-none p-3 mb-5 bg-dark rounded">
+<div class="posts shadow=lg p-3 mb-5 bg-dark rounded">
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<b-card :img-src="post.media" img-alt="Card image" img-middle bg-variant="dark" text-variant="white" border-variant="info">
+<b-card :img-src="post.media" img-alt="Card image" img-middle bg-variant="secondary" text-variant="black" border-variant="light">
 
 <b-card-header header-tag="header" header-bg-variant="secondary">
 <b-card-text align="left">
@@ -132,6 +132,7 @@ export default {
       await PostService.createPost(this.user, this.text, this.category, this.stars, this.media, formData);
       this.posts = await PostService.getPosts();
       this.media='';
+      
     },
     async deletePost(id){
       await PostService.deletePost(id);
@@ -177,6 +178,15 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.posts {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+#container{
+  height: 100%;
 }
 
 .createpost{

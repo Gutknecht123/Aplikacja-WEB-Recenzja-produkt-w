@@ -62,7 +62,7 @@ router.post('/', async (req,res) => {
         category: req.body.category,
         likes: req.body.likes,
         //comms: 0,
-        //media: req.body.media,
+        media: req.body.media,
         stars: req.body.stars,
         creator: req.body.creator,
         createdAt: new Date()
