@@ -7,9 +7,12 @@ class AccountService{
 
 static createAccount(login, password, email, name, surname){
 
+    let loginUp = login.toUpperCase();
+
     return axios.post(url+"register",{
 
         login,
+        loginUp,
         password,
         email,
         name,
@@ -23,9 +26,11 @@ static loginAccount(login, password){
 
     //return axios.get(url,{ params })
 
+    let loginUp = login.toUpperCase();
+
     return axios.post(url+"login",{
 
-        login,
+        loginUp,
         password
 
     },{

@@ -13,9 +13,12 @@ router.post('/register', async (req,res) => {
     
     const saltRounds = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, saltRounds);
+
+    
     
     const user = new accounts({
         login: req.body.login,
+        loginUp: req.body.loginUp,
         password: hash,
         email: req.body.email,
         name: req.body.name,
@@ -37,8 +40,8 @@ router.post('/register', async (req,res) => {
 router.post('/login', async (req, res) => {
 
     
-    const user = await accounts.findOne({login: req.body.login})
-    
+    const user = await accounts.findOne({loginUp: req.body.loginUp}) // toUpercase
+    // Kopia loginu uppercase w mongo i później porównanie z loginem podanym uppercase
 
     if(!user){
         return res.status(404).send({
