@@ -3,6 +3,7 @@ const express = require('express');
 const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const posts = require('../../../models/posts');
+const comments = require('../../../models/comments');
 
 const router = express.Router();
 
@@ -60,6 +61,10 @@ router.post('/', async (req,res) => {
         createdAt: new Date()
 
     });
+
+
+
+   
 
     const result = await post.save();
 

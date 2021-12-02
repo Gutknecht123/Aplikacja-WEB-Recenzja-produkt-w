@@ -62,9 +62,25 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 
 <footer>
+
 <b-card-text align="right">
 {{post.likes}}
 </b-card-text>
+
+<b-button variant="primary" v-if="commsbutton==false" v-on:click="showComments(post._id)">Show Comments</b-button>
+
+<div v-if="selected == post._id">
+<div class="comments" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
+
+<b-card-text align="center" v-bind:key = "com" v-for="com in comment.comments" >
+
+{{com.body}}
+
+</b-card-text>
+
+<b-button variant="primary" v-if="commsbutton==true" v-on:click="showComments(post._id)">Hide Comments</b-button>
+</div>
+</div>
 </footer>
 
 </b-card>
@@ -77,8 +93,10 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 <script>
 import PostService from '../PostService';
+import CommsService from '../CommsService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
+
 //import useStore from 'vuex';
 export default {
   name: 'PostComponent',
@@ -89,13 +107,16 @@ export default {
   data(){
     return { 
       posts: [],
+      comments: [],
       error: '',
       text: '',
       media: '',
       category: '',
       stars: '',
       user: '',
-      filedata: ''
+      filedata: '',
+      commsbutton: false,
+      selected: ''
     }
   },
   async created(){
@@ -105,6 +126,8 @@ export default {
     try{
 
       this.posts = await PostService.getPosts();
+
+      
 
       const response = await AccountService.getuserAccount();
 
@@ -157,7 +180,29 @@ export default {
     },
     removeImage:async function () {
       this.media = '';
+    },
+
+    async showComments(id){
+
+        this.commsbutton = !this.commsbutton;
+        this.selected = id;
+        
+
+        if(this.commsbutton == true){
+        this.comments = await CommsService.getComments(id);
+        if(this.comments.length == 0){
+          this.comments = ["Brak"];
+        }
+        }
+        if(this.commsbutton == false){
+          this.selected = '';
+          this.comments = [];
+        }
     }
+
+
+
+
   },
    
 }

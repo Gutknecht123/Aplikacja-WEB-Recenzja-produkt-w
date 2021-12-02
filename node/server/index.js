@@ -41,4 +41,8 @@ const accounts = require('./routes/api/accounts');
 
 app.use('/api/accounts', accounts);
 
+const comments = require('./routes/api/comments');
+
+app.use('/api/comments', comments);
+
 app.listen(3000);
