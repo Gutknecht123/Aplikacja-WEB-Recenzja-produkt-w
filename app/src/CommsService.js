@@ -24,7 +24,17 @@ static getComments(id){
 }
 
 
+static addComment(postID, comment, creator){
 
+    return axios.post(url+"add", {
+
+        postID,
+        comment,
+        creator
+
+    });
+
+}
 
 
 

@@ -24,7 +24,10 @@ router.post('/add', async (req, res) => {
             },  
             $push:{
             comments: {
-                body: req.body.comment
+                body: req.body.comment,
+                creator: req.body.creator,
+                likes: 0,
+                createdAt: new Date()
             } 
             }
         },

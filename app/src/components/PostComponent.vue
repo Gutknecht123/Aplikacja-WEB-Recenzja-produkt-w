@@ -67,23 +67,94 @@ Ocena: <input type="text" v-model="stars" id="stars">
 {{post.likes}}
 </b-card-text>
 
-<b-button variant="primary" v-if="commsbutton==false" v-on:click="showComments(post._id)">Show Comments</b-button>
+<b-button variant="primary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
+
+
+
+</footer>
+
+</b-card>
+
+<b-card class="comments shadow-lg p-3 mb-5 bg-dark rounded" bg-variant="secondary" text-variant="white" border-variant="light">
+
+
 
 <div v-if="selected == post._id">
-<div class="comments" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
 
-<b-card-text align="center" v-bind:key = "com" v-for="com in comment.comments" >
+<b-container class="bv-example-row">
+<b-row>
+<b-col>
+<b-form-textarea
+      id="textarea"
+      v-model="commenttext"
+      placeholder="Enter something..."
+      rows="3"
+      max-rows="6"
+></b-form-textarea>
+</b-col>
+</b-row>
+<b-row>
+
+<b-col>
+<b-button variant="primary" v-on:click="addComment(selected)">ADD</b-button>
+</b-col>
+
+</b-row>
+</b-container>
+
+
+<div class="comments border border-primary" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
+
+<div class="comments border border-primary" v-bind:key = "com" v-for="com in comment.comments">
+<b-container class="bv-example-row">
+<b-row>
+<b-col>
+<b-card-text align="left">
+
+{{com.creator}}
+
+</b-card-text>
+</b-col>
+
+<b-col>
+<b-card-text align="right">
+
+{{com.createdAt.substring(0,10)}}
+
+</b-card-text>
+</b-col>
+
+</b-row>
+
+<b-row align-v="stretch">
+<b-col align-self="stretch">
+<b-card-text align="left">
 
 {{com.body}}
 
 </b-card-text>
+</b-col>
+</b-row>
+<b-row>
 
-<b-button variant="primary" v-if="commsbutton==true" v-on:click="showComments(post._id)">Hide Comments</b-button>
+<b-col>
+
+</b-col>
+
+</b-row>
+
+</b-container>
+<br>
+<br>
 </div>
 </div>
-</footer>
+
+</div>
+<b-button variant="primary" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
+
 
 </b-card>
+
 </div>
 </div>
 </div>
@@ -116,7 +187,8 @@ export default {
       user: '',
       filedata: '',
       commsbutton: false,
-      selected: ''
+      selected: '',
+      commenttext: ''
     }
   },
   async created(){
@@ -184,23 +256,40 @@ export default {
 
     async showComments(id){
 
-        this.commsbutton = !this.commsbutton;
-        this.selected = id;
+        this.comments = [];
+
+        this.commsbutton = true;
+
+        if(this.selected != id){
         
+        this.selected = id;
+        }
 
         if(this.commsbutton == true){
         this.comments = await CommsService.getComments(id);
-        if(this.comments.length == 0){
-          this.comments = ["Brak"];
-        }
         }
         if(this.commsbutton == false){
           this.selected = '';
           this.comments = [];
         }
+    },
+
+    async hideComments(){
+
+        this.commsbutton = false;
+
+
+        this.selected = "";
+
+        this.comments = [];
+
+    },
+
+    async addComment(id){
+
+      await CommsService.addComment(id, this.commenttext, this.user);
+
     }
-
-
 
 
   },
