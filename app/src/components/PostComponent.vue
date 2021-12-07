@@ -289,6 +289,8 @@ export default {
 
       await CommsService.addComment(id, this.commenttext, this.user);
 
+      this.showComments(id);
+
     }
 
 

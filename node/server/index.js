@@ -45,4 +45,8 @@ const comments = require('./routes/api/comments');
 
 app.use('/api/comments', comments);
 
+const search = require('./routes/api/search');
+
+app.use('/api/search', search);
+
 app.listen(3000);
