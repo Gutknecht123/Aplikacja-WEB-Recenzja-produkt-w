@@ -22,9 +22,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background-color: #122436;
-  width: 100%;
-
+  background-color: #181d22;
+  
   
 }
 </style>

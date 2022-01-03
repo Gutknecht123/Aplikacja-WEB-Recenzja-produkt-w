@@ -1,5 +1,5 @@
 <template>
-  <b-navbar type="dark" variant="dark">
+  <b-navbar toggleable="lg" type="dark" variant="dark">
     <b-navbar-nav>
       <b-nav-item href="#">Home</b-nav-item>
 
@@ -66,3 +66,12 @@ export default {
 
 }
 </script>
+<style scoped>
+
+.navbar.navbar-dark.bg-dark{
+
+  background-color: #1e2935!important;
+  
+}
+
+</style>

@@ -3,18 +3,32 @@
 <div id="container">
 <NavbarSection/>
 
-<b-card class="createpost shadow-lg p-3 mb-5 bg-secondary rounded" bg-variant="secondary" text-variant="white" border-variant="light">
+<b-card class="createpost shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
+<b-row>
+<b-col>
 <b-form-textarea
       id="textarea"
       v-model="text"
       placeholder="Enter something..."
-      rows="3"
-      max-rows="6"
+      auto-shrink
+      no-resize
+      
 ></b-form-textarea>
+</b-col>
+</b-row>
 
+<b-row>
+<b-col>
 
 <b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
+
+</b-col>
+</b-row>
+
+<b-row>
+<b-col>
+
 <div v-if="!media">
     <input type="file" v-on:change="onFileChange">
   </div>
@@ -23,32 +37,46 @@
     <button v-on:click="removeImage">Remove image</button>
   </div>
  
+</b-col>
+</b-row>
+
+<b-row>
+<b-col>
 
 <b-card-text>
 Ocena: <input type="text" v-model="stars" id="stars">
 </b-card-text>
 
+</b-col>
+</b-row>
+
+<b-row>
+<b-col>
 <b-button variant="primary" v-on:click="createPost">ADD</b-button>
+</b-col>
+</b-row>
+
 
 </b-card>
 
 
 <p class="error" v-if="error">{{error}}</p>
 
-<div class="posts shadow=lg p-3 mb-5 bg-dark rounded">
+<div class="posts shadow=lg p-3 mb-5 rounded">
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<b-card :img-src="post.media" img-alt="Card image" img-middle bg-variant="secondary" text-variant="black" border-variant="light">
+<b-card text-variant="white" border-variant="dark" class="post-card">
 
-<b-card-header header-tag="header" header-bg-variant="secondary">
+<b-card-header header-tag="header" class="post-header">
 <b-card-text align="left">
 <a href="#/user"><img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD"></a> {{post.creator}}
 </b-card-text>
 <b-card-text align="right">
-{{`${post.createdAt.getDate()}/${post.createdAt.getMonth()}/${post.createdAt.getFullYear()}`}}
+{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
 </b-card-text>
 </b-card-header>
 
+<b-card-img :src="post.media" class="post-media rounded-0"></b-card-img>
 
 <b-card-text>
 {{post.category}}
@@ -67,19 +95,16 @@ Ocena: <input type="text" v-model="stars" id="stars">
 {{post.likes}}
 </b-card-text>
 
-<b-button variant="primary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
-
-
 
 </footer>
 
 </b-card>
 
-<b-card class="comments shadow-lg p-3 mb-5 bg-dark rounded" bg-variant="secondary" text-variant="white" border-variant="light">
+<b-card class="comments shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
+<b-button variant="primary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
 
-
-<div v-if="selected == post._id">
+<div class="comments" v-if="selected == post._id">
 
 <b-container class="bv-example-row">
 <b-row>
@@ -88,8 +113,9 @@ Ocena: <input type="text" v-model="stars" id="stars">
       id="textarea"
       v-model="commenttext"
       placeholder="Enter something..."
-      rows="3"
-      max-rows="6"
+      auto-shrink
+      no-resize
+     
 ></b-form-textarea>
 </b-col>
 </b-row>
@@ -103,10 +129,10 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </b-container>
 
 
-<div class="comments border border-primary" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
+<div class="comments border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
 
-<div class="comments border border-primary" v-bind:key = "com" v-for="com in comment.comments">
-<b-container class="bv-example-row">
+<div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
+<b-container class="comm bv-example-row">
 <b-row>
 <b-col>
 <b-card-text align="left">
@@ -138,14 +164,12 @@ Ocena: <input type="text" v-model="stars" id="stars">
 <b-row>
 
 <b-col>
-
+<b-button variant="primary" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
 </b-col>
 
 </b-row>
 
 </b-container>
-<br>
-<br>
 </div>
 </div>
 
@@ -291,6 +315,13 @@ export default {
 
       this.showComments(id);
 
+    },
+    async deleteComment(id, commid, postid){
+
+      await CommsService.deleteComment(id, commid);
+      
+      this.showComments(postid);
+
     }
 
 
@@ -301,6 +332,36 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+
+.post-header{
+
+  background-color: #1e2935;
+
+}
+
+
+.post-media{
+
+  width: 90%;
+  margin-bottom: 5%;
+  
+
+}
+.post-card{
+  background-color: #1e2935;
+}
+.comments {
+  
+  background-color: #181d22;
+
+}
+.comment {
+
+  margin-top: 5%;
+  background-color: #1e2935;
+
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -321,20 +382,19 @@ a {
   flex-direction: column-reverse;
 }
 
-#container{
-  height: 100%;
-}
-
 .createpost{
 
+  background-color: #1e2935;
   width: 60%;
   color: white;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 5%;
   
 }
 .post{
   
+  background-color: #1e2935;
   margin: auto;
   width: 60%;
   margin-top: 5%;
@@ -349,7 +409,7 @@ a {
 }
 
 #container{
-  background-color: #2e363f;
+  background-color:#181d22;
   width: 80%;
   margin-left: auto;
   margin-right: auto;
@@ -382,9 +442,11 @@ a {
 
 
 #textarea {
-    resize: none;
+
+    color: #e3e7eb;
+    background-color: #1e2935;
     border-radius: 10px;
-    width: 40%;
+    width: 95%;
     margin-left: auto;
     margin-right: auto;
 }

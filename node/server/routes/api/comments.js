@@ -73,9 +73,9 @@ router.get('/get/:postID', async (req,res) => {
 
 })
 
-router.delete('/:id', async (req,res) =>{
+router.post('/dellcomm', async (req,res) =>{
 
-    await comments.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
+    await comments.updateOne({_id: new mongodb.ObjectID(req.body.id)}, {$pull: { comments: {_id: new mongodb.ObjectID(req.body.commid)} }})
     res.status(200).send();
 
 });

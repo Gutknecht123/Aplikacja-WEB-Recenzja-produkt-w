@@ -36,7 +36,16 @@ static addComment(postID, comment, creator){
 
 }
 
+static deleteComment(id, commid){
 
+    return axios.post(url+"dellcomm",{
+
+        id,
+        commid
+
+    });
+
+}
 
 }
 
