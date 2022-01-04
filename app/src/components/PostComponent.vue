@@ -2,10 +2,10 @@
 
 <div id="container">
 <NavbarSection/>
-
+<form @submit.prevent="createPost" enctype="multipart/form-data" method="post">
 <b-card class="createpost shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
-<b-row>
+<b-row class="mb-3">
 <b-col>
 <b-form-textarea
       id="textarea"
@@ -18,7 +18,7 @@
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mb-3">
 <b-col>
 
 <b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
@@ -26,11 +26,11 @@
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mb-3">
 <b-col>
 
 <div v-if="!media">
-    <input type="file" v-on:change="onFileChange">
+    <input type="file" multiple v-on:change="onFileChange">
   </div>
   <div v-else>
     <p><img :src="media" class="post-img" /></p>
@@ -40,7 +40,7 @@
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mb-3">
 <b-col>
 
 <b-card-text>
@@ -50,15 +50,15 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mb-3">
 <b-col>
-<b-button variant="primary" v-on:click="createPost">ADD</b-button>
+<b-button variant="secondary" size="sm" type="submit">Publish</b-button>
 </b-col>
 </b-row>
 
 
 </b-card>
-
+</form>
 
 <p class="error" v-if="error">{{error}}</p>
 
@@ -95,6 +95,7 @@ Ocena: <input type="text" v-model="stars" id="stars">
 {{post.likes}}
 </b-card-text>
 
+<b-button variant="secondary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
 
 </footer>
 
@@ -102,12 +103,12 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 <b-card class="comments shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
-<b-button variant="primary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
+
 
 <div class="comments" v-if="selected == post._id">
 
 <b-container class="bv-example-row">
-<b-row>
+<b-row class="mb-3">
 <b-col>
 <b-form-textarea
       id="textarea"
@@ -118,11 +119,11 @@ Ocena: <input type="text" v-model="stars" id="stars">
      
 ></b-form-textarea>
 </b-col>
-</b-row>
-<b-row>
+</b-row >
+<b-row class="mb-3">
 
 <b-col>
-<b-button variant="primary" v-on:click="addComment(selected)">ADD</b-button>
+<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)">Publish</b-button>
 </b-col>
 
 </b-row>
@@ -133,7 +134,7 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 <div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
 <b-container class="comm bv-example-row">
-<b-row>
+<b-row class="mb-3">
 <b-col>
 <b-card-text align="left">
 
@@ -142,7 +143,7 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </b-card-text>
 </b-col>
 
-<b-col>
+<b-col class="mb-3">
 <b-card-text align="right">
 
 {{com.createdAt.substring(0,10)}}
@@ -152,7 +153,7 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 </b-row>
 
-<b-row align-v="stretch">
+<b-row align-v="stretch" class="mb-3">
 <b-col align-self="stretch">
 <b-card-text align="left">
 
@@ -163,8 +164,8 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </b-row>
 <b-row>
 
-<b-col>
-<b-button variant="primary" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
+<b-col class="mb-3">
+<b-button variant="secondary" size="sm" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
 </b-col>
 
 </b-row>
@@ -174,7 +175,8 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </div>
 
 </div>
-<b-button variant="primary" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
+
+<b-button class="mb-3" variant="secondary" size="sm" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
 
 
 </b-card>
@@ -209,7 +211,7 @@ export default {
       category: '',
       stars: '',
       user: '',
-      filedata: '',
+      file: '',
       commsbutton: false,
       selected: '',
       commenttext: ''
@@ -246,8 +248,14 @@ export default {
 
       const formData = new FormData();
 
-      formData.append("file", this.filedata);
+      formData.append("file", this.file);
+      console.log(this.file);
+     //for (const i of Object.keys(this.file)) {
+       //     formData.append('files', this.file[i])
+       //     
+       //   }
 
+      
       await PostService.createPost(this.user, this.text, this.category, this.stars, this.media, formData);
       this.posts = await PostService.getPosts();
       this.media='';
@@ -258,7 +266,7 @@ export default {
       this.posts = await PostService.getPosts();
     },
      async onFileChange(e) {
-      this.filedata = e.target.files[0];
+      this.file = e.target.files[0];
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
         return;
@@ -269,8 +277,8 @@ export default {
       var reader = new FileReader();
       //var vm = this;
 
-      reader.onload = (e) => {
-        this.media = e.target.result;
+      reader.onload = () => {
+        //this.media = e.target.result;
       };
       reader.readAsDataURL(file);
     },

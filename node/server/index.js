@@ -20,16 +20,24 @@ catch (error) {
 
 const app = express();
 
-app.use(express.static('public'));
 
-app.use(fileUpload());
 
 app.use(bodyParser.json());
+
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
 
 app.use(cors({
     credentials: true,
     origin: "http://localhost:8080"
 }));
+
+app.use(express.static('public'));
+
+app.use(fileUpload());
+
+app.use('/public', express.static('public'));
 
 app.use(cookieParser())
 

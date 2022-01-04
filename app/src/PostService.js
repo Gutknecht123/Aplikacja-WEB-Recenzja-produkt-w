@@ -28,17 +28,22 @@ class PostService{
 
 static createPost(creator, text, category, stars, media, formData){
 
-    return axios.post(url,{
+    
+    return axios.post(url+"add-post",
 
+    {
+        
         text,
         category,
         likes: 0,
-        media,
         formData,
+        media,
         stars,
         creator
 
-    });
+    },
+    
+  );
 
 }
 
