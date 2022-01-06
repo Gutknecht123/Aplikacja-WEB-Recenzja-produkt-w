@@ -2,7 +2,7 @@
 
 <div id="container">
 <NavbarSection/>
-<form @submit.prevent="createPost" enctype="multipart/form-data" method="post">
+<form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
 <b-row class="mb-3">
@@ -211,7 +211,7 @@ export default {
       category: '',
       stars: '',
       user: '',
-      file: '',
+      files: null,
       commsbutton: false,
       selected: '',
       commenttext: ''
@@ -248,15 +248,20 @@ export default {
 
       const formData = new FormData();
 
-      formData.append("file", this.file);
-      console.log(this.file);
-     //for (const i of Object.keys(this.file)) {
-       //     formData.append('files', this.file[i])
-       //     
-       //   }
+      formData.append('creator', this.user);
+      formData.append('text', this.text);
+      formData.append('category', this.category);
+      formData.append('stars', this.stars);
+      formData.append('media', this.media);
 
-      
-      await PostService.createPost(this.user, this.text, this.category, this.stars, this.media, formData);
+      console.log(this.files);
+     for (const i of Object.keys(this.files)) {
+           formData.append('files', this.files[i])
+            
+          }
+
+      console.log(formData.get('files'));
+      await PostService.createPost(formData);
       this.posts = await PostService.getPosts();
       this.media='';
       
@@ -266,7 +271,7 @@ export default {
       this.posts = await PostService.getPosts();
     },
      async onFileChange(e) {
-      this.file = e.target.files[0];
+      this.files = e.target.files;
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
         return;

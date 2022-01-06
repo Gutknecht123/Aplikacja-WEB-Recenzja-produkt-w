@@ -26,24 +26,22 @@ class PostService{
 
 //create
 
-static createPost(creator, text, category, stars, media, formData){
+static createPost(formData){
 
     
-    return axios.post(url+"add-post",
+    console.log(formData.get('files'));
+    console.log(formData.get('creator'));
 
-    {
-        
-        text,
-        category,
-        likes: 0,
-        formData,
-        media,
-        stars,
-        creator
-
-    },
-    
-  );
+    axios({
+        method: 'post',
+        url: url+'add-post',
+        data: formData,
+        headers: {
+            "Content-Type": "multipart/form-data",
+        }
+    }).then((res) => {
+        console.log(res)
+      });
 
 }
 

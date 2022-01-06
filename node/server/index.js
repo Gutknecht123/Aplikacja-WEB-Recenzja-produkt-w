@@ -4,6 +4,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+const multer = require('multer');
+const expressBusboy = require('express-busboy');
 
 const mongoose = require('mongoose');
 try{
@@ -20,18 +22,22 @@ catch (error) {
 
 const app = express();
 
-
-
-app.use(bodyParser.json());
-
-app.use(bodyParser.urlencoded({
-    extended: true
-  }));
+/*
+expressBusboy.extend(app, {
+    upload: true,
+    path: '/routes/public',
+    allowedPath: /./
+});
+*/
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
     credentials: true,
     origin: "http://localhost:8080"
 }));
+
+
 
 app.use(express.static('public'));
 
@@ -39,11 +45,13 @@ app.use(fileUpload());
 
 app.use('/public', express.static('public'));
 
+app.use('/routes/public', express.static('public'));
+
 app.use(cookieParser())
 
 const posts = require('./routes/api/posts');
 
-app.use('/api/posts', posts);
+app.use('/api/posts',  posts);
 
 const accounts = require('./routes/api/accounts');
 

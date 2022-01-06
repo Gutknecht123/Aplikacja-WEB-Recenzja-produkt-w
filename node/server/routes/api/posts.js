@@ -6,26 +6,20 @@ const comments = require('../../../models/comments');
 const multer = require('multer');
 const router = express.Router();
 
+const DIR = './public/';
 
-var storage = multer.diskStorage({
-
+const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-  
-      cb(null, "./public/")
+      console.log(req.body);
+      cb(null, DIR)
     },
-  
-  
     filename: function (req, file, cb) {
-  
-      let filename = Date.now() + '-' + Math.round(Math.random() * 1E9);
-       req.body.file = filename
-       console.log(req.body.file);
-      cb(null, filename)
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null, file.fieldname + '-' + uniqueSuffix)
     }
   })
   
-  var upload = multer({ storage: storage })
-
+  const upload = multer({ storage: storage })
 
 //getposts
 
@@ -38,12 +32,12 @@ router.get('/', async (req, res) => {
 
 //addposts
 
-router.post('/add-post', upload.single('file'), async (req,res,next) => {
+router.post('/add-post', upload.array('files', 10), async (req,res,next) => {
 
     console.log(req.body);
-    console.log(req.file);
-    console.log(req.body.file);
-    if (!req.file) {
+    
+
+    if (!req.files) {
         res.send("File was not found");
         return;
     }
