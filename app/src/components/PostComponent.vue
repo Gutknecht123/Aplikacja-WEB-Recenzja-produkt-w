@@ -30,7 +30,7 @@
 <b-col>
 
 <div v-if="!media">
-    <input type="file" multiple v-on:change="onFileChange">
+    <input type="file" name="files" multiple v-on:change="onFileChange">
   </div>
   <div v-else>
     <p><img :src="media" class="post-img" /></p>
@@ -253,13 +253,15 @@ export default {
       formData.append('category', this.category);
       formData.append('stars', this.stars);
       formData.append('media', this.media);
+      formData.append('likes', 0);
 
+    
       console.log(this.files);
      for (const i of Object.keys(this.files)) {
            formData.append('files', this.files[i])
             
           }
-
+      
       console.log(formData.get('files'));
       await PostService.createPost(formData);
       this.posts = await PostService.getPosts();

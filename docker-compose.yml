@@ -19,7 +19,7 @@ services:
         ports: 
             - "3000:3000"
         volumes:
-            - "./node:/app"   
+            - upload:/server/public/upload
         links:
             - server-database         
     
@@ -27,3 +27,6 @@ services:
     server-database:
         image: mongo
         restart: always
+    
+volumes:
+    upload:

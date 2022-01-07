@@ -6,6 +6,7 @@ const CommentsSchema = new mongoose.Schema({
     comments: [{
         body: {type: String, min: 1, max: 125},
         creator: {type: String},
+        likes: {type: Number},
         createdAt: { type: Date }
     }]
 

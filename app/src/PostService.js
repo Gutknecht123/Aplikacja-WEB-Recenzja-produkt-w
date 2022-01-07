@@ -37,11 +37,22 @@ static createPost(formData){
         url: url+'add-post',
         data: formData,
         headers: {
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "multipart/form-data"
         }
     }).then((res) => {
         console.log(res)
       });
+
+    axios({
+        method: 'post',
+        url: 'http://localhost:3000/api/upload',
+        data: formData,
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    }).then((res) => {
+        console.log(res)
+      }); 
 
 }
 

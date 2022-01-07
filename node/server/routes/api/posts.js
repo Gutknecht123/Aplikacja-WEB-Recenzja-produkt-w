@@ -4,22 +4,10 @@ const mongodb = require('mongodb');
 const posts = require('../../../models/posts');
 const comments = require('../../../models/comments');
 const multer = require('multer');
+const fileUpload = require('express-fileupload');
 const router = express.Router();
 
-const DIR = './public/';
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      console.log(req.body);
-      cb(null, DIR)
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null, file.fieldname + '-' + uniqueSuffix)
-    }
-  })
-  
-  const upload = multer({ storage: storage })
 
 //getposts
 
@@ -32,11 +20,13 @@ router.get('/', async (req, res) => {
 
 //addposts
 
-router.post('/add-post', upload.array('files', 10), async (req,res,next) => {
+router.post('/add-post', async (req,res,next) => {
 
-    console.log(req.body);
+  //console.log(req.body);
+  //console.log(req.files);
+  //console.log(req.files.length);
+  
     
-
     if (!req.files) {
         res.send("File was not found");
         return;
@@ -47,9 +37,10 @@ router.post('/add-post', upload.array('files', 10), async (req,res,next) => {
     const url = req.protocol + '://' + req.get('host')
 
     for (var i = 0; i < req.files.length; i++) {
-      reqFiles.push(url + '/public/' + req.files[i].filename)
+      reqFiles.push(req.files.files[i].name);
     }
-
+     
+    
    /*
     await posts.insertOne({
         text: req.body.text,
@@ -69,7 +60,7 @@ router.post('/add-post', upload.array('files', 10), async (req,res,next) => {
         category: req.body.category,
         likes: req.body.likes,
         files: reqFiles,
-        //media: req.body.media,
+        media: '',
         stars: req.body.stars,
         creator: req.body.creator,
         createdAt: new Date()
@@ -91,10 +82,6 @@ router.post('/add-post', upload.array('files', 10), async (req,res,next) => {
             error: err
           });
       });
-
-    const {media, ...data} = await result.toJSON();
-
-    res.send(data);
 
 });
 
