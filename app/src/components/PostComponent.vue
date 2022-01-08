@@ -247,6 +247,7 @@ export default {
     async createPost(){ 
 
       const formData = new FormData();
+      const f = [];
 
       formData.append('creator', this.user);
       formData.append('text', this.text);
@@ -259,10 +260,11 @@ export default {
       console.log(this.files);
      for (const i of Object.keys(this.files)) {
            formData.append('files', this.files[i])
-            
+           f.push(this.files[i].name)
           }
       
-      console.log(formData.get('files'));
+      //console.log(formData.get('files'));
+      console.log(f[0]);
       await PostService.createPost(formData);
       this.posts = await PostService.getPosts();
       this.media='';
@@ -425,7 +427,7 @@ a {
 
 #container{
   background-color:#181d22;
-  width: 80%;
+ 
   margin-left: auto;
   margin-right: auto;
 }

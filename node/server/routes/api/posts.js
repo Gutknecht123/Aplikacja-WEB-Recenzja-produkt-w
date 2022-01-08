@@ -17,10 +17,40 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/get/:user', async (req, res) => {
+
+    res.send(await posts.find({creator: req.params.user}));
+
+});
 
 //addposts
 
-router.post('/add-post', async (req,res,next) => {
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null,  './server/public/upload/');
+    },
+    filename: (req, file, cb) => {
+        //console.log(req.body.creator);
+      //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      const fileName = req.body.creator.toLowerCase().split(' ').join('-') + "-" + file.originalname.toLowerCase().split(' ').join('-');
+      cb(null, fileName)
+    }
+  });
+  
+  var upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+        cb(null, true);
+      } else {
+        cb(null, false);
+        return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+      }
+    }
+  });
+
+
+router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
 
   //console.log(req.body);
   //console.log(req.files);
@@ -37,7 +67,7 @@ router.post('/add-post', async (req,res,next) => {
     const url = req.protocol + '://' + req.get('host')
 
     for (var i = 0; i < req.files.length; i++) {
-      reqFiles.push(req.files.files[i].name);
+      reqFiles.push(req.body.creator.toLowerCase().split(' ').join('-') + "-" +req.files[i].filename.toLowerCase().split(' ').join('-'));
     }
      
     
@@ -67,10 +97,6 @@ router.post('/add-post', async (req,res,next) => {
 
     });
 
-
-
-   
-
     const result = await post.save().then(result => {
         console.log(result);
         res.status(201).json({
@@ -85,65 +111,6 @@ router.post('/add-post', async (req,res,next) => {
 
 });
 
-//files
-/*
-router.post('/file-upload', upload.array('files', 10),async (req,res,next) => {
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-    
-    if (!req.files) {
-        return res.status(500).send({ msg: "file is not found" })
-    }
-
-    var files = [];
-    var fileKeys = Object.keys(req.files);
-
-    fileKeys.forEach(function(key) {
-        files.push(req.files[key]);
-    });
-
-    console.log(files[0].name);
-    console.log(files[0].size);
-
-        
-    for( var i = 0; i<files.length; i++){
-
-    const myFile = files[i];
-
-    
-    fs.writeFile(`C:/Users/Robert/Desktop/Praca/node/server/routes/api/public/${myFile.name}`, myFile, 'binary', function(err){
-        if (err) throw err
-        console.log('File saved.')
-    });
-    */
-    
-    /*
-    myFile.mv(`${__dirname}/public/${myFile.name}`, (err) => {
-        if(err){
-            console.log(err);
-            return res.status(500).send({ msg: "Error occured" });
-        }
-        console.log({name: myFile.name, path: `${__dirname}/public/${myFile.name}`});
-        return res.send({name: myFile.name, path: `/${myFile.name}`});
-        
-    });
-    
-    }
-    
-});
-*/
 //delposts
 
 router.delete('/:id', async (req,res) =>{
