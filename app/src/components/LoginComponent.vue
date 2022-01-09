@@ -57,6 +57,8 @@ export default {
          
                 await AccountService.loginAccount(this.llogin, this.lpassword);
 
+                this.$store.dispatch('setProfile', this.llogin);
+
                 this.$router.push('/mainpage');
                  
     

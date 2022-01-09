@@ -348,7 +348,7 @@ export default {
     async Gotoprofile(profile){
 
 
-      this.$store.dispatch('setProfile', profile);
+      //this.$store.dispatch('setProfile', profile);
 
       this.$router.push('/user/'+profile);
 
