@@ -27,12 +27,12 @@ router.get('/get/:user', async (req, res) => {
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null,  './server/public/upload/');
+      cb(null,  './server/public/upload');
     },
     filename: (req, file, cb) => {
         //console.log(req.body.creator);
-      //const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      const fileName = req.body.creator.toLowerCase().split(' ').join('-') + "-" + file.originalname.toLowerCase().split(' ').join('-');
+      const uniqueSuffix = Math.round(Math.random() * 1E9)
+      const fileName = req.body.creator.toLowerCase().split(' ').join('-') + "-" + uniqueSuffix + "-" + file.originalname.toLowerCase().split(' ').join('-');
       cb(null, fileName)
     }
   });
@@ -40,7 +40,7 @@ const storage = multer.diskStorage({
   var upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
         cb(null, true);
       } else {
         cb(null, false);
@@ -55,7 +55,7 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
   //console.log(req.body);
   //console.log(req.files);
   //console.log(req.files.length);
-  
+  console.log(__dirname);
     
     if (!req.files) {
         res.send("File was not found");
@@ -67,7 +67,8 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
     const url = req.protocol + '://' + req.get('host')
 
     for (var i = 0; i < req.files.length; i++) {
-      reqFiles.push(req.body.creator.toLowerCase().split(' ').join('-') + "-" +req.files[i].filename.toLowerCase().split(' ').join('-'));
+      
+      reqFiles.push(url + '/api/posts/upload/' + req.files[i].filename.toLowerCase().split(' ').join('-'));
     }
      
     
@@ -116,6 +117,17 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
 router.delete('/:id', async (req,res) =>{
     await posts.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
     res.status(200).send();
+});
+
+router.get("/upload/:image", (req, res, next) => {
+
+    path = require('path')
+    //const url = req.protocol + '://' + req.get('host');
+    const image = req.params.image;
+    console.log(path.join(__dirname, '../../public/upload/' + image));
+    res.sendFile(path.join(__dirname, '../../public/upload/' + image));
+
+
 });
 
 /*

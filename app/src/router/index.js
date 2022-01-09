@@ -34,7 +34,7 @@ export default new Router({
     },
     {
 
-        path: '/user',
+        path: '/user/:profile',
         name: 'profile',
         component: ProfileComponent
 

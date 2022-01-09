@@ -78,7 +78,7 @@ static createPost(formData){
     }); 
     */
 
-    axios({
+    return axios({
         method: 'post',
         url: 'http://localhost:3000/api/posts/add-post',
         data: formData,

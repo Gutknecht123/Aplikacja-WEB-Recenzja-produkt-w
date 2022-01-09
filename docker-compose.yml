@@ -19,7 +19,8 @@ services:
         ports: 
             - "3000:3000"
         volumes:
-            - upload:/server/public/upload
+            - upload:/node/server/public/upload/
+            - ./node/server/public/upload/:/usr/src/app/node/server/public/upload/
         links:
             - server-database         
     
@@ -30,3 +31,5 @@ services:
     
 volumes:
     upload:
+    
+        

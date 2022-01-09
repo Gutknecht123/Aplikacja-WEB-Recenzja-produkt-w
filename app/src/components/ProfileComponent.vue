@@ -2,10 +2,10 @@
 <div id="container">
    <NavbarSection/>
 
-<b-container fluid class="profile-bannerpic border border-dark" :style="{'background-image':'url(https://i.imgur.com/ZJLIU8U.png)', 'background-size':'110%'}">
+<b-container fluid class="profile-bannerpic border-bottom border-dark" :style="{'background-image':'url(https://i.imgur.com/ZJLIU8U.png)', 'background-size':'110%'}">
 <b-row>
 <b-col cols="4" align-self="start">
-   <img src="https://i.imgur.com/VeDVeor.jpg" alt="" class="profile-pic border border-dark" align="right"/>
+   <img src="https://i.imgur.com/VeDVeor.jpg" alt="" class="profile-pic border-bottom border-dark" align="right"/>
 </b-col>
 <b-col cols="8">
    
@@ -13,7 +13,15 @@
 </b-row>
 </b-container>
 
+<b-container fluid>
 
+<b-row>
+<b-col cols="2">
+<div>
+Siema
+</div> 
+</b-col>
+<b-col cols="6">
 <div class="posts shadow=lg p-3 mb-5 rounded">
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
@@ -21,14 +29,16 @@
 
 <b-card-header header-tag="header" class="post-header">
 <b-card-text align="left">
-<a href="#/user"><img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD"></a> {{post.creator}}
+<img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
 </b-card-text>
 <b-card-text align="right">
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
 </b-card-text>
 </b-card-header>
 
-<b-card-img :src="post.media" class="post-media rounded-0"></b-card-img>
+<div v-bind:key = "image" v-for="image in post.files">
+<b-card-img :src="image" class="post-media rounded-0"></b-card-img>
+</div>
 
 <b-card-text>
 {{post.category}}
@@ -133,10 +143,16 @@
 
 </b-card>
 
-</div>
-</div>
+<b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
 
 </div>
+</div>
+</b-col>
+</b-row>
+</b-container>
+
+</div>
+
 </template>
 
 <script>
@@ -181,9 +197,11 @@ export default {
 
       this.$store.dispatch('setAuth', true);
 
-      console.log(this.$store.state.authenticated);
+      //console.log(this.$store.state.authenticated);
 
-      this.posts = await PostService.getUserPosts(this.user);
+      console.log(this.$store.state.profile);
+
+      this.posts = await PostService.getUserPosts(this.$route.params.profile);
 
     }catch(error){
       this.$store.dispatch('setAuth', false);
@@ -236,6 +254,16 @@ export default {
       await CommsService.deleteComment(id, commid);
       
       this.showComments(postid);
+
+    },
+     async deletePost(id){
+      await PostService.deletePost(id);
+      this.posts = await PostService.getPosts();
+    },
+      async Gotoprofile(profile){
+
+
+        console.log(profile);
 
     }
 
@@ -291,7 +319,7 @@ export default {
   
   background-color: #1e2935;
   margin: auto;
-  width: 45%;
+  width: 100%;
   margin-top: 1%;
   margin-left: 45%;
 

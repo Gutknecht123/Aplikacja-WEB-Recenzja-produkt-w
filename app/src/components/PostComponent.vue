@@ -69,15 +69,15 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 <b-card-header header-tag="header" class="post-header">
 <b-card-text align="left">
-<a href="#/user"><img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD"></a> {{post.creator}}
+<img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
 </b-card-text>
 <b-card-text align="right">
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
 </b-card-text>
 </b-card-header>
-
-<b-card-img :src="post.media" class="post-media rounded-0"></b-card-img>
-
+<div v-bind:key = "image" v-for="image in post.files">
+<b-card-img :src="image" class="post-media rounded-0"></b-card-img>
+</div>
 <b-card-text>
 {{post.category}}
 </b-card-text>
@@ -181,6 +181,8 @@ Ocena: <input type="text" v-model="stars" id="stars">
 
 </b-card>
 
+<b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
+
 </div>
 </div>
 </div>
@@ -268,6 +270,8 @@ export default {
       await PostService.createPost(formData);
       this.posts = await PostService.getPosts();
       this.media='';
+
+      
       
     },
     async deletePost(id){
@@ -338,6 +342,15 @@ export default {
       await CommsService.deleteComment(id, commid);
       
       this.showComments(postid);
+
+    },
+
+    async Gotoprofile(profile){
+
+
+      this.$store.dispatch('setProfile', profile);
+
+      this.$router.push('/user/'+profile);
 
     }
 

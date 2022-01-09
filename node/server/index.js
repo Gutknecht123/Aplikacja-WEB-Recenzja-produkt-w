@@ -39,13 +39,9 @@ app.use(cors({
 
 //app.use(express.static('/run/desktop/mnt/host/c/Users/Robert/Desktop/Praca/node/server/public/upload'));
 
-app.use(express.static('/upload/'));
+//app.use(express.static('./server/public/upload/'));
 
-//app.use(fileUpload());
-
-//app.use('./public', express.static('public'));
-
-app.use(express.static(__dirname));
+//app.use(express.static(__dirname));
 
 app.use(cookieParser())
 
@@ -55,20 +51,9 @@ app.use(cookieParser())
 
 const DIR = './public';
 
-/*
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      console.log(req.body);
-      cb(null, DIR)
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null, file.fieldname + '-' + uniqueSuffix)
-    }
-  })
-  
-  const upload = multer({ storage: storage })
-*/
+app.use('/api/upload', express.static('./public/upload/'));
+
+app.use(express.static(path.join(__dirname, '/public/upload/')));
 
 const posts = require('./routes/api/posts');
 
