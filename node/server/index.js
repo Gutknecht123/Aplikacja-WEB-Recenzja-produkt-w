@@ -71,4 +71,8 @@ const search = require('./routes/api/search');
 
 app.use('/api/search', search);
 
+const follows = require('./routes/api/follows');
+
+app.use('/api/follows', follows);
+
 app.listen(3000);

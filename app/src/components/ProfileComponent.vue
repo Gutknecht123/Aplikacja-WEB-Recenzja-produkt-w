@@ -16,9 +16,18 @@
 <b-container fluid>
 
 <b-row>
-<b-col cols="2">
+<b-col cols="3">
 <div>
-Siema
+<b-row>
+<b-col :style="{'text-align': 'right', 'font-size': '25px'}">
+{{username}}
+</b-col> 
+</b-row>
+<b-row>
+<b-col>
+<b-button variant="secondary" size="lg" >Follow</b-button>
+</b-col> 
+</b-row>
 </div> 
 </b-col>
 <b-col cols="6">
@@ -181,7 +190,8 @@ export default {
       files: null,
       commsbutton: false,
       selected: '',
-      commenttext: ''
+      commenttext: '',
+      username: ''
       }
   },
   async created(){
@@ -192,6 +202,10 @@ export default {
 
 
       const response = await AccountService.getuserAccount();
+
+      const username = await AccountService.getUsername(this.$route.params.profile);
+
+      this.username = username.data.login;
 
       this.user = response.data.login;
 

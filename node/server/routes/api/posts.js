@@ -9,7 +9,7 @@ const router = express.Router();
 
 
 
-//getposts
+//getposts - global
 
 router.get('/', async (req, res) => {
 
@@ -17,9 +17,19 @@ router.get('/', async (req, res) => {
 
 });
 
+//getposts - own
+
 router.get('/get/:user', async (req, res) => {
 
     res.send(await posts.find({creator: req.params.user}));
+
+});
+
+//getposts - followings
+
+router.get('/get/followings', async (req, res) => {
+
+  res.send(await posts.find({creator: req.body.followinguser}));
 
 });
 

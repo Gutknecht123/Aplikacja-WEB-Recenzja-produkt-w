@@ -54,6 +54,12 @@ static getuserAccount(){
 
 }
 
+static getUsername(user){
+
+    return axios.get(url+"/username/"+user,{})
+
+}
+
 static logoutAccount(){
 
     return axios(url+'logout',

@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const { query } = require('express');
 const jwt = require('jsonwebtoken');
 const accounts = require('../../../models/accounts');
+const follows = require('../../../models/follows');
+
 
 const router = express.Router();
 
@@ -25,6 +27,37 @@ router.post('/register', async (req,res) => {
         surname: req.body.surname,
         createdAt: new Date()
     });
+
+    try{
+
+        await follows.updateOne(
+            { Username: req.body.login },
+    
+            { 
+                $set:{
+                    Username: req.body.login
+                },  
+                $push:{
+                Follows: {
+                    Follow: '',
+                    createdAt: new Date()
+                },
+                Followings: {
+                    Following: '',
+                    createdAt: new Date()
+                }
+                }
+            },
+    
+            {upsert: true}
+            
+        )
+    
+        res.send("done");
+        }catch(e){
+            console.log(e);
+        }
+
 
     const result = await user.save();
 
@@ -112,6 +145,15 @@ router.post("/logout", async (req,res) =>{
     })
 })
 
+router.get("/username/:user", async (req,res) => {
+
+
+
+    const usr = await accounts.findOne({loginUp: (req.params.user).toUpperCase()});
+
+    res.send(usr);
+
+})
 /*
 async function dbconnect(){
 
