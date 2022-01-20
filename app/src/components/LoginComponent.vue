@@ -55,13 +55,16 @@ export default {
             
 
          
-                await AccountService.loginAccount(this.llogin, this.lpassword);
+                await AccountService.loginAccount(this.llogin, this.lpassword).then((response) => {
 
-                this.$store.dispatch('setProfile', this.llogin);
+                    if(response.data.message=="Success!"){
 
-                this.$router.push('/mainpage');
-                 
-    
+                     this.$store.dispatch('setProfile', this.llogin);
+
+                     this.$router.push('/mainpage');
+                    }
+
+                })
 
             
         }

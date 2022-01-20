@@ -8,10 +8,23 @@ const accounts = require('../../../models/accounts');
 const follows = require('../../../models/follows');
 const verify = require('../../../models/verification');
 const crypto = require("crypto");
+const ObjectID = require('mongodb').ObjectID;
+const nodemailer = require('nodemailer');
 
 
 const router = express.Router();
+//ustawienia wysyłania emaili
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'roburr24@gmail.com',
+      pass: 'kolo2424'
+    }
+  });
 
+
+
+//rejestracja
 router.post('/register', async (req,res) => {
 
     
@@ -37,8 +50,16 @@ router.post('/register', async (req,res) => {
 
     const {password, ...data} = await result.toJSON();
 
-    console.log(data._id);
+    var link = 'http://localhost:3000/api/accounts/verify/'+code;
 
+    //Opcje maila
+    var mailOptions = {
+        from: 'roburr24@gmail.com',
+        to: req.body.email,
+        subject: 'Vue app Verification',
+        text: 'Verify your account, click the link: ' + link,
+    
+      };
 
     const ver = new verify({
 
@@ -47,7 +68,20 @@ router.post('/register', async (req,res) => {
 
     })
 
-        await follows.updateOne(
+    await ver.save();
+
+    //Wysłanie maila z linkiem weryfikacyjnym
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+    });
+
+
+    //Utworzenie followów
+    await follows.updateOne(
             { Username: req.body.login },
     
             { 
@@ -80,11 +114,71 @@ router.post('/register', async (req,res) => {
     
 });
 
+//Obsługa weryfikacji
+
+router.get('/verify/:code', async(req, res) => {
+
+    var ID;
+
+    try{
+
+        await verify.findOne({code: req.params.code}, (err, check) => {
+
+            if(check){
+
+                ID = check._id;
+                console.log(req.params.code);
+                console.log(check.userID);
+    
+                accounts.updateOne(
+                    {_id: ObjectID(check.userID)},
+                    {
+                        $set:{
+                        active: true
+                        }
+                    },
+                    {upsert: true}, (err, res) => {
+                        if (err) throw err;
+                    });
+
+            }else{
+                res.send(err);
+            }
+
+        })
+
+        await verify.deleteOne({code: req.params.code}, (err, obj ) => {
+            if (err) throw err;
+          });
+                    
+        res.writeHead(302, {
+            'Location': 'http://localhost:8080/#/'
+        })
+        res.end();
+
+    }catch(e){
+        console.log(e);
+    }
+
+})
 
 
+//Logowanie
 router.post('/login', async (req, res) => {
 
     
+    
+
+
+    if(await accounts.findOne({
+
+        $and: [
+            {loginUp: req.body.loginUp},
+            {active: true}
+        ]
+    
+    })){
+
     const user = await accounts.findOne({loginUp: req.body.loginUp}) // toUpercase
     // Kopia loginu uppercase w mongo i później porównanie z loginem podanym uppercase
 
@@ -110,15 +204,17 @@ router.post('/login', async (req, res) => {
 
     })
 
-
-
     res.send({
         message: "Success!"
     });
-
+    }else{
+        res.send({
+            message: "Błędne dane / Konto nieaktywowane!"
+        });
+    }
 });
 
-
+//get user
 router.get('/user', async (req,res) => {
 
     try{
@@ -147,7 +243,7 @@ router.get('/user', async (req,res) => {
 
 })
 
-
+//Wylogowanie
 router.post("/logout", async (req,res) =>{
 
     res.clearCookie('jwt');
@@ -157,26 +253,15 @@ router.post("/logout", async (req,res) =>{
     })
 })
 
+
+//get ustalonego użytkownika
 router.get("/username/:user", async (req,res) => {
-
-
 
     const usr = await accounts.findOne({loginUp: (req.params.user).toUpperCase()});
 
     res.send(usr);
 
 })
-/*
-async function dbconnect(){
 
-    const client = await mongodb.MongoClient.connect('mongodb+srv://user:12345@cluster0.rorub.mongodb.net/mongodb?retryWrites=true&w=majority', {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    });
-
-return client.db('mongodb').collection('accounts');
-
-}
-*/
 
 module.exports = router;

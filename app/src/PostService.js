@@ -43,7 +43,7 @@ class PostService{
 
 //create
 
-static createPost(formData){
+static async createPost(formData){
 
     //const filename = Date.now() + '-' + Math.round(Math.random() * 1E9)
 
@@ -78,18 +78,15 @@ static createPost(formData){
     }); 
     */
 
-    return axios({
+    const res = await axios({
         method: 'post',
         url: 'http://localhost:3000/api/posts/add-post',
         data: formData,
         headers: {
             "Content-Type": "multipart/form-data"
         }
-        }).then((res) => {
-        console.log(res)
-
-
-        }); 
+    });
+    console.log(res); 
 }
 
 //delete
