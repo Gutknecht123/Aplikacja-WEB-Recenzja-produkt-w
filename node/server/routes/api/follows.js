@@ -9,7 +9,7 @@ const router = express.Router();
 
 
 //add to follows
-router.post('/add', async (req, res) => {
+router.post('/addfollow', async (req, res) => {
 
     try{
 
@@ -60,13 +60,27 @@ router.get('/getfollows/:user', async(req,res) => {
 
 })
 
+router.get('/checkfollow', async(req,res) => {
+
+    var check = false;
+
+    console.log(req.query["user"])
+    console.log(req.query["username"])
+
+    if(await follows.findOne({Username: req.query["user"], "Followings.Following": req.query["username"]},{"Followings.$": 1})){
+        check = true;
+    }
+
+    res.send(check);
+
+})
 
 //delete unfollow
 
-router.post('/unfollow/:user', async (req,res) =>{
+router.post('/unfollow', async (req,res) =>{
 
-    await follows.updateOne({Username: req.params.user}, {$pull: { Followings: {Following: req.body.followuser} }})
-    await follows.updateOne({Username: req.body.followuser}, {$pull: { Follows: {Follow: req.params.user} }})
+    await follows.updateOne({Username: req.body.user}, {$pull: { Followings: {Following: req.body.followuser} }})
+    await follows.updateOne({Username: req.body.followuser}, {$pull: { Follows: {Follow: req.body.user} }})
     res.status(200).send();
 
 });

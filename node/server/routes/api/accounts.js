@@ -6,6 +6,8 @@ const { query } = require('express');
 const jwt = require('jsonwebtoken');
 const accounts = require('../../../models/accounts');
 const follows = require('../../../models/follows');
+const verify = require('../../../models/verification');
+const crypto = require("crypto");
 
 
 const router = express.Router();
@@ -15,9 +17,11 @@ router.post('/register', async (req,res) => {
     
     const saltRounds = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, saltRounds);
+    const code = crypto.randomBytes(20).toString('hex');
 
     
-    
+    try{
+
     const user = new accounts({
         login: req.body.login,
         loginUp: req.body.loginUp,
@@ -25,10 +29,23 @@ router.post('/register', async (req,res) => {
         email: req.body.email,
         name: req.body.name,
         surname: req.body.surname,
+        active: false,
         createdAt: new Date()
     });
 
-    try{
+    const result = await user.save();
+
+    const {password, ...data} = await result.toJSON();
+
+    console.log(data._id);
+
+
+    const ver = new verify({
+
+        userID: data._id,
+        code: code
+
+    })
 
         await follows.updateOne(
             { Username: req.body.login },
@@ -59,11 +76,6 @@ router.post('/register', async (req,res) => {
         }
 
 
-    const result = await user.save();
-
-    const {password, ...data} = await result.toJSON();
-
-    res.send(data);
 
     
 });

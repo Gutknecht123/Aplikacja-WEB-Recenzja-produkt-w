@@ -8,7 +8,6 @@ const PostsSchema = new mongoose.Schema({
     files:{
         type: Array
     },
-    media: {},
     stars: {type: Number, required: true},
     creator: {type: String, required: true},
     createdAt: { type: Date }

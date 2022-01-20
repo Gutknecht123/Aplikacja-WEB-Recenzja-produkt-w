@@ -101,7 +101,6 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
         category: req.body.category,
         likes: req.body.likes,
         files: reqFiles,
-        media: '',
         stars: req.body.stars,
         creator: req.body.creator,
         createdAt: new Date()

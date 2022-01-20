@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const FollowsSchema = new mongoose.Schema({
 
-    Username: { type: String, unique: true },
+    Username: { type: String },
     Follows: [{
 
-        Follow: { type: String, unique: true },
+        Follow: { type: String  },
         createdAt: { type: Date }
 
     }],
     Followings: [{
 
-        Following: { type: String, unique: true },
+        Following: { type: String },
         createdAt: { type: Date }
 
     }]

@@ -1,7 +1,8 @@
 <template>
 
-<div id="container">
+<div>
 <NavbarSection/>
+<div id="container">
 <form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
 
@@ -186,7 +187,7 @@ Ocena: <input type="text" v-model="stars" id="stars">
 </div>
 </div>
 </div>
-
+</div>
 
 </template>
 
@@ -255,7 +256,6 @@ export default {
       formData.append('text', this.text);
       formData.append('category', this.category);
       formData.append('stars', this.stars);
-      formData.append('media', this.media);
       formData.append('likes', 0);
 
     
@@ -280,6 +280,7 @@ export default {
     },
      async onFileChange(e) {
       this.files = e.target.files;
+      
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length)
         return;
@@ -290,8 +291,8 @@ export default {
       var reader = new FileReader();
       //var vm = this;
 
-      reader.onload = () => {
-        //this.media = e.target.result;
+      reader.onload = (e) => {
+        this.media = e.target.result;
       };
       reader.readAsDataURL(file);
     },

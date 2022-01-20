@@ -24,9 +24,12 @@
 </b-col> 
 </b-row>
 <b-row>
-<b-col>
-<b-button variant="secondary" size="lg" >Follow</b-button>
-</b-col> 
+<b-col v-if="username!=user && check==false">
+<b-button variant="secondary" size="lg" v-on:click="Follow()" >Follow</b-button>
+</b-col>
+<b-col v-if="username!=user && check==true">
+<b-button variant="secondary" size="lg" v-on:click="Unfollow()" >Unfollow</b-button>
+</b-col>
 </b-row>
 </div> 
 </b-col>
@@ -170,6 +173,7 @@ import PostService from '../PostService';
 import CommsService from '../CommsService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
+import ProfileService from '../ProfileService';
 
 export default {
     name: 'ProfileComponent',
@@ -191,7 +195,8 @@ export default {
       commsbutton: false,
       selected: '',
       commenttext: '',
-      username: ''
+      username: '',
+      check: null
       }
   },
   async created(){
@@ -213,7 +218,11 @@ export default {
 
       //console.log(this.$store.state.authenticated);
 
-      console.log(this.$store.state.profile);
+      //console.log(this.$store.state.profile);
+
+      this.check = await ProfileService.Check(this.user, this.username)
+
+      console.log(this.check);
 
       this.posts = await PostService.getUserPosts(this.$route.params.profile);
 
@@ -279,7 +288,19 @@ export default {
 
         console.log(profile);
 
-    }
+    },
+      async Follow(){
+
+        
+        await ProfileService.Follow(this.user, this.username);
+        this.check = await ProfileService.Check(this.user, this.username)
+
+      },
+      async Unfollow(){
+
+        await ProfileService.Unfollow(this.user, this.username);
+        this.check = await ProfileService.Check(this.user, this.username)
+      }
 
   }
 }
