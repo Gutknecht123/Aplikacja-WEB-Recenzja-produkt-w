@@ -5,6 +5,12 @@ const PostsSchema = new mongoose.Schema({
     text: {type: String, required: true},
     category: {type: String, required: true},
     likes: {type: Number, required: true},
+    likedby: [{
+
+        username: { type: String },
+        createdAt: { type: Date }
+
+    }],
     files:{
         type: Array
     },

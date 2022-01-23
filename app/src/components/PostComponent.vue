@@ -41,12 +41,15 @@
 </b-col>
 </b-row>
 
-<b-row class="mb-3">
-<b-col>
+<b-row>
 
-<b-card-text>
-Ocena: <input type="text" v-model="stars" id="stars">
-</b-card-text>
+<b-col>
+<star-rating v-bind:increment="0.5"
+             v-bind:max-rating="5"
+             inactive-color="#0099cc"
+             active-color="#ffcc66"
+             v-bind:show-rating="false"
+             v-bind:star-size="40" v-model="stars" id="stars" @rating-selected="setRating"></star-rating>
 
 </b-col>
 </b-row>
@@ -69,40 +72,94 @@ Ocena: <input type="text" v-model="stars" id="stars">
 <b-card text-variant="white" border-variant="dark" class="post-card">
 
 <b-card-header header-tag="header" class="post-header">
+<b-row>
+<b-col>
 <b-card-text align="left">
 <img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
 </b-card-text>
+</b-col>
+<b-col>
 <b-card-text align="right">
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
 </b-card-text>
+</b-col>
+</b-row>
 </b-card-header>
-<div v-bind:key = "image" v-for="image in post.files">
-<b-card-img :src="image" class="post-media rounded-0"></b-card-img>
+
+<VueSlickCarousel :arrows="true" :dots="true" :adaptiveHeight="true" :swipe="false">
+
+
+
+<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
+
+
+    <div align="center">
+    <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'"></b-card-img>
+    </div>
+
+    <div v-if="image.split('.').pop()=='mp4'">
+
+    <video-player class="vjs-custom-skin" 
+                  ref="videoPlayer"
+                  :options="playerOptions[index]"
+                  :playsinline="true"
+                  @play="onPlayerPlay($event,index)"
+                  @pause="onPlayerPause($event)"
+                  >
+    </video-player>
+    </div>
+
 </div>
-<b-card-text>
+</VueSlickCarousel>
+
+<b-container class="post-content">
+<b-row class="stars-cat">
+<b-col>
+<b-card-text align="left">
+Rating: <star-rating v-bind:increment="0.5"
+              v-bind:max-rating="5"
+              inactive-color="#1e2935"
+              active-color="#ffcc66"
+              v-bind:rating="post.stars"
+              v-bind:read-only="true"
+              v-bind:show-rating="false"
+              v-bind:star-size="30" class="stars"></star-rating>
+</b-card-text>
+
+
+</b-col>
+<b-col>
+<b-card-text align="right">
+Category:
 {{post.category}}
 </b-card-text>
+</b-col>
+</b-row>
+
 <b-card-text>
-{{post.text}}
+<div class="post-text">{{post.text}}</div>
 </b-card-text>
-<b-card-text>
-{{post.stars}}
-</b-card-text>
+</b-container>
 
 
 <footer>
 
-<b-card-text align="right">
-{{post.likes}}
+<b-row class="com-likes">
+<b-col>
+<b-button align="left" variant="secondary" size="sm" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
+</b-col> 
+<b-col>
+<b-card-text>
+{{post.likes}} <b-button variant="secondary" size="sm" v-on:click="likePost(post._id)">Like</b-button>
 </b-card-text>
-
-<b-button variant="secondary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
+</b-col>
+</b-row> 
 
 </footer>
 
 </b-card>
 
-<b-card class="comments shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
+<b-card class="comments shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark" v-if="selected == post._id">
 
 
 
@@ -196,12 +253,20 @@ import PostService from '../PostService';
 import CommsService from '../CommsService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
+import VueSlickCarousel from 'vue-slick-carousel'
+import 'vue-slick-carousel/dist/vue-slick-carousel.css'
+// optional style for arrows & dots
+import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
+import StarRating from 'vue-star-rating'
+
 
 //import useStore from 'vuex';
 export default {
   name: 'PostComponent',
    components:{
      NavbarSection,
+     VueSlickCarousel,
+     StarRating
      
  },
   data(){
@@ -212,12 +277,15 @@ export default {
       text: '',
       media: '',
       category: '',
-      stars: '',
+      stars: 0,
       user: '',
       files: null,
       commsbutton: false,
       selected: '',
-      commenttext: ''
+      commenttext: '',
+      playerOptions: [],
+      medialist:[]
+
     }
   },
   async created(){
@@ -226,11 +294,13 @@ export default {
 
     try{
 
+
+
       this.posts = await PostService.getPosts();
 
-      
-
       const response = await AccountService.getuserAccount();
+
+      
 
       this.user = response.data.login;
 
@@ -238,15 +308,73 @@ export default {
 
       console.log(this.$store.state.authenticated);
 
-      
 
+      for(var i=0; i<this.posts.length; i++){
+
+        for(var j=0; j<this.posts[i].files.length; j++){
+
+          //console.log(this.posts[i].files[j]);
+
+          if(this.posts[i].files[j].split('.').pop()=='mp4'){
+          let arrs = {
+
+            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+            autoplay: false, //If true, the browser will start playing back when it is ready.
+            muted: true, // Any audio will be removed by default.
+            loop: false, // Causes the video to restart as soon as it's over.
+            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            language: "en-EN",
+            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            fluid: true,
+            sources: [{
+            type: "video/mp4",
+            src: this.posts[i].files[j]
+            }],
+            poster: "",
+            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+              controlBar: {
+                timeDivider: true,
+                durationDisplay: true,
+                remainingTimeDisplay: false,
+                fullscreenToggle: true //Full screen button
+              }
+          }
+
+      
+          this.playerOptions[i] = arrs;
+          
+          }
+
+          
+        }
+
+      }
+
+
+
+
+      
     }catch(error){
       this.$store.dispatch('setAuth', false);
       
       this.error = error.message;
     }
   },
-  methods: {
+    mounted() {
+      // console.log('this is current player instance object', this.player)
+      setTimeout(() => {
+        //console.log('dynamic change options', this.player)
+        this.player.muted(false)
+      }, 2000)
+    },
+    computed: {
+      player() {
+        return this.$refs.videoPlayer.player
+      }
+    },
+
+     methods: {
+
     async createPost(){ 
 
       const formData = new FormData();
@@ -271,9 +399,53 @@ export default {
       this.posts = await PostService.getPosts();
       this.media='';
 
+      for(var i=0; i<this.posts.length; i++){
+
+        for(var j=0; j<this.posts[i].files.length; j++){
+
+          //console.log(this.posts[i].files[j]);
+
+          if(this.posts[i].files[j].split('.').pop()=='mp4'){
+          let arrs = {
+
+            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+            autoplay: false, //If true, the browser will start playing back when it is ready.
+            muted: false, // Any audio will be removed by default.
+            loop: false, // Causes the video to restart as soon as it's over.
+            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            language: "zh-CN",
+            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            fluid: true,
+            sources: [{
+            type: "video/mp4",
+            src: this.posts[i].files[j]
+            }],
+            poster: "",
+            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+              controlBar: {
+                timeDivider: true,
+                durationDisplay: true,
+                remainingTimeDisplay: false,
+                fullscreenToggle: true //Full screen button
+              }
+          }
+
       
+          this.playerOptions[i] = arrs;
+          
+          }
+
+          
+        }
+
+      }
       
     },
+
+    setRating: function(rating){
+      this.stars= rating;
+    },
+
     async deletePost(id){
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
@@ -353,8 +525,22 @@ export default {
 
       this.$router.push('/user/'+profile);
 
-    }
+    },
 
+    async likePost(postid){
+
+      try{
+
+      await PostService.Like(postid, this.user);
+      this.posts = await PostService.getPosts();
+
+      }catch(e){
+
+        console.log(e);
+      }
+
+
+    }
 
   },
    
@@ -488,4 +674,45 @@ a {
   margin-right: auto;
 
 }
+
+#stars{
+
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+.post-text{
+  text-align: left;
+  margin-top: 5%;
+  margin-bottom: 10%;
+}
+
+.stars-cat{
+
+  margin-top: 3%;
+
+
+}
+.post-content{
+
+  width: 90%;
+
+}
+
+</style>
+<style>
+
+.slick-prev:before,
+            .slick-next:before {
+                font-size: 20px;
+                line-height: 1;
+                opacity: 0.75;
+                color: red !important;
+
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+        
+
 </style>

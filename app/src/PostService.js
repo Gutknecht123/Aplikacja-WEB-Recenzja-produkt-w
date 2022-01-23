@@ -97,7 +97,17 @@ static deletePost(id){
 
 }
 
+static Like(postid, username){
+
+    return axios.post(url+"like/"+postid,{
+        username
+    })                   
 }
+
+
+
+}
+
 
 
 export default PostService;

@@ -6,6 +6,67 @@ const comments = require('../../../models/comments');
 const multer = require('multer');
 const fileUpload = require('express-fileupload');
 const router = express.Router();
+const ObjectID = require('mongodb').ObjectID;
+
+
+//like post
+
+router.post('/like/:postid', async(req,res) => {
+
+  console.log(req.params.postid);
+
+  try{
+
+    posts.updateOne(
+      { _id: ObjectID(req.params.postid) },
+      
+      {
+        $inc: {
+            likes: 1
+        },
+        $push:{
+          likedby:{
+              username: req.body.username
+          }
+        }
+      },
+      {upsert: true}, (err, res) => {
+        if (err) throw err;
+      })
+
+      res.send("done");
+    
+  }catch(e){
+      console.log(e);
+  }
+
+
+})
+
+//dislike post
+router.post('/dislike/:postid', async(req,res) => {
+
+  posts.updateOne(
+    { _id: ObjectID(req.params.postid) },
+    
+    {
+      $inc: {
+          likes: -1
+      }
+    }
+
+  )
+
+
+})
+
+//get likes
+
+router.get('/likes/:postid', async(req, res) => {
+
+
+
+})
 
 
 
@@ -50,7 +111,7 @@ const storage = multer.diskStorage({
   var upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
-      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
+      if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif" || file.mimetype == "video/mp4") {
         cb(null, true);
       } else {
         cb(null, false);
@@ -100,6 +161,7 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
         text: req.body.text,
         category: req.body.category,
         likes: req.body.likes,
+        likedby: [],
         files: reqFiles,
         stars: req.body.stars,
         creator: req.body.creator,

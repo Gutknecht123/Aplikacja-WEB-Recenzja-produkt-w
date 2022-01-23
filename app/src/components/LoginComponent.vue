@@ -61,7 +61,7 @@ export default {
 
                      this.$store.dispatch('setProfile', this.llogin);
 
-                     this.$router.push('/mainpage');
+                     this.$router.push('/');
                     }
 
                 })

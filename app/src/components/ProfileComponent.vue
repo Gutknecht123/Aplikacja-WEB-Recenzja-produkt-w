@@ -48,8 +48,21 @@
 </b-card-text>
 </b-card-header>
 
-<div v-bind:key = "image" v-for="image in post.files">
-<b-card-img :src="image" class="post-media rounded-0"></b-card-img>
+<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
+  
+<b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'"></b-card-img>
+
+<div v-if="image.split('.').pop()=='mp4'">
+
+<video-player class="vjs-custom-skin" 
+                  ref="videoPlayer"
+                  :options="playerOptions[index]"
+                  :playsinline="true"
+                  @play="onPlayerPlay($event,index)"
+                  @pause="onPlayerPause($event)"
+                  >
+</video-player>
+</div>
 </div>
 
 <b-card-text>
@@ -175,10 +188,12 @@ import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
 import ProfileService from '../ProfileService';
 
+
 export default {
     name: 'ProfileComponent',
    components:{
      NavbarSection,
+     
      
  },
   data(){
@@ -196,7 +211,9 @@ export default {
       selected: '',
       commenttext: '',
       username: '',
-      check: null
+      check: null,
+      playerOptions: [],
+      medialist:[]
       }
   },
   async created(){
@@ -225,6 +242,49 @@ export default {
       console.log(this.check);
 
       this.posts = await PostService.getUserPosts(this.$route.params.profile);
+
+      for(var i=0; i<this.posts.length; i++){
+
+        for(var j=0; j<this.posts[i].files.length; j++){
+
+          //console.log(this.posts[i].files[j]);
+
+          if(this.posts[i].files[j].split('.').pop()=='mp4'){
+          let arrs = {
+
+            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+            autoplay: false, //If true, the browser will start playing back when it is ready.
+            muted: false, // Any audio will be removed by default.
+            loop: false, // Causes the video to restart as soon as it's over.
+            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            language: "zh-CN",
+            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            fluid: true,
+            sources: [{
+            type: "video/mp4",
+            src: this.posts[i].files[j]
+            }],
+            poster: "",
+            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+              controlBar: {
+                timeDivider: true,
+                durationDisplay: true,
+                remainingTimeDisplay: false,
+                fullscreenToggle: true //Full screen button
+              }
+          }
+
+      
+          this.playerOptions[i] = arrs;
+          
+          }
+
+          
+        }
+
+      }
+
+
 
     }catch(error){
       this.$store.dispatch('setAuth', false);

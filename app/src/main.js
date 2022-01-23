@@ -10,6 +10,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Vuelidate from 'vuelidate'
 import VueCompositionAPI from '@vue/composition-api'
 import store from './store/store'
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
 Vue.config.productionTip = false
 
 
@@ -19,6 +21,8 @@ new Vue({
   router,
   store
 }).$mount('#app')
+
+Vue.use(VueVideoPlayer,)
 
 Vue.use(BootstrapVue)
 

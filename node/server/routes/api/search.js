@@ -31,5 +31,14 @@ router.get('/content/:phrase', async (req, res) => {
 
 });
 
+router.get("/username/:phrase", async (req,res) => {
+
+    const usr = await accounts.find({loginUp: (req.params.phrase).toUpperCase()});
+
+    const {password, ...data} = await usr.toJSON();
+
+    res.send(data);
+
+})
 
 module.exports = router;

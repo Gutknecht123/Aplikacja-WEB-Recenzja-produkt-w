@@ -1,7 +1,7 @@
 <template>
 <div>
   <b-navbar toggleable="lg" type="dark" variant="dark">
-    <b-navbar-brand href="#/mainpage" class="ml-auto">Home</b-navbar-brand>
+    <b-navbar-brand href="#/" class="ml-auto">Home</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
@@ -16,13 +16,10 @@
     
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
-            <b-nav-form>
          
-             <b-form-input size="sm"  placeholder="Search"></b-form-input>
+             <b-form-input size="sm" v-model="sphrase"  placeholder="Search"></b-form-input>
             
-             <b-button size="sm" type="submit">Search</b-button>
-            
-            </b-nav-form>
+             <b-button size="sm" v-on:click.stop="Search()">Search</b-button>
 
           <b-nav-item :href="'#/user/'+lUser">{{lUser}}</b-nav-item>
           <b-nav-item  href="#/settings">Settings</b-nav-item>
@@ -44,7 +41,8 @@ export default {
         return {
 
             auth: '',
-            lUser: ''
+            lUser: '',
+            sphrase: ''
             
         }
     },
@@ -76,8 +74,16 @@ export default {
 
             await AccountService.logoutAccount();
             this.$store.dispatch('setAuth', false);
-            this.$router.push('/');
+            this.$router.push('/login');
+        },
+        async Search(){
+
+          this.$store.dispatch('setSphrase', this.sphrase);
+          //this.$router.push('/search/'+this.sphrase);
+          this.$router.push({ name: 'search', params: { phrase: this.sphrase }})
+
         }
+
 
     },
 

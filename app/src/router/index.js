@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import PostComponent from '@/components/PostComponent'
-import LoginComponent from '@/components/LoginComponent'
+import SearchComponent from '@/components/SearchComponent'
 import RegisterComponent from '@/components/RegisterComponent'
 import ProfileComponent from '@/components/ProfileComponent'
 
@@ -15,21 +15,14 @@ export default new Router({
 
         path: '/',
         name: 'main',
-        component: RegisterComponent
+        component: PostComponent
 
     },
     {
 
         path: '/login',
         name: 'login',
-        component: LoginComponent
-
-    },
-    {
-
-        path: '/mainpage',
-        name: 'mainpage',
-        component: PostComponent
+        component: RegisterComponent
 
     },
     {
@@ -39,7 +32,13 @@ export default new Router({
         component: ProfileComponent
 
     },
+    {
 
+        path: '/search/:phrase',
+        name: 'search',
+        component: SearchComponent
+
+    },
 ]
 
 })

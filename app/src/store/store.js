@@ -7,7 +7,8 @@ export default new Vuex.Store({
 
     state:{
         authenticated: false,
-        profile: null
+        profile: null,
+        sphrase: null
     },
     mutations:{
         SET_AUTH (state, auth){
@@ -15,6 +16,9 @@ export default new Vuex.Store({
         },
         SET_PROFILE (state, profile){
             state.profile = profile;
+        },
+        SET_SPHRASE (state, sphrase){
+            state.sphrase = sphrase;
         }
     },
     actions:{
@@ -23,6 +27,9 @@ export default new Vuex.Store({
         },
         setProfile (context, profile) {
             context.commit('SET_PROFILE', profile);
+        },
+        setSphrase (context, sphrase) {
+            context.commit('SET_SPHRASE', sphrase);
         }
     },
     modules:{}
