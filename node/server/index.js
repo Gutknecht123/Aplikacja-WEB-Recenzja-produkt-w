@@ -75,4 +75,8 @@ const follows = require('./routes/api/follows');
 
 app.use('/api/follows', follows);
 
+const profiles = require('./routes/api/profiles');
+
+app.use('/api/profiles', profiles);
+
 app.listen(3000);

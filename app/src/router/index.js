@@ -4,6 +4,7 @@ import PostComponent from '@/components/PostComponent'
 import SearchComponent from '@/components/SearchComponent'
 import RegisterComponent from '@/components/RegisterComponent'
 import ProfileComponent from '@/components/ProfileComponent'
+import SettingsComponent from '@/components/SettingsComponent'
 
 Vue.use(Router)
 
@@ -37,6 +38,13 @@ export default new Router({
         path: '/search/:phrase',
         name: 'search',
         component: SearchComponent
+
+    },
+    {
+
+        path: '/settings',
+        name: 'settings',
+        component: SettingsComponent
 
     },
 ]

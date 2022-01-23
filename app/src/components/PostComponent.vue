@@ -48,6 +48,7 @@
              v-bind:max-rating="5"
              inactive-color="#0099cc"
              active-color="#ffcc66"
+             v-bind:rating="1"
              v-bind:show-rating="false"
              v-bind:star-size="40" v-model="stars" id="stars" @rating-selected="setRating"></star-rating>
 

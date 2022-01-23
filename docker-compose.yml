@@ -21,6 +21,8 @@ services:
         volumes:
             - upload:/node/server/public/upload/
             - ./node/server/public/upload/:/usr/src/app/node/server/public/upload/
+            - profiles:/node/server/public/profiles/
+            - ./node/server/public/profiles/:/usr/src/app/node/server/public/profiles/
         links:
             - server-database         
     
@@ -31,5 +33,6 @@ services:
     
 volumes:
     upload:
+    profiles:
     
         
