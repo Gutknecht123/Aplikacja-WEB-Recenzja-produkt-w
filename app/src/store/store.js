@@ -8,7 +8,8 @@ export default new Vuex.Store({
     state:{
         authenticated: false,
         profile: null,
-        sphrase: null
+        sphrase: null,
+        postcount: 5
     },
     mutations:{
         SET_AUTH (state, auth){
@@ -19,6 +20,9 @@ export default new Vuex.Store({
         },
         SET_SPHRASE (state, sphrase){
             state.sphrase = sphrase;
+        },
+        SET_POSTCOUNT (state, postcount){
+            state.postcount += postcount;
         }
     },
     actions:{
@@ -30,6 +34,9 @@ export default new Vuex.Store({
         },
         setSphrase (context, sphrase) {
             context.commit('SET_SPHRASE', sphrase);
+        },
+        setPostCount (context, postcount) {
+            context.commit('SET_POSTCOUNT', postcount);
         }
     },
     modules:{}

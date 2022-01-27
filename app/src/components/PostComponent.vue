@@ -285,7 +285,8 @@ export default {
       selected: '',
       commenttext: '',
       playerOptions: [],
-      medialist:[]
+      medialist:[],
+      PostCount: 5
 
     }
   },
@@ -297,7 +298,7 @@ export default {
 
 
 
-      this.posts = await PostService.getPosts();
+      this.posts = await PostService.getPosts(this.PostCount);
 
       const response = await AccountService.getuserAccount();
 
@@ -362,6 +363,9 @@ export default {
     }
   },
     mounted() {
+
+      this.scroll();
+
       // console.log('this is current player instance object', this.player)
       setTimeout(() => {
         //console.log('dynamic change options', this.player)
@@ -397,7 +401,7 @@ export default {
       //console.log(formData.get('files'));
       console.log(f[0]);
       await PostService.createPost(formData);
-      this.posts = await PostService.getPosts();
+      this.posts = await PostService.getPosts(this.PostCount);
       this.media='';
 
       for(var i=0; i<this.posts.length; i++){
@@ -449,7 +453,7 @@ export default {
 
     async deletePost(id){
       await PostService.deletePost(id);
-      this.posts = await PostService.getPosts();
+      this.posts = await PostService.getPosts(this.PostCount);
     },
      async onFileChange(e) {
       this.files = e.target.files;
@@ -533,7 +537,7 @@ export default {
       try{
 
       await PostService.Like(postid, this.user);
-      this.posts = await PostService.getPosts();
+      this.posts = await PostService.getPosts(this.PostCount);
 
       }catch(e){
 
@@ -541,7 +545,70 @@ export default {
       }
 
 
-    }
+    },
+
+    async scroll () {
+      window.onscroll = () => {
+        let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight === document.documentElement.offsetHeight
+
+        if (bottomOfWindow) {
+
+        this.PostCount += 5;
+
+        console.log(this.PostCount);
+
+          this.setPosts();
+
+        }
+        }
+       },
+
+      async setPosts(){
+
+        this.posts = await PostService.getPosts(this.PostCount);
+
+        for(var i=0; i<this.posts.length; i++){
+
+          for(var j=0; j<this.posts[i].files.length; j++){
+
+          //console.log(this.posts[i].files[j]);
+
+              if(this.posts[i].files[j].split('.').pop()=='mp4'){
+              let arrs = {
+
+                playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+                autoplay: false, //If true, the browser will start playing back when it is ready.
+                muted: true, // Any audio will be removed by default.
+                loop: false, // Causes the video to restart as soon as it's over.
+                preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+                language: "en-EN",
+                aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+                fluid: true,
+                sources: [{
+                type: "video/mp4",
+                src: this.posts[i].files[j]
+                }],
+                poster: "",
+                notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+                  controlBar: {
+                    timeDivider: true,
+                    durationDisplay: true,
+                    remainingTimeDisplay: false,
+                    fullscreenToggle: true //Full screen button
+                  }
+              }
+
+          
+              this.playerOptions[i] = arrs;
+              
+          }
+
+          
+        }
+
+      }
+
+      }
 
   },
    
@@ -597,7 +664,7 @@ a {
 
 .posts {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
 }
 
 .createpost{

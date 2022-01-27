@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         //console.log(req.body.creator);
       const uniqueSuffix = Math.round(Math.random() * 1E9)
-      const fileName = req.body.creator.toLowerCase().split(' ').join('-') + "-" + uniqueSuffix + "-" + file.originalname.toLowerCase().split(' ').join('-');
+      const fileName = req.body.username.toLowerCase().split(' ').join('-') + "-" + uniqueSuffix + "-" + file.originalname.toLowerCase().split(' ').join('-');
       cb(null, fileName)
     }
   });
@@ -36,33 +36,36 @@ const storage = multer.diskStorage({
 
   router.post('/update', upload.array('files', 2),async (req,res,next) => {
 
-    const pic1, pic2 = ''
+    var pic1 ='', pic2 = ''
 
     const url = req.protocol + '://' + req.get('host')
 
+    console.log(req.files)
+
     if (req.files[0]) {
+        pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
 
-        pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-')+'-profilepic';
-
-        profiles.updateOne(
+        await profiles.updateOne(
             {Username: req.body.username},
             {
                 $set:{
+                  Username: req.body.username,
                   profilePic: pic1
                 }
             },
             {upsert: true}
         );
         
-    }
+        }
     if (req.files[1]) {
 
-        pic2 = url + '/api/profiles/upload/' + req.files[1].filename.toLowerCase().split(' ').join('-')+'-banner';
+        pic2 = url + '/api/profiles/upload/' + req.files[1].filename.toLowerCase().split(' ').join('-');
 
-        profiles.updateOne(
+        await profiles.updateOne(
             {Username: req.body.username},
             {
                 $set:{
+                  Username: req.body.username,
                   banner: pic2
                 }
             },
@@ -71,7 +74,10 @@ const storage = multer.diskStorage({
     
     }
     
+    console.log(pic1)
+    console.log(pic2)
 
+    res.send("done");
 
 
   });

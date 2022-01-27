@@ -5,9 +5,9 @@ const url = "http://localhost:3000/api/posts/";
 class PostService{
 
 //get
-    static getPosts(){
+    static getPosts(PostCount){
         return new Promise ((resolve,reject) => {
-            axios.get(url).then((res) => {
+            axios.get(url,{params: {PostCount}}).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({

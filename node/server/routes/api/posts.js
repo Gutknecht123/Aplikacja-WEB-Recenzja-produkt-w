@@ -74,7 +74,7 @@ router.get('/likes/:postid', async(req, res) => {
 
 router.get('/', async (req, res) => {
 
-    res.send(await posts.find({}));
+    res.send(await posts.find({}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
 
 });
 

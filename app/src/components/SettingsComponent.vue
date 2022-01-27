@@ -8,7 +8,7 @@
     <input type="file" name="files" v-on:change="onProfilepicChange">
 </div>
 <div v-else>
-    <p><img :src="media" class="post-img" /></p>
+    <p><img :src="Sprofilepic" class="post-img" /></p>
     <button v-on:click="removeProfilepic">Remove image</button>
 </div>
 
@@ -16,7 +16,7 @@
     <input type="file" name="files" v-on:change="onBannerChange">
 </div>
 <div v-else>
-    <p><img :src="media" class="post-img" /></p>
+    <p><img :src="Sbanner" class="post-img" /></p>
     <button v-on:click="removeBanner">Remove image</button>
 </div>
 <b-button variant="secondary" size="sm" type="submit">Update</b-button>
@@ -29,7 +29,6 @@
 <script>
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
-import ProfileService from '../ProfileService';
 import SettingsService from '../SettingsService';
 
 export default {
@@ -68,6 +67,7 @@ export default {
 
         const formData = new FormData();
 
+        formData.append('username', this.user);  
         formData.append('files', this.profilepic);
         formData.append('files', this.banner);
 
