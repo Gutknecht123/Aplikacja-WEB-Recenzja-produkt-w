@@ -4,6 +4,14 @@ const url = "http://localhost:3000/api/follows/";
 
 class ProfileService{
 
+
+static getFollows(user){
+
+    return axios.get(url+"getfollows/"+user,{});
+
+}
+
+
 static Follow(user, followuser){
 
     console.log(user + ' ' + followuser);

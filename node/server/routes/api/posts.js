@@ -82,15 +82,39 @@ router.get('/', async (req, res) => {
 
 router.get('/get/:user', async (req, res) => {
 
-    res.send(await posts.find({creator: req.params.user}));
+    res.send(await posts.find({creator: req.params.user}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
 
 });
 
 //getposts - followings
 
-router.get('/get/followings', async (req, res) => {
+router.get('/followings', async (req, res) => {
 
-  res.send(await posts.find({creator: req.body.followinguser}));
+  var arr = [];
+
+  //console.log(req.query["follows"]);
+
+  console.log('xD');
+
+  var p = [];
+   
+  
+
+  for(var i=0; i<req.query["follows"].length; i++){
+
+    arr = JSON.parse(req.query["follows"][i]);
+
+    console.log("TO ARR:");
+    console.log(arr.Following);
+
+    p.push({"creator": arr.Following});
+
+  }
+
+  
+  console.log(p);
+
+  res.send(await posts.find({$or: p}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
 
 });
 

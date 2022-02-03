@@ -1,6 +1,6 @@
 <template>
 <div>
-  <b-navbar toggleable="lg" type="dark" variant="dark">
+  <b-navbar fixed="top" toggleable="lg" type="dark" variant="dark">
     <b-navbar-brand href="#/" class="ml-auto">Home</b-navbar-brand>
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -10,7 +10,7 @@
     
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
-    
+
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
     
@@ -36,6 +36,10 @@ import AccountService from '../AccountService';
 
 export default { 
      name: 'NavbarSection',
+
+     components:{
+       
+     },
 
     data() {
         return {

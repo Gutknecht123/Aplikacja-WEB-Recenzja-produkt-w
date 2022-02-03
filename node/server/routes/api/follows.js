@@ -56,7 +56,7 @@ router.post('/addfollow', async (req, res) => {
 
 router.get('/getfollows/:user', async(req,res) => {
 
-    res.send(await follows.find({Username: req.params.user}));
+    res.send(await follows.findOne({Username: req.params.user}));
 
 })
 

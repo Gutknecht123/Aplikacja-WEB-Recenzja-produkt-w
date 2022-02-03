@@ -41,6 +41,33 @@ class PostService{
         });
     }
 
+    static getfollowsPosts(follows, PostCount){
+
+        console.log("tutaj");
+
+        
+        return new Promise ((resolve,reject) => {
+            axios.get(url+"followings",{params: {follows, PostCount}}).then((res) => {
+                const data = res.data;
+                resolve(
+                    data.map(post => ({
+                        ...post,
+                        createdAt: new Date(post.createdAt)
+                    }))
+                );
+            })
+            .catch((error)=> {
+                reject(error);
+            })
+            
+        });
+        
+
+
+        
+
+    }
+
 //create
 
 static async createPost(formData){

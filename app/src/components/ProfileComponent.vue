@@ -2,28 +2,28 @@
 <div id="container">
    <NavbarSection/>
 
-<b-container fluid class="profile-bannerpic border-bottom border-dark" :style="{'background-image':'url(https://i.imgur.com/ZJLIU8U.png)', 'background-size':'110%'}">
-<b-row>
-<b-col cols="4" align-self="start">
-   <img src="https://i.imgur.com/VeDVeor.jpg" alt="" class="profile-pic border-bottom border-dark" align="right"/>
-</b-col>
-<b-col cols="8">
-   
-</b-col>
-</b-row>
+<b-container fluid class="profile-bannerpic border-bottom border-primary" height="100px" align="center" justify="center">
+<b-img class="banner-img" :src="banner" contain alt="Responsive image"></b-img>
 </b-container>
 
 <b-container fluid>
 
 <b-row>
+<b-col cols="1">
+ </b-col>
 <b-col cols="3">
-<div>
-<b-row>
-<b-col :style="{'text-align': 'right', 'font-size': '25px'}">
+
+<b-card text-variant="white" border-variant="dark" class="profile-card" align="right">
+
+<b-avatar size="200px" square><b-card-img :src="profilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-card-img></b-avatar>
+
+<b-card-text align="center">
+
 {{username}}
-</b-col> 
-</b-row>
-<b-row>
+
+</b-card-text>
+
+<b-row >
 <b-col v-if="username!=user && check==false">
 <b-button variant="secondary" size="lg" v-on:click="Follow()" >Follow</b-button>
 </b-col>
@@ -31,9 +31,10 @@
 <b-button variant="secondary" size="lg" v-on:click="Unfollow()" >Unfollow</b-button>
 </b-col>
 </b-row>
-</div> 
+
+</b-card>
 </b-col>
-<b-col cols="6">
+<b-col cols="6" align-self="start">
 <div class="posts shadow=lg p-3 mb-5 rounded">
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
@@ -58,8 +59,6 @@
                   ref="videoPlayer"
                   :options="playerOptions[index]"
                   :playsinline="true"
-                  @play="onPlayerPlay($event,index)"
-                  @pause="onPlayerPause($event)"
                   >
 </video-player>
 </div>
@@ -187,6 +186,7 @@ import CommsService from '../CommsService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
 import ProfileService from '../ProfileService';
+import SettingsService from '../SettingsService';
 
 
 export default {
@@ -213,7 +213,9 @@ export default {
       username: '',
       check: null,
       playerOptions: [],
-      medialist:[]
+      medialist:[],
+      banner: '',
+      profilepic: ''
       }
   },
   async created(){
@@ -222,6 +224,11 @@ export default {
 
     try{
 
+      const userProfile = await SettingsService.getProfile(this.$route.params.profile);
+
+      this.banner = userProfile.data[0].banner;
+
+      this.profilepic = userProfile.data[0].profilePic;
 
       const response = await AccountService.getuserAccount();
 
@@ -368,15 +375,9 @@ export default {
 
 <style scoped>
 
-.profile-banner {
-
-    
-    height: 400px;
-}
-
 #container{
 
-    background-color:#181d22;
+    background-color:#222930;
  
     margin-left: auto;
     margin-right: auto;
@@ -385,8 +386,8 @@ export default {
 
 .profile-pic{
 
-    width: 30%;
-    margin-top: 35%;
+    width: 70%;
+    
 
 }
 
@@ -415,14 +416,21 @@ export default {
   background-color: #1e2935;
   margin: auto;
   width: 100%;
-  margin-top: 1%;
-  margin-left: 45%;
+  margin-top: 5%;
+  margin-left: 15%;
 
 }
 
 .posts {
   display: flex;
   flex-direction: column-reverse;
+}
+
+.profile-card{
+
+  margin-top: 10%;
+  background-color: #1e2935;
+  
 }
 
 .comment {
@@ -434,7 +442,7 @@ export default {
 
 .comments {
   
-  background-color: #181d22;
+  background-color: #222930;
 
 }
 
@@ -464,5 +472,13 @@ export default {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
+}
+.profile-bannerpic{
+  height: 300px;
+}
+.banner-img{
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 </style>
