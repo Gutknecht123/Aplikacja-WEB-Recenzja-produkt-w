@@ -1,10 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import PostComponent from '@/components/PostComponent'
-import SearchComponent from '@/components/SearchComponent'
-import RegisterComponent from '@/components/RegisterComponent'
-import ProfileComponent from '@/components/ProfileComponent'
-import SettingsComponent from '@/components/SettingsComponent'
 
 Vue.use(Router)
 
@@ -16,35 +11,35 @@ export default new Router({
 
         path: '/',
         name: 'main',
-        component: PostComponent
+        component: () => import('@/components/PostComponent')
 
     },
     {
 
         path: '/login',
         name: 'login',
-        component: RegisterComponent
+        component: () => import('@/components/RegisterComponent')
 
     },
     {
 
         path: '/user/:profile',
         name: 'profile',
-        component: ProfileComponent
+        component: () => import('@/components/ProfileComponent')
 
     },
     {
 
         path: '/search/:phrase',
         name: 'search',
-        component: SearchComponent
+        component: () => import('@/components/SearchComponent')
 
     },
     {
 
         path: '/settings',
         name: 'settings',
-        component: SettingsComponent
+        component: () => import('@/components/SettingsComponent')
 
     },
 ]

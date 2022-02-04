@@ -1,15 +1,18 @@
 <template>
   <div id="app">
-
+    <loading-section></loading-section>
     <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 
 <script>
-
+import LoadingSection from './components/LoadingComponent.vue';
 
 export default {
   name: 'App',
+  components: {
+    LoadingSection
+  }
 
 }
 </script>

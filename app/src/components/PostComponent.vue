@@ -275,14 +275,13 @@ import StarRating from 'vue-star-rating'
 import ProfileService from '../ProfileService';
 import SettingsService from '../SettingsService';
 
-
 //import useStore from 'vuex';
 export default {
   name: 'PostComponent',
    components:{
      NavbarSection,
      VueSlickCarousel,
-     StarRating
+     StarRating,
      
  },
   data(){

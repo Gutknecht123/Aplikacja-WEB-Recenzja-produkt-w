@@ -9,5 +9,10 @@ module.exports = {
 				additionalData: [...bootstrapSassAbstractsImports, ''].join(';\n')
 			}
 		}
-	}
+	},
+	chainWebpack: (config) => {
+        // Disable prefetching and preloading
+        config.plugins.delete('prefetch')
+        config.plugins.delete('preload')
+    },
 }
