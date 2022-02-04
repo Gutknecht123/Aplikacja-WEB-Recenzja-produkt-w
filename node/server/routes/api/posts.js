@@ -2,6 +2,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongodb = require('mongodb');
 const posts = require('../../../models/posts');
+const likes = require('../../../models/likes');
 const comments = require('../../../models/comments');
 const multer = require('multer');
 const fileUpload = require('express-fileupload');
@@ -17,7 +18,7 @@ router.post('/like/:postid', async(req,res) => {
 
   try{
 
-    posts.updateOne(
+   posts.updateOne(
       { _id: ObjectID(req.params.postid) },
       
       {
@@ -33,6 +34,25 @@ router.post('/like/:postid', async(req,res) => {
       {upsert: true}, (err, res) => {
         if (err) throw err;
       })
+
+    likes.updateOne(
+        { Username: req.body.username },
+
+        { 
+      
+            $push:{
+            likedPosts: {
+                postID: req.params.postid,
+                createdAt: new Date()
+            }
+            }
+        }, 
+
+        {upsert: true},(err, res) => {
+          if (err) throw err;
+        }
+        
+    )
 
       res.send("done");
     
@@ -57,6 +77,9 @@ router.post('/dislike/:postid', async(req,res) => {
 
   )
 
+  await likes.updateOne({Username: req.body.username}, {$pull: { likedPosts: {postID: req.params.postid} }})
+  
+  res.status(200).send();
 
 })
 

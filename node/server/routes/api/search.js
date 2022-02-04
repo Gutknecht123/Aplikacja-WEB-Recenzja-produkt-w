@@ -10,7 +10,7 @@ const router = express.Router();
 // search by category
 router.get('/category/:phrase', async (req, res) => {
 
-    res.send(await posts.find({category: req.params.phrase}));
+    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
 
 });
 
@@ -19,7 +19,7 @@ router.get('/category/:phrase', async (req, res) => {
 
 router.get('/creator/:phrase', async (req, res) => {
 
-    res.send(await posts.find({creator: req.params.phrase}));
+    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
 
 });
 
@@ -27,7 +27,7 @@ router.get('/creator/:phrase', async (req, res) => {
 
 router.get('/content/:phrase', async (req, res) => {
 
-    res.send(await posts.find({text: req.params.phrase}));
+    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
 
 });
 

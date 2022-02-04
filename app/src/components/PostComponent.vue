@@ -8,27 +8,6 @@
 
 <b-row class="mt-3">
 <b-col>
-<b-form-textarea
-      id="textarea"
-      v-model="text"
-      placeholder="Enter something..."
-      auto-shrink
-      no-resize
-      
-></b-form-textarea>
-</b-col>
-</b-row>
-
-<b-row class="mt-3">
-<b-col>
-
-<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
-
-</b-col>
-</b-row>
-
-<b-row class="mt-3">
-<b-col>
 
 <div v-if="!media">
     <input type="file" name="files" multiple v-on:change="onFileChange">
@@ -41,8 +20,20 @@
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mt-3">
+<b-col>
+<b-form-textarea
+      id="textarea"
+      v-model="text"
+      placeholder="Enter something..."
+      auto-shrink
+      no-resize
+      
+></b-form-textarea>
+</b-col>
+</b-row>
 
+<b-row class="mt-5">
 <b-col>
 <star-rating v-bind:increment="0.5"
              v-bind:max-rating="5"
@@ -51,6 +42,11 @@
              v-bind:rating="1"
              v-bind:show-rating="false"
              v-bind:star-size="40" v-model="stars" id="stars" @rating-selected="setRating"></star-rating>
+
+</b-col>
+<b-col>
+
+<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
 
 </b-col>
 </b-row>
@@ -67,11 +63,18 @@
 
 <p class="error" v-if="error">{{error}}</p>
 
-<b-tabs content-class="mt-3" fill>
-
-<b-tab title="Global" v-on:click="globalPosts()"  active>
-
 <div class="posts shadow=lg p-3 mt-5 rounded">
+
+<b-container class="nav-buttons">
+<b-row>
+<b-col>
+<b-button variant="secondary" size="lg" v-on:click="globalPosts()">Global</b-button>
+</b-col>
+<b-col>
+<b-button variant="secondary" size="lg" v-on:click="followsPosts()">Follows</b-button>
+</b-col>
+</b-row>
+</b-container>
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
 <b-card text-variant="white" border-variant="dark" class="post-card">
@@ -80,7 +83,7 @@
 <b-row>
 <b-col>
 <b-card-text align="left">
-<img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
+<img class="creator-img"  :src="pictures[index]" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
 </b-card-text>
 </b-col>
 <b-col>
@@ -92,34 +95,25 @@
 </b-card-header>
 
 <VueSlickCarousel :adaptiveHeight="true" :swipe="false">
-
-
-
 <div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
 
+    <div v-if="image.split('.').pop()=='mp4'">
+
+    <video-player class="vjs-custom-skin" 
+                  ref="videoPlayer"
+                  :options="playerOptions[index]"
+                  :playsinline="true"
+                  >
+    </video-player>
+    </div>
 
     <div align="center">
     <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain height="600px"></b-card-img>
     </div>
 
-    <div v-if="image.split('.').pop()=='mp4'">
 
-    <video-player class="vjs-custom-skin" 
-                  ref="videoPlayer"
-                  :options="playerOptions[index]"
-                  :playsinline="true"
-                  >
-    </video-player>
-    </div>
     
 </div>
-
-    <template #prevArrow="arrowOption">
-      <div class="custom-arrow">
-        {{ arrowOption.currentSlide }}/{{ arrowOption.slideCount }}
-      </div>
-    </template>
-
 </VueSlickCarousel>
 
 
@@ -256,197 +250,6 @@ Category:
 </div>
 </div>
 
-</b-tab>
-<b-tab title="Follows" v-on:click="followsPosts()">
-
-<div class="posts shadow=lg p-3 mt-5 rounded">
-
-<div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<b-card text-variant="white" border-variant="dark" class="post-card">
-
-<b-card-header header-tag="header" class="post-header">
-<b-row>
-<b-col>
-<b-card-text align="left">
-<img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
-</b-card-text>
-</b-col>
-<b-col>
-<b-card-text align="right">
-{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
-</b-card-text>
-</b-col>
-</b-row>
-</b-card-header>
-
-<VueSlickCarousel :adaptiveHeight="true" :swipe="false">
-
-
-
-<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
-
-
-    <div align="center">
-    <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'"></b-card-img>
-    </div>
-
-    <div v-if="image.split('.').pop()=='mp4'">
-
-    <video-player class="vjs-custom-skin" 
-                  ref="videoPlayer"
-                  :options="playerOptions[index]"
-                  :playsinline="true"
-
-                  >
-    </video-player>
-    </div>
-    
-</div>
-
-    <template #prevArrow="arrowOption">
-      <div class="custom-arrow">
-        {{ arrowOption.currentSlide }}/{{ arrowOption.slideCount }}
-      </div>
-    </template>
-
-</VueSlickCarousel>
-
-
-
-<b-container class="post-content">
-<b-row class="stars-cat">
-<b-col>
-<b-card-text align="left">
-Rating: <star-rating v-bind:increment="0.5"
-              v-bind:max-rating="5"
-              inactive-color="#1e2935"
-              active-color="#ffcc66"
-              v-bind:rating="post.stars"
-              v-bind:read-only="true"
-              v-bind:show-rating="false"
-              v-bind:star-size="30" class="stars"></star-rating>
-</b-card-text>
-
-
-</b-col>
-<b-col>
-<b-card-text align="right">
-Category:
-{{post.category}}
-</b-card-text>
-</b-col>
-</b-row>
-
-<b-card-text>
-<div class="post-text">{{post.text}}</div>
-</b-card-text>
-</b-container>
-
-
-<footer>
-
-<b-row class="com-likes">
-<b-col>
-<b-button align="left" variant="secondary" size="sm" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
-</b-col> 
-<b-col>
-<b-card-text>
-{{post.likes}} <b-button variant="secondary" size="sm" v-on:click="likePost(post._id)">Like</b-button>
-</b-card-text>
-</b-col>
-</b-row> 
-
-</footer>
-
-</b-card>
-
-<b-card class="comments shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark" v-if="selected == post._id">
-
-
-
-<div class="comments" v-if="selected == post._id">
-
-<b-container class="bv-example-row">
-<b-row class="mt-3">
-<b-col>
-<b-form-textarea
-      id="textarea"
-      v-model="commenttext"
-      placeholder="Enter something..."
-      auto-shrink
-      no-resize
-     
-></b-form-textarea>
-</b-col>
-</b-row >
-<b-row class="mt-3">
-
-<b-col>
-<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)">Publish</b-button>
-</b-col>
-
-</b-row>
-</b-container>
-
-
-<div class="comments border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
-
-<div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
-<b-container class="comm bv-example-row">
-<b-row class="mt-3">
-<b-col>
-<b-card-text align="left">
-
-{{com.creator}}
-
-</b-card-text>
-</b-col>
-
-<b-col class="mt-3">
-<b-card-text align="right">
-
-{{com.createdAt.substring(0,10)}}
-
-</b-card-text>
-</b-col>
-
-</b-row>
-
-<b-row align-v="stretch" class="mt-3">
-<b-col align-self="stretch">
-<b-card-text align="left">
-
-{{com.body}}
-
-</b-card-text>
-</b-col>
-</b-row>
-<b-row>
-
-<b-col class="mt-3">
-<b-button variant="secondary" size="sm" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
-</b-col>
-
-</b-row>
-
-</b-container>
-</div>
-</div>
-
-</div>
-
-<b-button class="mt-3" variant="secondary" size="sm" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
-
-
-</b-card>
-
-<b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
-
-</div>
-</div>
-
-</b-tab>
-</b-tabs>
 
 </div>
 
@@ -470,6 +273,7 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import StarRating from 'vue-star-rating'
 import ProfileService from '../ProfileService';
+import SettingsService from '../SettingsService';
 
 
 //import useStore from 'vuex';
@@ -495,12 +299,36 @@ export default {
       commsbutton: false,
       selected: '',
       commenttext: '',
-      playerOptions: [],
+      playerOptions: [{
+
+            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+            autoplay: false, //If true, the browser will start playing back when it is ready.
+            muted: true, // Any audio will be removed by default.
+            loop: false, // Causes the video to restart as soon as it's over.
+            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            language: "en",
+            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            fluid: true,
+            sources: [{
+            type: "video/mp4",
+            src: ""
+            }],
+            poster: "",
+            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+              controlBar: {
+                timeDivider: true,
+                durationDisplay: true,
+                remainingTimeDisplay: false,
+                fullscreenToggle: true //Full screen button
+              }
+          }],
       medialist:[],
       PostCount: 5,
       follows: [],
       global: true,
       tothetop: false,
+      pictures: []
+      
 
     }
   },
@@ -516,59 +344,14 @@ export default {
 
       const response = await AccountService.getuserAccount();
 
-      
-
+  
       this.user = response.data.login;
 
       this.$store.dispatch('setAuth', true);
 
-      console.log(this.$store.state.authenticated);
+      //console.log(this.$store.state.authenticated);
 
-
-      for(var i=0; i<this.posts.length; i++){
-
-        for(var j=0; j<this.posts[i].files.length; j++){
-
-          //console.log(this.posts[i].files[j]);
-
-          if(this.posts[i].files[j].split('.').pop()=='mp4'){
-          let arrs = {
-
-            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-            autoplay: false, //If true, the browser will start playing back when it is ready.
-            muted: true, // Any audio will be removed by default.
-            loop: false, // Causes the video to restart as soon as it's over.
-            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-            language: "en-EN",
-            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-            fluid: true,
-            sources: [{
-            type: "video/mp4",
-            src: this.posts[i].files[j]
-            }],
-            poster: "",
-            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-              controlBar: {
-                timeDivider: true,
-                durationDisplay: true,
-                remainingTimeDisplay: false,
-                fullscreenToggle: true //Full screen button
-              }
-          }
-
-      
-          this.playerOptions[i] = arrs;
-          
-          }
-
-          
-        }
-
-      }
-
-
-
-
+      this.set();
       
     }catch(error){
       this.$store.dispatch('setAuth', false);
@@ -579,10 +362,12 @@ export default {
     mounted() {
 
       this.scroll();
-
+      
     },
     computed: {
-
+      player() {
+        return this.$refs.videoPlayer.player
+      }
     },
 
      methods: {
@@ -610,47 +395,8 @@ export default {
       await PostService.createPost(formData);
       this.posts = await PostService.getPosts(this.PostCount);
       this.media='';
-
-      for(var i=0; i<this.posts.length; i++){
-
-        for(var j=0; j<this.posts[i].files.length; j++){
-
-          //console.log(this.posts[i].files[j]);
-
-          if(this.posts[i].files[j].split('.').pop()=='mp4'){
-          let arrs = {
-
-            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-            autoplay: false, //If true, the browser will start playing back when it is ready.
-            muted: false, // Any audio will be removed by default.
-            loop: false, // Causes the video to restart as soon as it's over.
-            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-            language: "zh-CN",
-            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-            fluid: true,
-            sources: [{
-            type: "video/mp4",
-            src: this.posts[i].files[j]
-            }],
-            poster: "",
-            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-              controlBar: {
-                timeDivider: true,
-                durationDisplay: true,
-                remainingTimeDisplay: false,
-                fullscreenToggle: true //Full screen button
-              }
-          }
-
-      
-          this.playerOptions[i] = arrs;
-          
-          }
-
-          
-        }
-
-      }
+      this.pictures = [];
+      this.set();
       
     },
 
@@ -762,7 +508,7 @@ export default {
 
         this.PostCount += 5;
 
-        console.log(this.PostCount);
+        
 
           if(this.global){
             this.setPosts();
@@ -770,8 +516,6 @@ export default {
             this.followsPosts();
           }
         }
-
-        console.log(Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop));
 
         if(Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)>=500){
               this.tothetop = true;
@@ -791,46 +535,9 @@ export default {
         
         this.posts = tempposts;
 
-        for(var i=0; i<this.posts.length; i++){
+        this.pictures = [];
 
-          for(var j=0; j<this.posts[i].files.length; j++){
-
-          //console.log(this.posts[i].files[j]);
-
-              if(this.posts[i].files[j].split('.').pop()=='mp4'){
-              let arrs = {
-
-                playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-                autoplay: false, //If true, the browser will start playing back when it is ready.
-                muted: true, // Any audio will be removed by default.
-                loop: false, // Causes the video to restart as soon as it's over.
-                preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-                language: "en-EN",
-                aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-                fluid: true,
-                sources: [{
-                type: "video/mp4",
-                src: this.posts[i].files[j]
-                }],
-                poster: "",
-                notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-                  controlBar: {
-                    timeDivider: true,
-                    durationDisplay: true,
-                    remainingTimeDisplay: false,
-                    fullscreenToggle: true //Full screen button
-                  }
-              }
-
-          
-              this.playerOptions[i] = arrs;
-              
-          }
-
-          
-        }
-
-      }
+        this.set();
 
 
 
@@ -867,54 +574,17 @@ export default {
 
 
 
-
+        this.pictures = [];
 
         
         /////////////////////////////////////////////////////
-        for(var i=0; i<this.posts.length; i++){
 
-          for(var j=0; j<this.posts[i].files.length; j++){
+        this.set();
 
-          //console.log(this.posts[i].files[j]);
+         // console.log(this.posts);
 
-              if(this.posts[i].files[j].split('.').pop()=='mp4'){
-              let arrs = {
-
-                playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-                autoplay: false, //If true, the browser will start playing back when it is ready.
-                muted: true, // Any audio will be removed by default.
-                loop: false, // Causes the video to restart as soon as it's over.
-                preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-                language: "en-EN",
-                aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-                fluid: true,
-                sources: [{
-                type: "video/mp4",
-                src: this.posts[i].files[j]
-                }],
-                poster: "",
-                notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-                  controlBar: {
-                    timeDivider: true,
-                    durationDisplay: true,
-                    remainingTimeDisplay: false,
-                    fullscreenToggle: true //Full screen button
-                  }
-              }
-
-          
-              this.playerOptions[i] = arrs;
-              
-          }
-
-          
-        }
-
-      }
-        console.log(this.posts);
-
-        console.log(await PostService.getPosts(this.PostCount));
-        console.log(await PostService.getfollowsPosts(this.follows.data.Followings));
+         // console.log(await PostService.getPosts(this.PostCount));
+         // console.log(await PostService.getfollowsPosts(this.follows.data.Followings));
 
       },
       async scrollToTop() {
@@ -925,6 +595,61 @@ export default {
         this.tothetop = false;
         
       },
+
+      async userPic(creator){
+
+        var pic = await SettingsService.getProfile(creator);
+        
+        this.pictures.push(pic.data[0].profilePic);
+
+      },
+
+      async set(){
+
+        for(var i=0; i<this.posts.length; i++){
+
+        for(var j=0; j<this.posts[i].files.length; j++){
+
+          //console.log(this.posts[i].files[j]);
+
+          if(this.posts[i].files[j].split('.').pop()=='mp4'){
+          let arrs = {
+
+            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
+            autoplay: false, //If true, the browser will start playing back when it is ready.
+            muted: true, // Any audio will be removed by default.
+            loop: false, // Causes the video to restart as soon as it's over.
+            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            language: "en",
+            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            fluid: true,
+            sources: [{
+            type: "video/mp4",
+            src: this.posts[i].files[j]
+            }],
+            poster: "",
+            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+              controlBar: {
+                timeDivider: true,
+                durationDisplay: true,
+                remainingTimeDisplay: false,
+                fullscreenToggle: true //Full screen button
+              }
+          }
+
+      
+          this.playerOptions[i] = arrs;
+          console.log(this.playerOptions[i]);
+          }
+
+          
+        }
+
+        await this.userPic(this.posts[i].creator);
+      }
+
+
+      }
    
 
   },

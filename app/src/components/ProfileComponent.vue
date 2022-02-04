@@ -386,7 +386,9 @@ export default {
 
 .profile-pic{
 
-    width: 70%;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
     
 
 }
