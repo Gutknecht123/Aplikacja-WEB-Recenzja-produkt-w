@@ -84,7 +84,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    height: 5px;
+    height: 100px;
     width: 100%;
     opacity: 0;
     display: none;
@@ -113,7 +113,7 @@ export default {
     float: right;
     height: 100%;
     width: 20%;
-    background-image: linear-gradient(to right, #23d6d6, #29ffff, #23d6d6);
+    background-image: linear-gradient(to right, #d023d6, #d023d6, #d023d6);
     animation: loading-animation 2s ease-in infinite;
 }
 
