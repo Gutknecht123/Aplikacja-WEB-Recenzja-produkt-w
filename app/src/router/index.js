@@ -46,7 +46,7 @@ const router = new Router({
 
         path: '/main',
         name: 'mainpage',
-        component: () => import('./views/Posts')
+        component: () => import('../views/Posts')
 
     },
 ]
