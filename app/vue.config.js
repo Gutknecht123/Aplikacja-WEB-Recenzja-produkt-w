@@ -15,4 +15,8 @@ module.exports = {
         config.plugins.delete('prefetch')
         config.plugins.delete('preload')
     },
+
+	devServer: {
+		proxy: 'http://192.168.1.12:8080/',
+	}
 }

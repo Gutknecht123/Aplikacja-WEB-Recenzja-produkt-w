@@ -1,49 +1,64 @@
 <template>
-<div>
+<div  class="container">
 <NavbarSection/>
-<div class="container mt-5">
+
 <div class="settings shadow-lg mt-3 rounded">
 
 <form @submit.prevent="updateProfile" method="post" enctype="multipart/form-data">
+<div class="user-photos">
 
-<b-container class="photos">
-<b-row class="mb-5">
-
+<b-row>
 <b-col>
+
+<b-avatar size="230px" square v-if="Sprofilepic==''"><b-img :src="Cprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
+<b-avatar size="230px" square v-else><b-img :src="Sprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
 <div v-if="!Sprofilepic">
     <input type="file" name="files" v-on:change="onProfilepicChange">
 </div>
-
 <div v-else>
-    <p><img :src="Sprofilepic" class="post-img" /></p>
     <button v-on:click="removeProfilepic">Remove image</button>
 </div>
 </b-col>
-
 </b-row>
-<b-row class="mb-5">
 
+<b-row>
 <b-col>
+
+<b-img :src="Cbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" contain align="center" v-if="Sbanner==''"></b-img>
+<b-img :src="Sbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" contain align="center" v-else></b-img>
 <div v-if="!Sbanner">
     <input type="file" name="files" v-on:change="onBannerChange">
 </div>
 
 <div v-else>
-    <p><img :src="Sbanner" class="post-img" /></p>
     <button v-on:click="removeBanner">Remove image</button>
 </div>
-
 </b-col>
 </b-row>
 
-<b-button class="mb-5" variant="secondary" size="sm" type="submit">Update</b-button>
+<b-row>
+<b-col>
+    <b-form-textarea
+      class="textarea"
+      v-model="description"
+      :placeholder="description"
+      rows="4"
+      max-rows="8"
+      no-resize
+      
+></b-form-textarea>
+</b-col>
+</b-row>
+
+<b-button variant="secondary" size="sm" type="submit">Update</b-button>
+
+</div>
 
 
-</b-container>
 </form>
 
 </div>
-</div>
+
 
 </div>
 </template>
@@ -67,20 +82,32 @@ export default {
             files: null,
             profilepic: '',
             banner: '',
+            Cprofilepic: '',
+            Cbanner: '',
             Sprofilepic: '',
-            Sbanner: ''
+            Sbanner: '',
+            description: '',
+            sending: ''
 
         }
     },
     async created(){
 
+        
+
         const response = await AccountService.getuserAccount();
+
+        this.$store.dispatch('setAuth', true);
         
         this.user = response.data.login;
 
-        this.data = await SettingsService.getProfile(this.user);
+        const userProfile = await SettingsService.getProfile(this.user);
 
+        this.Cbanner = userProfile.data[0].banner;
 
+        this.Cprofilepic = userProfile.data[0].profilePic;
+
+        this.description = userProfile.data[0].description;
 
     },
     methods: {
@@ -89,7 +116,17 @@ export default {
 
         const formData = new FormData();
 
-        formData.append('username', this.user);  
+        if(this.profilepic!='' && this.banner!=''){
+            this.sending = 'both'
+        }else if(this.profilepic!='' && this.banner==''){
+            this.sending = 'profilepic'
+        }else if(this.profilepic=='' && this.banner!=''){
+            this.sending = 'banner'
+        }
+
+        formData.append('username', this.user);
+        formData.append('description', this.description);
+        formData.append('sending', this.sending);
         formData.append('files', this.profilepic);
         formData.append('files', this.banner);
 
@@ -142,9 +179,11 @@ export default {
 
     removeProfilepic:async function () {
       this.Sprofilepic = '';
+      this.profilePic = '';
     },
     removeBanner:async function () {
       this.Sbanner = '';
+      this.banner = '';
     },
     }
 }
@@ -155,14 +194,15 @@ export default {
 .container {
 
     margin-top: 2%;
-    height: 100em;
-    
+    background-color:#222930;
 
 }
 
 .settings {
 
     background-color: #1e2935;
+    height: 100vh;
+    
 
 }
 
@@ -172,5 +212,32 @@ export default {
     padding-top: 10%;
 
 }
+.user-photos{
+    padding-top: 10%;
+}
 
+.textarea{
+    color: #e3e7eb;
+    background-color: #1e2935;
+    border-radius: 10px;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.profile-pic{
+
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+    
+
+}
+.banner-pic{
+
+  height: 330px;
+  width: 90%;
+  object-fit: cover;
+    
+
+}
 </style>

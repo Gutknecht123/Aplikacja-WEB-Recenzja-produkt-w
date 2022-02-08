@@ -17,7 +17,7 @@
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
          
-             <b-form-input size="sm" v-model="sphrase"  placeholder="Search"></b-form-input>
+             <b-form-input size="md" v-model="sphrase"  placeholder="Search"></b-form-input>
             
              <b-button size="sm" v-on:click.stop="Search()">Search</b-button>
 
@@ -57,8 +57,7 @@ export default {
 
       this.lUser = response.data.login;
 
-     
-        
+
     },
 
     computed: {
@@ -97,6 +96,7 @@ export default {
 
 .navbar.navbar-dark.bg-dark{
 
+  width: 100vw;
   background-color: #1e2935!important;
   
 }

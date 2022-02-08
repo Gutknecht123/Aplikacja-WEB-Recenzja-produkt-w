@@ -3,9 +3,16 @@
 <div>
 <NavbarSection/>
 <div id="container">
+
+
+
 <form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
-
+<b-row class="mt-3">
+<b-col>
+<b-form-input v-model="title" placeholder="Enter title" id = "title"></b-form-input>
+</b-col>
+</b-row>
 <b-row class="mt-3">
 <b-col>
 
@@ -59,7 +66,10 @@
 
 
 </b-card>
+
 </form>
+
+
 
 <p class="error" v-if="error">{{error}}</p>
 
@@ -77,29 +87,35 @@
 </b-container>
 
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
+<div>
 <b-card text-variant="white" border-variant="dark" class="post-card">
 
 <b-card-header header-tag="header" class="post-header">
 <b-row>
 <b-col>
 <b-card-text align="left">
-<img class="creator-img"  :src="pictures[index]" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
+<b-avatar button @click="Gotoprofile(post.creator)" :src="pictures[index]" size="md"></b-avatar> {{post.creator}}
 </b-card-text>
 </b-col>
 <b-col>
 <b-card-text align="right">
-{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
+{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()+1}-${post.createdAt.getDate()}`}}
+{{`${post.createdAt.getHours()}:${post.createdAt.getMinutes()}`}}
 </b-card-text>
 </b-col>
 </b-row>
 </b-card-header>
 
-<VueSlickCarousel :adaptiveHeight="true" :swipe="false">
-<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
+<div class="title" align="center">{{post.title}}</div>
 
-    <div v-if="image.split('.').pop()=='mp4'">
+<div class="media-container">  
 
-    <video-player class="vjs-custom-skin" 
+<VueSlickCarousel :ref="'carousel'+index" :adaptiveHeight="true" :swipe="true" :arrows ="false" :swipeToSlide="true" v-if="post.files.length > 1">
+<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files" fluid>
+
+    <div v-if="image.split('.').pop()=='mp4'" align="center" >
+
+    <video-player class="post-media vjs-custom-skin" 
                   ref="videoPlayer"
                   :options="playerOptions[index]"
                   :playsinline="true"
@@ -107,22 +123,46 @@
     </video-player>
     </div>
 
-    <div align="center">
-    <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain height="600px"></b-card-img>
+    <div align="center" fluid>
+    <b-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain ></b-img>
     </div>
-
-
     
 </div>
 </VueSlickCarousel>
 
+      <b-button class="nav-button1" v-on:click="prevSlide(0, index)" v-if="post.files.length > 1" align="center" variant="secondary" size="md">&lt;</b-button>
+   
+      <b-button class="nav-button2" v-on:click="nextSlide(0, index)" v-if="post.files.length > 1" align="center" variant="secondary" size="md">&gt;</b-button>
+
+</div>
+
+  <div  v-if="post.files.length==1">
+  <div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files" fluid>
+
+    <div v-if="image.split('.').pop()=='mp4'" align="center">
+
+      <video-player class="post-media vjs-custom-skin" 
+                  ref="videoPlayer"
+                  :options="playerOptions[index]"
+                  :playsinline="true"
+                  >
+      </video-player>
+
+    </div>
+
+    <div align="center" fluid>
+      <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain ></b-card-img>
+    </div>
+ 
+  </div>
+  </div>
 
 
 <b-container class="post-content">
 <b-row class="stars-cat">
 <b-col>
-<b-card-text align="left">
-Rating: <star-rating v-bind:increment="0.5"
+
+<star-rating  align="center" v-bind:increment="0.5"
               v-bind:max-rating="5"
               inactive-color="#1e2935"
               active-color="#ffcc66"
@@ -130,13 +170,12 @@ Rating: <star-rating v-bind:increment="0.5"
               v-bind:read-only="true"
               v-bind:show-rating="false"
               v-bind:star-size="30" class="stars"></star-rating>
-</b-card-text>
+
 
 
 </b-col>
 <b-col>
-<b-card-text align="right">
-Category:
+<b-card-text align="center">
 {{post.category}}
 </b-card-text>
 </b-col>
@@ -152,11 +191,17 @@ Category:
 
 <b-row class="com-likes">
 <b-col>
-<b-button align="left" variant="secondary" size="sm" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
+<b-button align="left" variant="secondary" size="md" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
 </b-col> 
 <b-col>
 <b-card-text>
-{{post.likes}} <b-button variant="secondary" size="sm" v-on:click="likePost(post._id)">Like</b-button>
+
+
+{{post.likedby.length-1}}
+<b-button variant="secondary" size="md" :disabled="isDisabled" v-on:click="likePost(post._id)" v-if="post.likedby.filter(e => e.username === user).length == 0">Like</b-button>
+<b-button variant="secondary" size="md" :disabled="isDisabled" v-on:click="unlikePost(post._id)" v-if="post.likedby.filter(e => e.username === user).length > 0">Unlike</b-button>
+
+
 </b-card-text>
 </b-col>
 </b-row> 
@@ -169,7 +214,7 @@ Category:
 
 
 
-<div class="comments" v-if="selected == post._id">
+<div class="comments1" v-if="selected == post._id">
 
 <b-container class="bv-example-row">
 <b-row class="mt-3">
@@ -194,7 +239,7 @@ Category:
 </b-container>
 
 
-<div class="comments border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
+<div class="comments2 border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
 
 <div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
 <b-container class="comm bv-example-row">
@@ -246,9 +291,12 @@ Category:
 </b-card>
 
 <b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
+</div>
 
 </div>
+
 </div>
+<LoadingComponent v-if="Loading==true"/>
 
 
 </div>
@@ -267,6 +315,7 @@ import PostService from '../PostService';
 import CommsService from '../CommsService';
 import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
+import LoadingComponent from './LoadingComponent';
 import VueSlickCarousel from 'vue-slick-carousel'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 // optional style for arrows & dots
@@ -282,18 +331,20 @@ export default {
      NavbarSection,
      VueSlickCarousel,
      StarRating,
-     
+     LoadingComponent
  },
   data(){
     return { 
       posts: [],
       comments: [],
       error: '',
+      title: '',
       text: '',
       media: '',
       category: '',
       stars: 0,
       user: '',
+      isDisabled: false,
       files: null,
       commsbutton: false,
       selected: '',
@@ -326,7 +377,8 @@ export default {
       follows: [],
       global: true,
       tothetop: false,
-      pictures: []
+      pictures: [],
+      Loading: true,
       
 
     }
@@ -337,12 +389,9 @@ export default {
 
     try{
 
-
-
-      this.posts = await PostService.getPosts(this.PostCount);
-
       const response = await AccountService.getuserAccount();
 
+      this.posts = await PostService.getPosts(this.PostCount);
   
       this.user = response.data.login;
 
@@ -377,6 +426,7 @@ export default {
       const f = [];
 
       formData.append('creator', this.user);
+      formData.append('title', this.title);
       formData.append('text', this.text);
       formData.append('category', this.category);
       formData.append('stars', this.stars);
@@ -488,7 +538,12 @@ export default {
 
       try{
 
+      this.isDisabled = true;
+
       await PostService.Like(postid, this.user);
+
+      this.isDisabled = false;
+
       this.posts = await PostService.getPosts(this.PostCount);
 
       }catch(e){
@@ -498,15 +553,36 @@ export default {
 
 
     },
+    async unlikePost(postid){
 
+      try{
+
+      this.isDisabled = true;
+
+      await PostService.unLike(postid, this.user);
+
+      this.isDisabled = false;
+
+      this.posts = await PostService.getPosts(this.PostCount);
+
+      }catch(e){
+
+        console.log(e);
+      }
+
+
+    },
     async scroll () {
       window.onscroll = () => {
         let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight === document.documentElement.offsetHeight
 
         if (bottomOfWindow) {
 
+          
+
         this.PostCount += 5;
 
+        this.Loading = true;
         
 
           if(this.global){
@@ -522,6 +598,7 @@ export default {
               this.tothetop = false;
         }
       
+        
 
         }
        },
@@ -538,7 +615,7 @@ export default {
 
         this.set();
 
-
+        
 
         }
   //
@@ -605,6 +682,8 @@ export default {
 
       async set(){
 
+
+
         for(var i=0; i<this.posts.length; i++){
 
         for(var j=0; j<this.posts[i].files.length; j++){
@@ -647,8 +726,27 @@ export default {
         await this.userPic(this.posts[i].creator);
       }
 
+      this.Loading = false;
 
-      }
+      },
+
+      nextSlide(ix, index){
+
+        console.log(ix);
+
+        console.log(index);
+
+        this.$refs["carousel"+index.toString()][ix].next();
+
+      },
+      prevSlide(ix, index){
+
+        console.log(this.$refs["carousel"+index.toString()]);
+
+        this.$refs["carousel"+index.toString()][ix].prev();
+
+      },
+      
    
 
   },
@@ -670,8 +768,13 @@ export default {
 
 .post-media{
 
-  width: 90%;
-  margin-bottom: 5%;
+  height: 90%;
+  width: 100%;
+  max-height: 900px;
+  overflow: hidden;
+  object-fit: cover;
+  margin-top: 3%;
+  margin-bottom: 3%;
   
 
 }
@@ -681,27 +784,17 @@ export default {
 .comments {
   
   background-color: #222930;
+  max-height: 1000px;
+  overflow: auto;
+ 
 
 }
 .comment {
 
   margin-top: 5%;
   background-color: #1e2935;
+ 
 
-}
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
 }
 
 .posts {
@@ -723,9 +816,10 @@ a {
   
   background-color: #1e2935;
   margin: auto;
-  width: 60%;
+  width: 50%;
   margin-top: 5%;
 
+ 
 }
 
 .content{
@@ -737,9 +831,8 @@ a {
 
 #container{
   background-color:#222930;
- 
-  margin-left: auto;
-  margin-right: auto;
+  
+  margin: auto;
 }
 .media-img{
 
@@ -795,12 +888,12 @@ a {
 .post-text{
   text-align: left;
   margin-top: 5%;
-  margin-bottom: 10%;
+  margin-bottom: 5%;
 }
 
 .stars-cat{
 
-  margin-top: 3%;
+  margin-top: 1%;
 
 
 }
@@ -812,6 +905,7 @@ a {
 
 .custon-arrow{
 
+  
   height: 200px;
 
 }
@@ -826,20 +920,49 @@ a {
 .navbar.navbar-dark.bg-dark:hover{
   opacity: 1.0;
 }
+.title{
 
+  margin-top: 1%;
+  font-size: 40px;
+
+}
+
+.nav-button1{
+  position: absolute;
+  top: 38%;
+  
+  
+  left: 0.5%;
+  height: 10%;
+  width: 5%;
+  opacity: 0.4;
+
+}
+
+.nav-button2{
+
+  position: absolute;
+  top: 38%;
+  
+  right: 0.5%;
+  height: 10%;
+  width: 5%;
+  opacity: 0.4;
+
+}
+.nav-button1:hover,.nav-button2:hover{
+
+  opacity: 0.6;
+
+}
+
+.media-container{
+
+  position: relative;
+  height: 100%;
+
+}
 </style>
-<style>
-
-.slick-prev:before,
-            .slick-next:before {
-                font-size: 20px;
-                line-height: 1;
-                opacity: 0.75;
-                color: red !important;
-
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-        
+<style>        
 
 </style>

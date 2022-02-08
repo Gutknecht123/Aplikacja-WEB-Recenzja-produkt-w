@@ -10,13 +10,12 @@
 <b-container class="nav-buttons">
 <b-row>
 <b-col>
-<b-button variant="secondary" size="lg" v-on:click="Search()">Content</b-button>
+<b-button variant="secondary" size="lg" v-on:click="searchTitle()">Title</b-button>
 </b-col>
+</b-row>
+<b-row>
 <b-col>
-<b-button variant="secondary" size="lg" v-on:click="Search()">Category</b-button>
-</b-col>
-<b-col>
-<b-button variant="secondary" size="lg" v-on:click="Search()">Creator</b-button>
+<b-form-select v-model="chCategory" :options="options" v-on:change="searchCategory()"></b-form-select>
 </b-col>
 </b-row>
 </b-container>
@@ -173,7 +172,10 @@ export default {
       files: null,
       commsbutton: false,
       selected: '',
-      commenttext: ''
+      commenttext: '',
+      chCategory: '',
+      categories: [],
+      options: []
 
      }
  },
@@ -181,14 +183,27 @@ export default {
 
 try{
 
-      console.log(this.$route.params.phrase);
-      this.posts = await SearchService.searchCategory(this.$route.params.phrase);
-
       const response = await AccountService.getuserAccount();
 
-
-
       this.user = response.data.login;
+
+      this.$store.dispatch('setAuth', true);
+
+      //console.log(this.$route.params.phrase);
+
+      this.posts = await SearchService.searchTitle(this.$route.params.phrase);
+
+      this.categories = await SearchService.getCategories(this.$route.params.phrase);
+
+      for(var i = 0; i<this.categories.data.length; i++){
+
+        this.options.push({ value: this.categories.data[i], text: this.categories.data[i] });
+
+      }
+      
+      console.log(this.categories);
+
+
 
 
     }catch(error){
@@ -253,12 +268,18 @@ try{
       this.$router.push('/user/'+profile);
 
     },
-    async Search(){
+    async searchTitle(){
 
-        this.posts = await SearchService.searchCreator(this.$route.params.phrase);
+        this.posts = await SearchService.searchTitle(this.$route.params.phrase);
 
     },
+    async searchCategory(){
 
+        console.log(this.chCategory);
+
+        this.posts = await SearchService.searchCategory(this.$route.params.phrase, this.chCategory);
+
+    },
 
     },
 

@@ -13,7 +13,7 @@
 
 <script>
 import random from 'lodash.random'
-import $eventHub from '../components/eventHub'
+import $eventHub from './eventHub'
 
 // Assume that loading will complete under this amount of time.
 const defaultDuration = 8000 
@@ -27,7 +27,7 @@ const startingPoint = 0
 const endingPoint = 90 
 
 export default {
-    name: 'LoadingSection',
+    name: 'ProgressBar',
     data: () => ({
         isLoading: true, // Once loading is done, start fading away
         isVisible: false, // Once animate finish, set display: none
@@ -84,7 +84,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    height: 100px;
+    height: 10px;
     width: 100%;
     opacity: 0;
     display: none;
@@ -103,7 +103,7 @@ export default {
     background: #23d6d6;
     display: inline-block;
     height: 100%;
-    width: 50%;
+    width: 100%;
     overflow: hidden;
     border-radius: 0 0 5px 0;
     transition: 200 width ease-out;

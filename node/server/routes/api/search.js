@@ -7,10 +7,13 @@ const comments = require('../../../models/comments');
 
 const router = express.Router();
 
-// search by category
+//search by category
 router.get('/category/:phrase', async (req, res) => {
 
-    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
+    let reg = new RegExp(req.params.phrase, "ig");
+    console.log(req.params.phrase);
+    console.log(req.query["category"]);
+    res.send(await posts.find({ title: reg, category: req.query["category"] }).sort({createdAt: -1}));
 
 });
 
@@ -23,11 +26,23 @@ router.get('/creator/:phrase', async (req, res) => {
 
 });
 
-//search in text?
+//search by title
 
-router.get('/content/:phrase', async (req, res) => {
+router.get('/title/:phrase', async (req, res) => {
 
-    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
+    let reg = new RegExp(req.params.phrase, "ig");
+
+    res.send(await posts.find({ title: reg }).sort({createdAt: -1}));
+
+});
+
+//get categories
+
+router.get('/categories/:phrase', async (req, res) => {
+
+    let reg = new RegExp(req.params.phrase, "ig");
+
+    res.send(await posts.find({ title: reg }, {category: 1, _id: 0}).distinct('category'));
 
 });
 

@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
     credentials: true,
-    origin: "http://localhost:8080"
+    origin: ["http://localhost:8080", "http://192.168.1.12:8080"]
 }));
 
 //app.use(express.static('/run/desktop/mnt/host/c/Users/Robert/Desktop/Praca/node/server/public/upload'));
@@ -79,4 +79,4 @@ const profiles = require('./routes/api/profiles');
 
 app.use('/api/profiles', profiles);
 
-app.listen(3000);
+app.listen(3000, '0.0.0.0');

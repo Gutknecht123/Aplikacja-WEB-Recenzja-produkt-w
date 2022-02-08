@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-const url = "http://localhost:3000/api/posts/";
-
+//const url = "http://localhost:3000/api/posts/";
+const url = "http://192.168.1.12:3000/api/posts/"
 class PostService{
 
 //get
-    static getPosts(PostCount){
+    static async getPosts(PostCount){
         return new Promise ((resolve,reject) => {
             axios.get(url,{params: {PostCount}}).then((res) => {
                 const data = res.data;
@@ -107,7 +107,7 @@ static async createPost(formData){
 
     const res = await axios({
         method: 'post',
-        url: 'http://localhost:3000/api/posts/add-post',
+        url: url+'add-post',
         data: formData,
         headers: {
             "Content-Type": "multipart/form-data"
@@ -131,7 +131,12 @@ static Like(postid, username){
     })                   
 }
 
+static unLike(postid, username){
 
+    return axios.post(url+"dislike/"+postid,{
+        username
+    })                   
+}
 
 }
 

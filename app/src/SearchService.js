@@ -1,16 +1,16 @@
 import axios from 'axios';
 
-const url = "http://localhost:3000/api/search/";
-
+//const url = "http://localhost:3000/api/search/";
+const url = "http://192.168.1.12:3000/api/search/"
 
 
 class SearchService {
 
 
-    static async searchCategory(phrase){
+    static async searchCategory(phrase, category){
 
         return new Promise ((resolve,reject) => {
-            axios.get(url+"category/"+phrase).then((res) => {
+            axios.get(url+"category/"+phrase,{params: {category}}).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({
@@ -47,10 +47,10 @@ class SearchService {
 
     }
 
-    static async searchContent(phrase){
+    static async searchTitle(phrase){
 
         return new Promise ((resolve,reject) => {
-            axios.get(url+"content/"+phrase).then((res) => {
+            axios.get(url+"title/"+phrase).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({
@@ -66,10 +66,14 @@ class SearchService {
         });
 
     }
+    static async getCategories(phrase){
 
+        return axios.get(url+"categories/"+phrase);
+
+    }
     static searchUsername(phrase){
 
-        return axios.get(url+"/username/"+phrase,{})
+        return axios.get(url+"/username/"+phrase,{});
     
     }
 

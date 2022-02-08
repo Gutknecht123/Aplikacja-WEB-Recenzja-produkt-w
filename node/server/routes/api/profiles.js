@@ -42,7 +42,22 @@ const storage = multer.diskStorage({
 
     console.log(req.files)
 
-    if (req.files[0]) {
+    if (req.body.sending=='') {
+    
+      await profiles.updateOne(
+        {Username: req.body.username},
+        {
+            $set:{
+              Username: req.body.username,
+              description: req.body.description
+            }
+        },
+        {upsert: true}
+    );
+
+    }
+
+    if (req.files[0] && req.body.sending=='profilepic') {
         pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
 
         await profiles.updateOne(
@@ -50,29 +65,52 @@ const storage = multer.diskStorage({
             {
                 $set:{
                   Username: req.body.username,
-                  profilePic: pic1
+                  profilePic: pic1,
+                  description: req.body.description
                 }
             },
             {upsert: true}
         );
         
         }
-    if (req.files[1]) {
 
-        pic2 = url + '/api/profiles/upload/' + req.files[1].filename.toLowerCase().split(' ').join('-');
+     if (req.files[0] && req.body.sending=='banner') {
+
+        pic2 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
 
         await profiles.updateOne(
             {Username: req.body.username},
             {
                 $set:{
                   Username: req.body.username,
-                  banner: pic2
+                  banner: pic2,
+                  description: req.body.description
                 }
             },
             {upsert: true}
         );
     
     }
+
+      if (req.files[0] && req.files[1] && req.body.sending=='both') {
+
+      pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
+      pic2 = url + '/api/profiles/upload/' + req.files[1].filename.toLowerCase().split(' ').join('-');
+
+      await profiles.updateOne(
+          {Username: req.body.username},
+          {
+              $set:{
+                Username: req.body.username,
+                profilePic: pic1,
+                banner: pic2,
+                description: req.body.description
+              }
+          },
+          {upsert: true}
+      );
+  
+  }
     
     console.log(pic1)
     console.log(pic2)

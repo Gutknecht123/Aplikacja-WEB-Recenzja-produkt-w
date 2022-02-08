@@ -27,7 +27,8 @@ router.post('/like/:postid', async(req,res) => {
         },
         $push:{
           likedby:{
-              username: req.body.username
+              username: req.body.username,
+              createdAt: new Date()
           }
         }
       },
@@ -66,12 +67,12 @@ router.post('/like/:postid', async(req,res) => {
 //dislike post
 router.post('/dislike/:postid', async(req,res) => {
 
-  posts.updateOne(
+  await posts.updateOne(
     { _id: ObjectID(req.params.postid) },
     
     {
-      $inc: {
-          likes: -1
+      $pull: {
+        likedby: {username: req.body.username}
       }
     }
 
@@ -205,10 +206,14 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
 
     const post = new posts({
 
+        title: req.body.title,
         text: req.body.text,
         category: req.body.category,
         likes: req.body.likes,
-        likedby: [],
+        likedby: [{
+          username: '',
+          createdAt: new Date()
+        }],
         files: reqFiles,
         stars: req.body.stars,
         creator: req.body.creator,

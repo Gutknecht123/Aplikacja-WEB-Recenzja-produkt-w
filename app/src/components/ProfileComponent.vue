@@ -10,19 +10,23 @@
 
 <b-row>
 <b-col cols="1">
- </b-col>
+</b-col>
 <b-col cols="3">
 
-<b-card text-variant="white" border-variant="dark" class="profile-card" align="right">
+<b-card text-variant="white" border-variant="dark" class="profile-card" align="center">
 
-<b-avatar size="200px" square><b-card-img :src="profilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-card-img></b-avatar>
+<b-avatar size="200px" square><b-card-img :src="profilepic" alt="" class="profile-pic border-bottom border-dark"></b-card-img></b-avatar>
 
-<b-card-text align="center">
+<b-card-text align="center" class="mt-3">
 
 {{username}}
 
 </b-card-text>
+<b-card-text align="center" class="mt-3">
 
+{{description}}
+
+</b-card-text>
 <b-row >
 <b-col v-if="username!=user && check==false">
 <b-button variant="secondary" size="lg" v-on:click="Follow()" >Follow</b-button>
@@ -49,20 +53,27 @@
 </b-card-text>
 </b-card-header>
 
+<VueSlickCarousel :adaptiveHeight="true" :swipe="false">
 <div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
-  
-<b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'"></b-card-img>
 
-<div v-if="image.split('.').pop()=='mp4'">
+    <div v-if="image.split('.').pop()=='mp4'">
 
-<video-player class="vjs-custom-skin" 
+    <video-player class="vjs-custom-skin" 
                   ref="videoPlayer"
                   :options="playerOptions[index]"
                   :playsinline="true"
                   >
-</video-player>
+    </video-player>
+    </div>
+
+    <div align="center">
+    <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain height="600px"></b-card-img>
+    </div>
+
+
+    
 </div>
-</div>
+</VueSlickCarousel>
 
 <b-card-text>
 {{post.category}}
@@ -187,13 +198,13 @@ import AccountService from '../AccountService';
 import NavbarSection from './NavbarComponent';
 import ProfileService from '../ProfileService';
 import SettingsService from '../SettingsService';
-
+import VueSlickCarousel from 'vue-slick-carousel'
 
 export default {
     name: 'ProfileComponent',
    components:{
      NavbarSection,
-     
+     VueSlickCarousel
      
  },
   data(){
@@ -215,7 +226,8 @@ export default {
       playerOptions: [],
       medialist:[],
       banner: '',
-      profilepic: ''
+      profilepic: '',
+      description: ''
       }
   },
   async created(){
@@ -229,6 +241,8 @@ export default {
       this.banner = userProfile.data[0].banner;
 
       this.profilepic = userProfile.data[0].profilePic;
+
+      this.description = userProfile.data[0].description;
 
       const response = await AccountService.getuserAccount();
 
@@ -386,6 +400,7 @@ export default {
 
 .profile-pic{
 
+  
   height: 100%;
   width: 100%;
   object-fit: cover;
@@ -430,7 +445,7 @@ export default {
 
 .profile-card{
 
-  margin-top: 10%;
+  margin-top: 13%;
   background-color: #1e2935;
   
 }

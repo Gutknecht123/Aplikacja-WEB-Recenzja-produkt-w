@@ -61,6 +61,8 @@ export default {
 
                      this.$store.dispatch('setProfile', this.llogin);
 
+                     this.$store.dispatch('setAuth', true);
+
                      this.$router.push('/');
                     }
 
