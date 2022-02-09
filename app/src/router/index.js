@@ -49,6 +49,13 @@ const router = new Router({
         component: () => import('../views/Posts')
 
     },
+    {
+
+        path: '/usr/:profile',
+        name: 'userprofile',
+        component: () => import('../views/Profile')
+
+    },
 ]
 
 })

@@ -207,6 +207,7 @@ export default {
      VueSlickCarousel
      
  },
+ props: [],
   data(){
       return {
       posts: [],
@@ -262,7 +263,11 @@ export default {
 
       console.log(this.check);
 
-      this.posts = await PostService.getUserPosts(this.$route.params.profile);
+      //this.posts = await PostService.getUserPosts(this.$route.params.profile);
+
+
+      this.posts = this.$store.state.posts;
+
 
       for(var i=0; i<this.posts.length; i++){
 
