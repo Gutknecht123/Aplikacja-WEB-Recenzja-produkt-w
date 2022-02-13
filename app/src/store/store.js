@@ -10,7 +10,8 @@ export default new Vuex.Store({
         profile: null,
         sphrase: null,
         postcount: 5,
-        posts: []
+        posts: [],
+        global: 0
     },
     mutations:{
         SET_AUTH (state, auth){
@@ -27,6 +28,9 @@ export default new Vuex.Store({
         },
         SET_POSTS (state, posts){
             state.posts = posts;
+        },
+        SET_GLOBAL (state, global){
+            state.global = global;
         }
     },
     actions:{
@@ -44,6 +48,9 @@ export default new Vuex.Store({
         },
         setPosts (context, posts) {
             context.commit('SET_POSTS', posts);
+        },
+        setGlobal (context, global) {
+            context.commit('SET_GLOBAL', global);
         }
     },
     modules:{}

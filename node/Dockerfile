@@ -1,4 +1,6 @@
-FROM node:latest
+FROM node:16.3.0-alpine
+
+ENV NODE_VERSION 16.3.0
 
 WORKDIR /node
 

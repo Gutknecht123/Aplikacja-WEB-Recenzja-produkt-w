@@ -64,6 +64,8 @@ router.post('/like/:postid', async(req,res) => {
 
 })
 
+
+
 //dislike post
 router.post('/dislike/:postid', async(req,res) => {
 
@@ -88,7 +90,7 @@ router.post('/dislike/:postid', async(req,res) => {
 
 router.get('/likes/:postid', async(req, res) => {
 
-
+  res.send(await posts.find({ _id: ObjectID(req.params.postid) }, {likedby: 1, _id: 0}).distinct('likedby'));
 
 })
 
@@ -209,7 +211,6 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
         title: req.body.title,
         text: req.body.text,
         category: req.body.category,
-        likes: req.body.likes,
         likedby: [{
           username: '',
           createdAt: new Date()
@@ -232,6 +233,70 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
             error: err
           });
       });
+
+});
+
+//edit post
+
+router.post('/editpost/:postid', upload.array('files', 5), async(req,res) => {
+
+  try{
+
+    const reqFiles = []
+
+    const url = req.protocol + '://' + req.get('host')
+
+    for (var i = 0; i < req.files.length; i++) {
+      
+      reqFiles.push(url + '/api/posts/upload/' + req.files[i].filename.toLowerCase().split(' ').join('-'));
+    }
+
+    if(req.files[0]){
+      posts.updateOne(
+        { _id: ObjectID(req.params.postid) },
+        
+        {
+          $set: {
+          
+           files: reqFiles,
+           title: req.body.title,
+           text: req.body.text,
+           category: req.body.category,
+           stars: req.body.stars
+ 
+          }
+        },
+        (err, res) => {
+          if (err) throw err;
+        })
+    }else{
+    posts.updateOne(
+       { _id: ObjectID(req.params.postid) },
+       
+       {
+         $set: {
+
+          title: req.body.title,
+          text: req.body.text,
+          category: req.body.category,
+          stars: req.body.stars
+
+         }
+       },
+       (err, res) => {
+         if (err) throw err;
+       })
+    }
+
+
+
+
+      res.status(201).json({
+        message: "Done upload!"
+      })
+    }catch(e){
+        console.log(e);
+    }
 
 });
 

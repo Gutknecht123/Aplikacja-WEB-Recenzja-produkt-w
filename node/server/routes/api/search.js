@@ -13,7 +13,7 @@ router.get('/category/:phrase', async (req, res) => {
     let reg = new RegExp(req.params.phrase, "ig");
     console.log(req.params.phrase);
     console.log(req.query["category"]);
-    res.send(await posts.find({ title: reg, category: req.query["category"] }).sort({createdAt: -1}));
+    res.send(await posts.find({ title: reg, category: req.query["category"] }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
 
 });
 
@@ -32,7 +32,7 @@ router.get('/title/:phrase', async (req, res) => {
 
     let reg = new RegExp(req.params.phrase, "ig");
 
-    res.send(await posts.find({ title: reg }).sort({createdAt: -1}));
+    res.send(await posts.find({ title: reg }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
 
 });
 

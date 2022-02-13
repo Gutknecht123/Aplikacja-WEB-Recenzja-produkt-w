@@ -1,16 +1,15 @@
 <template>
 
 <div>
-<NavbarSection/>
 <div id="container">
 
-
-
+<div class="postcreation">
 <form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
 <b-row class="mt-3">
 <b-col>
-<b-form-input v-model="title" placeholder="Enter title" id = "title"></b-form-input>
+<b-form-input v-model="title" placeholder="Enter title" class="title"></b-form-input>
+<div class="text-danger" v-if="v$.title.$error">Wrong title! 2-101 chars!</div>
 </b-col>
 </b-row>
 <b-row class="mt-3">
@@ -23,7 +22,7 @@
     <p><img :src="media" class="post-img" /></p>
     <button v-on:click="removeImage">Remove image</button>
   </div>
- 
+ <div class="text-danger" v-if="v$.files.$error">Unsuported file</div>
 </b-col>
 </b-row>
 
@@ -33,306 +32,198 @@
       id="textarea"
       v-model="text"
       placeholder="Enter something..."
-      auto-shrink
+      rows="4"
+      max-rows="8"
       no-resize
-      
 ></b-form-textarea>
+<div class="text-danger" v-if="v$.text.$error">Wrong text! 2-24 chars!</div>
 </b-col>
 </b-row>
-
-<b-row class="mt-5">
+<b-row class="mt-3">
 <b-col>
+<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
+<div class="text-danger" v-if="v$.category.$error">Wrong category! 2-16 chars!</div>
+</b-col>
+</b-row>
+<b-row class="mt-3">
+<b-col id="stars">
 <star-rating v-bind:increment="0.5"
              v-bind:max-rating="5"
              inactive-color="#0099cc"
              active-color="#ffcc66"
-             v-bind:rating="1"
+             v-bind:rating="stars"
              v-bind:show-rating="false"
-             v-bind:star-size="40" v-model="stars" id="stars" @rating-selected="setRating"></star-rating>
+             v-bind:star-size="40" v-model="stars"  @rating-selected="setRating"></star-rating>
 
 </b-col>
-<b-col>
 
-<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
-
-</b-col>
 </b-row>
 
-<b-row class="mt-3">
+<b-row class="mt-5">
 <b-col>
 <b-button variant="secondary" size="sm" type="submit">Publish</b-button>
 </b-col>
 </b-row>
 
-
 </b-card>
 
 </form>
-
-
+</div>
 
 <p class="error" v-if="error">{{error}}</p>
 
-<div class="posts shadow=lg p-3 mt-5 rounded">
+<div class="posts shadow=lg mt-5 rounded">
 
-<b-container class="nav-buttons">
-<b-row>
-<b-col>
-<b-button variant="secondary" size="lg" v-on:click="globalPosts()">Global</b-button>
-</b-col>
-<b-col>
-<b-button variant="secondary" size="lg" v-on:click="followsPosts()">Follows</b-button>
-</b-col>
-</b-row>
-</b-container>
-
-<div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<div>
-<b-card text-variant="white" border-variant="dark" class="post-card">
-
-<b-card-header header-tag="header" class="post-header">
-<b-row>
-<b-col>
-<b-card-text align="left">
-<b-avatar button @click="Gotoprofile(post.creator)" :src="pictures[index]" size="md"></b-avatar> {{post.creator}}
-</b-card-text>
-</b-col>
-<b-col>
-<b-card-text align="right">
-{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()+1}-${post.createdAt.getDate()}`}}
-{{`${post.createdAt.getHours()}:${post.createdAt.getMinutes()}`}}
-</b-card-text>
-</b-col>
-</b-row>
-</b-card-header>
-
-<div class="title" align="center">{{post.title}}</div>
-
-<div class="media-container">  
-
-<VueSlickCarousel :ref="'carousel'+index" :adaptiveHeight="true" :swipe="true" :arrows ="false" :swipeToSlide="true" v-if="post.files.length > 1">
-<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files" fluid>
-
-    <div v-if="image.split('.').pop()=='mp4'" align="center" >
-
-    <video-player class="post-media vjs-custom-skin" 
-                  ref="videoPlayer"
-                  :options="playerOptions[index]"
-                  :playsinline="true"
-                  >
-    </video-player>
-    </div>
-
-    <div align="center" fluid>
-    <b-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain ></b-img>
-    </div>
-    
-</div>
-</VueSlickCarousel>
-
-      <b-button class="nav-button1" v-on:click="prevSlide(0, index)" v-if="post.files.length > 1" align="center" variant="secondary" size="md">&lt;</b-button>
-   
-      <b-button class="nav-button2" v-on:click="nextSlide(0, index)" v-if="post.files.length > 1" align="center" variant="secondary" size="md">&gt;</b-button>
-
-</div>
-
-  <div  v-if="post.files.length==1">
-  <div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files" fluid>
-
-    <div v-if="image.split('.').pop()=='mp4'" align="center">
-
-      <video-player class="post-media vjs-custom-skin" 
-                  ref="videoPlayer"
-                  :options="playerOptions[index]"
-                  :playsinline="true"
-                  >
-      </video-player>
-
-    </div>
-
-    <div align="center" fluid>
-      <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain ></b-card-img>
-    </div>
- 
-  </div>
-  </div>
-
-
-<b-container class="post-content">
-<b-row class="stars-cat">
-<b-col>
-
-<star-rating  align="center" v-bind:increment="0.5"
-              v-bind:max-rating="5"
-              inactive-color="#1e2935"
-              active-color="#ffcc66"
-              v-bind:rating="post.stars"
-              v-bind:read-only="true"
-              v-bind:show-rating="false"
-              v-bind:star-size="30" class="stars"></star-rating>
-
-
-
-</b-col>
-<b-col>
-<b-card-text align="center">
-{{post.category}}
-</b-card-text>
-</b-col>
-</b-row>
-
-<b-card-text>
-<div class="post-text">{{post.text}}</div>
-</b-card-text>
-</b-container>
-
-
-<footer>
-
-<b-row class="com-likes">
-<b-col>
-<b-button align="left" variant="secondary" size="md" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
-</b-col> 
-<b-col>
-<b-card-text>
-
-
-{{post.likedby.length-1}}
-<b-button variant="secondary" size="md" :disabled="isDisabled" v-on:click="likePost(post._id)" v-if="post.likedby.filter(e => e.username === user).length == 0">Like</b-button>
-<b-button variant="secondary" size="md" :disabled="isDisabled" v-on:click="unlikePost(post._id)" v-if="post.likedby.filter(e => e.username === user).length > 0">Unlike</b-button>
-
-
-</b-card-text>
-</b-col>
-</b-row> 
-
-</footer>
-
-</b-card>
-
-<b-card class="comments shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark" v-if="selected == post._id">
-
-
-
-<div class="comments1" v-if="selected == post._id">
-
-<b-container class="bv-example-row">
+<b-container class="nav-buttons"> 
 <b-row class="mt-3">
-<b-col>
-<b-form-textarea
-      id="textarea"
-      v-model="commenttext"
-      placeholder="Enter something..."
-      auto-shrink
-      no-resize
-     
-></b-form-textarea>
+<b-col align="right">
+<b-button variant="secondary" class="global" size="lg" v-on:click="globalPosts()">Global</b-button>
 </b-col>
-</b-row >
-<b-row class="mt-3">
-
-<b-col>
-<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)">Publish</b-button>
+<b-col align="left">
+<b-button variant="secondary" class="follows" size="lg" v-on:click="followsPosts()">Follows</b-button>
 </b-col>
-
 </b-row>
 </b-container>
 
-
-<div class="comments2 border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
-
-<div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
-<b-container class="comm bv-example-row">
-<b-row class="mt-3">
-<b-col>
-<b-card-text align="left">
-
-{{com.creator}}
-
-</b-card-text>
-</b-col>
-
-<b-col class="mt-3">
-<b-card-text align="right">
-
-{{com.createdAt.substring(0,10)}}
-
-</b-card-text>
-</b-col>
-
-</b-row>
-
-<b-row align-v="stretch" class="mt-3">
-<b-col align-self="stretch">
-<b-card-text align="left">
-
-{{com.body}}
-
-</b-card-text>
-</b-col>
-</b-row>
-<b-row>
-
-<b-col class="mt-3">
-<b-button variant="secondary" size="sm" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
-</b-col>
-
-</b-row>
-
-</b-container>
-</div>
-</div>
+<Posts/>
 
 </div>
-
-<b-button class="mt-3" variant="secondary" size="sm" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
-
-
-</b-card>
-
-<b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
-</div>
-
-</div>
-
-</div>
-<LoadingComponent v-if="Loading==true"/>
-
-
 </div>
 
 <div class="pagefooter shadow-lg p-3 mt-5 rounded">
 <b-navbar toggleable="md" type="dark" variant="dark" fixed="bottom" v-if="tothetop==true">
-<b-button variant="secondary" size="lg" v-on:click="scrollToTop()">Go to top</b-button>
+<b-button class="addButton" variant="secondary" size="lg" v-on:click="create=!create" v-if="!create">+</b-button>
+<div class="postcreation" v-if="create">
+<form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
+<b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
+<b-row class="mt-3">
+<b-col>
+<b-form-input v-model="title" placeholder="Enter title" class="title"></b-form-input>
+<div class="text-danger" v-if="v$.title.$error">Wrong title! 2-101 chars!</div>
+</b-col>
+</b-row>
+<b-row class="mt-3">
+<b-col>
+
+<div v-if="!media">
+    <input type="file" name="files" multiple v-on:change="onFileChange">
+  </div>
+  <div v-else>
+    <p><img :src="media" class="post-img" /></p>
+    <button v-on:click="removeImage">Remove image</button>
+  </div>
+ <div class="text-danger" v-if="v$.files.$error">Unsuported file</div>
+</b-col>
+</b-row>
+
+<b-row class="mt-3">
+<b-col>
+<b-form-textarea
+      id="textarea"
+      v-model="text"
+      placeholder="Enter something..."
+      rows="4"
+      max-rows="8"
+      no-resize
+></b-form-textarea>
+<div class="text-danger" v-if="v$.text.$error">Wrong text! 2-24 chars!</div>
+</b-col>
+</b-row>
+<b-row class="mt-3">
+<b-col>
+<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
+<div class="text-danger" v-if="v$.category.$error">Wrong category! 2-16 chars!</div>
+</b-col>
+</b-row>
+<b-row class="mt-3">
+<b-col id="stars">
+<star-rating v-bind:increment="0.5"
+             v-bind:max-rating="5"
+             inactive-color="#0099cc"
+             active-color="#ffcc66"
+             v-bind:rating="stars"
+             v-bind:show-rating="false"
+             v-bind:star-size="40" v-model="stars"  @rating-selected="setRating"></star-rating>
+
+</b-col>
+
+</b-row>
+
+<b-row class="mt-5">
+<b-col>
+<b-button variant="secondary" size="sm" type="submit">Publish</b-button>
+</b-col>
+</b-row>
+<b-row>
+<b-col>
+<b-button class="postcreation mt-2" v-on:click="create=!create" v-if="create">Hide</b-button>
+</b-col>
+</b-row>
+</b-card>
+
+</form>
+</div>
+
 </b-navbar>
 </div>
+
 </div>
 
 </template>
 
 <script>
 import PostService from '../PostService';
-import CommsService from '../CommsService';
 import AccountService from '../AccountService';
-import NavbarSection from './NavbarComponent';
-import LoadingComponent from './LoadingComponent';
-import VueSlickCarousel from 'vue-slick-carousel'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
-// optional style for arrows & dots
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import StarRating from 'vue-star-rating'
 import ProfileService from '../ProfileService';
-import SettingsService from '../SettingsService';
+import useVuelidate from '@vuelidate/core';
+import { required, minLength, maxLength } from '@vuelidate/validators'
+import Posts from './Posts';
 
-//import useStore from 'vuex';
+const CheckSize = (value) =>  {
+  if (!value) {
+    return true;
+  }
+  let file = value;
+
+  console.log(file[0].size)
+
+  for(var i=0; i<file.length; i++){
+    if(file[i].size < 10485760){
+      return (file[i].size < 10485760)
+    }
+  }
+  console.log("Zbyt duży plik!");
+  return false;
+};
+
+const CheckType = (value) => {
+  if (!value) {
+    return true;
+    }
+    
+    let file = value;
+
+    for(var i=0; i<file.length; i++){
+      if(file[i].type.startsWith('image')||file[i].type.startsWith('video')){
+        return true;
+      }
+    }
+    console.log("Nieprawidłowy plik!");
+    return false;
+}
+
 export default {
   name: 'PostComponent',
    components:{
-     NavbarSection,
-     VueSlickCarousel,
      StarRating,
-     LoadingComponent
+     Posts
  },
+
+ setup: () => ({ v$: useVuelidate() }),
+
   data(){
     return { 
       posts: [],
@@ -342,40 +233,41 @@ export default {
       text: '',
       media: '',
       category: '',
-      stars: 0,
+      stars: 1,
       user: '',
       isDisabled: false,
       files: null,
       commsbutton: false,
       selected: '',
+      create: false,
       commenttext: '',
       playerOptions: [{
 
-            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-            autoplay: false, //If true, the browser will start playing back when it is ready.
-            muted: true, // Any audio will be removed by default.
-            loop: false, // Causes the video to restart as soon as it's over.
-            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
+            playbackRates: [1.0, 2.0, 3.0], 
+            autoplay: false, 
+            muted: true, 
+            loop: false, 
+            preload: "auto", 
             language: "en",
-            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
+            aspectRatio: "16:9",
             fluid: true,
             sources: [{
             type: "video/mp4",
             src: ""
             }],
             poster: "",
-            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
+            notSupportedMessage: "This video can't be played temporarily. Please try again later",
               controlBar: {
                 timeDivider: true,
                 durationDisplay: true,
                 remainingTimeDisplay: false,
-                fullscreenToggle: true //Full screen button
+                fullscreenToggle: true 
               }
           }],
       medialist:[],
       PostCount: 5,
       follows: [],
-      global: true,
+      global: 0,
       tothetop: false,
       pictures: [],
       Loading: true,
@@ -383,31 +275,32 @@ export default {
 
     }
   },
-  async created(){
+  validations(){
 
-    
+     return{
+        title: { required, minLength: minLength(2), maxLength: maxLength(24) },
+        text: { required, minLength: minLength(2), maxLength: maxLength(101) },
+        category: { required, minLength: minLength(2), maxLength: maxLength(16) },
+        files: { CheckSize, CheckType },
+     }
+  },
+
+  async created(){
 
     try{
 
       const response = await AccountService.getuserAccount();
-
-      this.posts = await PostService.getPosts(this.PostCount);
   
       this.user = response.data.login;
-
-      this.$store.dispatch('setAuth', true);
-
-      //console.log(this.$store.state.authenticated);
-
-      this.set();
       
     }catch(error){
       this.$store.dispatch('setAuth', false);
       
       this.error = error.message;
     }
-  },
-    mounted() {
+    },
+
+  mounted() {
 
       this.scroll();
       
@@ -418,9 +311,14 @@ export default {
       }
     },
 
-     methods: {
+  methods: {
 
-    async createPost(){ 
+      async createPost(){ 
+
+      const isFormCorrect = await this.v$.$validate()
+        if (!isFormCorrect){ 
+            return;
+        }else{
 
       const formData = new FormData();
       const f = [];
@@ -430,46 +328,52 @@ export default {
       formData.append('text', this.text);
       formData.append('category', this.category);
       formData.append('stars', this.stars);
-      formData.append('likes', 0);
 
-    
-      console.log(this.files);
-     for (const i of Object.keys(this.files)) {
-           formData.append('files', this.files[i])
-           f.push(this.files[i].name)
+      if(this.files != null){
+
+       for (const i of Object.keys(this.files)) {
+            formData.append('files', this.files[i])
+            f.push(this.files[i].name)
           }
-      
-      //console.log(formData.get('files'));
-      console.log(f[0]);
+      }
       await PostService.createPost(formData);
-      this.posts = await PostService.getPosts(this.PostCount);
+      if(this.$store.state.global==0){
+      this.posts = await PostService.getPosts(this.$store.state.postcount);
+      this.$store.dispatch('setPosts', this.posts);
+      }
       this.media='';
-      this.pictures = [];
-      this.set();
-      
+      this.title='';
+      this.category='';
+      this.files=null;
+      this.text='';
+      this.stars=1;
+      }
     },
 
     setRating: function(rating){
       this.stars= rating;
     },
 
-    async deletePost(id){
-      await PostService.deletePost(id);
-      this.posts = await PostService.getPosts(this.PostCount);
-    },
      async onFileChange(e) {
-      this.files = e.target.files;
       
       var files = e.target.files || e.dataTransfer.files;
+
+      this.files = files;
+    
+      this.$v.files.$touch();
+
+      if (this.$v.files.$error) {
+        console.log("Zły plik")
+        return;	
+      }
       if (!files.length)
         return;
       this.createImage(files[0]);
     },
     async createImage(file) {
-      //var media = new Image();
+    
       var reader = new FileReader();
-      //var vm = this;
-
+    
       reader.onload = (e) => {
         this.media = e.target.result;
       };
@@ -479,115 +383,19 @@ export default {
       this.media = '';
     },
 
-    async showComments(id){
-
-        this.comments = [];
-
-        this.commsbutton = true;
-
-        if(this.selected != id){
-        
-        this.selected = id;
-        }
-
-        if(this.commsbutton == true){
-        this.comments = await CommsService.getComments(id);
-        }
-        if(this.commsbutton == false){
-          this.selected = '';
-          this.comments = [];
-        }
-    },
-
-    async hideComments(){
-
-        this.commsbutton = false;
-
-
-        this.selected = "";
-
-        this.comments = [];
-
-    },
-
-    async addComment(id){
-
-      await CommsService.addComment(id, this.commenttext, this.user);
-
-      this.showComments(id);
-
-    },
-    async deleteComment(id, commid, postid){
-
-      await CommsService.deleteComment(id, commid);
-      
-      this.showComments(postid);
-
-    },
-
-    async Gotoprofile(profile){
-
-
-      //this.$store.dispatch('setProfile', profile);
-
-      this.$router.push('/user/'+profile);
-
-    },
-
-    async likePost(postid){
-
-      try{
-
-      this.isDisabled = true;
-
-      await PostService.Like(postid, this.user);
-
-      this.isDisabled = false;
-
-      this.posts = await PostService.getPosts(this.PostCount);
-
-      }catch(e){
-
-        console.log(e);
-      }
-
-
-    },
-    async unlikePost(postid){
-
-      try{
-
-      this.isDisabled = true;
-
-      await PostService.unLike(postid, this.user);
-
-      this.isDisabled = false;
-
-      this.posts = await PostService.getPosts(this.PostCount);
-
-      }catch(e){
-
-        console.log(e);
-      }
-
-
-    },
     async scroll () {
       window.onscroll = () => {
         let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight === document.documentElement.offsetHeight
 
         if (bottomOfWindow) {
 
-          
-
-        this.PostCount += 5;
+        this.$store.dispatch('setPostCount', 5);
 
         this.Loading = true;
-        
-
-          if(this.global){
+      
+          if(this.global==0){
             this.setPosts();
-          }else if(!this.global){
+          }else if(this.global==1){
             this.followsPosts();
           }
         }
@@ -596,161 +404,55 @@ export default {
               this.tothetop = true;
         }else if (Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop)<500){
               this.tothetop = false;
+             
         }
-      
-        
-
         }
        },
 
       async setPosts(){
 
-        let tempposts = await PostService.getPosts(this.PostCount-1);
+        let tempposts = await PostService.getPosts(this.$store.state.postcount-1);
 
-        if(this.posts.length != tempposts.length){
-        
-        this.posts = tempposts;
+        if(this.$store.state.posts.length != tempposts.length){
 
-        this.pictures = [];
+        this.$store.dispatch('setPosts', tempposts);
 
-        this.set();
-
-        
+        this.$store.dispatch('setGlobal', this.global);
 
         }
-  //
-
 
       },
       async globalPosts(){
 
-        this.global = true;
+        this.global = 0;
 
-        this.PostCount = 5;
+        this.$store.dispatch('setPostCount', ((-1)*(this.$store.state.postcount-5)));
 
         this.setPosts();
 
       },
       async followsPosts(){
 
-        this.global = false;
+        this.global = 1;
+
+        this.$store.dispatch('setGlobal', this.global);
 
         this.follows = await ProfileService.getFollows(this.user);
+    
+        let tempposts = await PostService.getfollowsPosts(this.follows.data.Followings, this.$store.state.postcount);
 
-        
-        //var tempposts = await PostService.getfollowsPosts(this.follows.data.Followings);
-        console.log("tu");
-
-        console.log(this.follows.data.Followings);
-
-      
-        this.posts = await PostService.getfollowsPosts(this.follows.data.Followings, this.PostCount);
-
-
-
-
-
-        this.pictures = [];
-
-        
-        /////////////////////////////////////////////////////
-
-        this.set();
-
-         // console.log(this.posts);
-
-         // console.log(await PostService.getPosts(this.PostCount));
-         // console.log(await PostService.getfollowsPosts(this.follows.data.Followings));
+        this.$store.dispatch('setPosts', tempposts);
 
       },
       async scrollToTop() {
 
-        
         window.scrollTo(0,0);
 
         this.tothetop = false;
         
       },
 
-      async userPic(creator){
-
-        var pic = await SettingsService.getProfile(creator);
-        
-        this.pictures.push(pic.data[0].profilePic);
-
-      },
-
-      async set(){
-
-
-
-        for(var i=0; i<this.posts.length; i++){
-
-        for(var j=0; j<this.posts[i].files.length; j++){
-
-          //console.log(this.posts[i].files[j]);
-
-          if(this.posts[i].files[j].split('.').pop()=='mp4'){
-          let arrs = {
-
-            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-            autoplay: false, //If true, the browser will start playing back when it is ready.
-            muted: true, // Any audio will be removed by default.
-            loop: false, // Causes the video to restart as soon as it's over.
-            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-            language: "en",
-            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-            fluid: true,
-            sources: [{
-            type: "video/mp4",
-            src: this.posts[i].files[j]
-            }],
-            poster: "",
-            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-              controlBar: {
-                timeDivider: true,
-                durationDisplay: true,
-                remainingTimeDisplay: false,
-                fullscreenToggle: true //Full screen button
-              }
-          }
-
-      
-          this.playerOptions[i] = arrs;
-          console.log(this.playerOptions[i]);
-          }
-
-          
-        }
-
-        await this.userPic(this.posts[i].creator);
-      }
-
-      this.Loading = false;
-
-      },
-
-      nextSlide(ix, index){
-
-        console.log(ix);
-
-        console.log(index);
-
-        this.$refs["carousel"+index.toString()][ix].next();
-
-      },
-      prevSlide(ix, index){
-
-        console.log(this.$refs["carousel"+index.toString()]);
-
-        this.$refs["carousel"+index.toString()][ix].prev();
-
-      },
-      
-   
-
   },
-
 
 }
 </script>
@@ -758,13 +460,11 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-
 .post-header{
 
   background-color: #1e2935;
 
 }
-
 
 .post-media{
 
@@ -775,18 +475,27 @@ export default {
   object-fit: cover;
   margin-top: 3%;
   margin-bottom: 3%;
-  
 
 }
 .post-card{
+
   background-color: #1e2935;
+
 }
+
+.postcreation{
+
+  width: 95%;
+  margin-top: 5%;
+  margin: auto;
+
+}
+
 .comments {
   
   background-color: #222930;
   max-height: 1000px;
   overflow: auto;
- 
 
 }
 .comment {
@@ -794,18 +503,19 @@ export default {
   margin-top: 5%;
   background-color: #1e2935;
  
-
 }
 
 .posts {
+
   display: flex;
   flex-direction: column;
+
 }
 
 .createpost{
 
   background-color: #1e2935;
-  width: 60%;
+  width: 70%;
   color: white;
   margin-left: auto;
   margin-right: auto;
@@ -816,23 +526,33 @@ export default {
   
   background-color: #1e2935;
   margin: auto;
-  width: 50%;
+  width: 100%;
   margin-top: 5%;
 
- 
 }
 
+.global{
+
+  width: 70%;
+  
+}
+.follows{
+
+  width: 70%;
+ 
+}
 .content{
 
   margin: auto;
   
-
 }
 
 #container{
+
+  position: relative;
   background-color:#222930;
-  
   margin: auto;
+
 }
 .media-img{
 
@@ -869,20 +589,23 @@ export default {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
+
 }
 #category{
 
-  width: 40%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
+  color: #e3e7eb;
+  background-color: #1e2935;
 
 }
 
 #stars{
 
-  margin-left: auto;
-  margin-right: auto;
-
+  position: absolute;
+  left: 35%;
+  
 }
 
 .post-text{
@@ -895,7 +618,6 @@ export default {
 
   margin-top: 1%;
 
-
 }
 .post-content{
 
@@ -905,33 +627,30 @@ export default {
 
 .custon-arrow{
 
-  
   height: 200px;
 
 }
 
 .navbar.navbar-dark.bg-dark{
 
-  background-color: #222930!important;
-  width: 15%;
-  margin-left: 3%;
-  opacity: 0.5;
+  background:rgba(0,0,0,0)!important;
+  width: 60%;
+  margin-left: 10%;
+  
 }
-.navbar.navbar-dark.bg-dark:hover{
-  opacity: 1.0;
-}
+
 .title{
 
-  margin-top: 1%;
-  font-size: 40px;
-
+  color: #e3e7eb;
+  background-color: #1e2935;
+  width: 95%;
+  margin: auto;
 }
 
 .nav-button1{
+
   position: absolute;
   top: 38%;
-  
-  
   left: 0.5%;
   height: 10%;
   width: 5%;
@@ -943,7 +662,6 @@ export default {
 
   position: absolute;
   top: 38%;
-  
   right: 0.5%;
   height: 10%;
   width: 5%;
@@ -961,6 +679,90 @@ export default {
   position: relative;
   height: 100%;
 
+}
+
+.submitB{
+  margin-top: 10%;
+}
+
+.addButton{
+  width: 150px;
+}
+
+@media screen and (max-width: 1200px) {
+
+    .createpost{
+
+      width: 80%;
+
+    }
+    .navbar.navbar-dark.bg-dark{
+
+      margin-left: 0%;
+  
+    }
+    .addButton{
+      width: 20%;
+    }
+    .global{
+
+      width: 100%;
+  
+    }
+    .follows{
+
+      width: 100%;
+ 
+    }
+}
+
+@media screen and (max-width: 1000px) {
+
+    .createpost{
+
+      width: 100%;
+
+    }
+    #stars{
+
+      position: absolute;
+      left: 15%;
+    
+    }
+    #category{
+
+      width: 95%;
+
+    }
+    .submitB{
+
+      margin-top: 20%;
+
+    }
+    .navbar.navbar-dark.bg-dark{
+
+      background:rgba(0,0,0,0)!important;
+      width: 100%;
+  
+    }
+    .navbar.navbar-dark.bg-dark{
+
+      margin-left: 0%;
+  
+    }
+    .addButton{
+      width: 15%;
+    }
+    .global{
+
+      width: 100%;
+  
+    }
+    .follows{
+
+      width: 100%;
+ 
+    }
 }
 </style>
 <style>        

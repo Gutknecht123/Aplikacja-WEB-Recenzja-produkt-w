@@ -5,7 +5,7 @@ const url = "http://192.168.1.12:3000/api/posts/"
 class PostService{
 
 //get
-    static async getPosts(PostCount){
+    static getPosts(PostCount){
         return new Promise ((resolve,reject) => {
             axios.get(url,{params: {PostCount}}).then((res) => {
                 const data = res.data;
@@ -23,9 +23,9 @@ class PostService{
         });
     }
 
-    static getUserPosts(user){
+    static getUserPosts(user, PostCount){
         return new Promise ((resolve,reject) => {
-            axios.get(url+"get/"+user).then((res) => {
+            axios.get(url+"get/"+user,{params: {PostCount}}).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({
@@ -116,6 +116,20 @@ static async createPost(formData){
     console.log(res); 
 }
 
+static async editPost(postid, formData){
+
+    const res = await axios({
+        method: 'post',
+        url: url+'editpost/'+postid,
+        data: formData,
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+    console.log(res); 
+
+}
+
 //delete
 
 static deletePost(id){
@@ -136,6 +150,11 @@ static unLike(postid, username){
     return axios.post(url+"dislike/"+postid,{
         username
     })                   
+}
+
+static GetLikes(postid){
+
+    return axios.get(url+"likes/"+postid);                
 }
 
 }

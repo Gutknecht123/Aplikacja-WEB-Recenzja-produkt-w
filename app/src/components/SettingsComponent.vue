@@ -7,25 +7,11 @@
 <form @submit.prevent="updateProfile" method="post" enctype="multipart/form-data">
 <div class="user-photos">
 
-<b-row>
+<b-row class="mt-5">
 <b-col>
-
-<b-avatar size="230px" square v-if="Sprofilepic==''"><b-img :src="Cprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
-<b-avatar size="230px" square v-else><b-img :src="Sprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
-<div v-if="!Sprofilepic">
-    <input type="file" name="files" v-on:change="onProfilepicChange">
-</div>
-<div v-else>
-    <button v-on:click="removeProfilepic">Remove image</button>
-</div>
-</b-col>
-</b-row>
-
-<b-row>
-<b-col>
-
-<b-img :src="Cbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" contain align="center" v-if="Sbanner==''"></b-img>
-<b-img :src="Sbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" contain align="center" v-else></b-img>
+<div class="text">Choose your banner picture:</div>
+<b-img :src="Cbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" align="center" v-if="Sbanner==''"></b-img>
+<b-img :src="Sbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" align="center" v-else></b-img>
 <div v-if="!Sbanner">
     <input type="file" name="files" v-on:change="onBannerChange">
 </div>
@@ -36,8 +22,23 @@
 </b-col>
 </b-row>
 
-<b-row>
+<b-row class="mt-5">
 <b-col>
+<div class="text">Choose your profile picture:</div>
+<b-avatar size="130px" square v-if="Sprofilepic==''"><b-img :src="Cprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
+<b-avatar size="130px" square v-else><b-img :src="Sprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
+<div v-if="!Sprofilepic">
+    <input type="file" name="files" v-on:change="onProfilepicChange">
+</div>
+<div v-else>
+    <button v-on:click="removeProfilepic">Remove image</button>
+</div>
+</b-col>
+</b-row>
+
+<b-row class="mt-5">
+<b-col>
+    <div class="text">Change your description:</div>
     <b-form-textarea
       class="textarea"
       v-model="description"
@@ -97,7 +98,7 @@ export default {
 
         const response = await AccountService.getuserAccount();
 
-        this.$store.dispatch('setAuth', true);
+       
         
         this.user = response.data.login;
 
@@ -195,23 +196,30 @@ export default {
 
     margin-top: 2%;
     background-color:#222930;
+    height: 100vh;
 
 }
 
 .settings {
 
     background-color: #1e2935;
-    height: 100vh;
+    
     
 
 }
 
 .photos {
 
-    
     padding-top: 10%;
 
 }
+
+.text{
+
+    color: white;
+
+}
+
 .user-photos{
     padding-top: 10%;
 }
@@ -234,9 +242,10 @@ export default {
 }
 .banner-pic{
 
-  height: 330px;
-  width: 90%;
-  object-fit: cover;
+  height: 100%;
+  width: 100%;
+  max-height: 329px;
+  margin: auto;
     
 
 }

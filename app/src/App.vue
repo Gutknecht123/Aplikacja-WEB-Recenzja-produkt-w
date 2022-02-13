@@ -1,17 +1,15 @@
 <template>
   <div id="app">
-    <progress-bar></progress-bar>
     <router-view :key="$route.fullPath"></router-view>
   </div>
 </template>
 
 <script>
-import ProgressBar from './components/ProgressBar.vue';
 
 export default {
   name: 'App',
   components: {
-    ProgressBar
+    
   }
 
 }
@@ -30,5 +28,11 @@ export default {
   
   
   
+}
+html,body {
+    margin:0;
+    padding:0;
+    overflow-x:hidden;
+    
 }
 </style>

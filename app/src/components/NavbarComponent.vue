@@ -13,7 +13,7 @@
 
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
-    
+       
       </b-navbar-nav>
       <b-navbar-nav class="mx-auto">
          
@@ -23,7 +23,7 @@
 
           <b-nav-item :href="'#/user/'+lUser">{{lUser}}</b-nav-item>
           <b-nav-item  href="#/settings">Settings</b-nav-item>
-          <b-nav-item  v-if="getAuth" @click="logout">Logout</b-nav-item>
+          <b-nav-item  v-if="auth" @click="logout">Logout</b-nav-item>
 
       </b-navbar-nav>
     </b-collapse>
@@ -52,10 +52,25 @@ export default {
     },
     async created() {
 
+      try{
 
       const response = await AccountService.getuserAccount();
 
+      if(response){
+
+        this.$store.dispatch('setAuth', true);
+
+        console.log()
+
+        this.auth = this.$store.state.authenticated;
+      }
+
       this.lUser = response.data.login;
+
+      }catch(e){
+        this.$store.dispatch('setAuth', false);
+        console.log(e);
+      }
 
 
     },
@@ -69,6 +84,10 @@ export default {
         return auth;
 
         }
+
+    },
+    watch: {
+
 
     },
     methods: {

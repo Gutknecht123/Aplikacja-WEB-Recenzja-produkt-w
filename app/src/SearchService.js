@@ -7,10 +7,10 @@ const url = "http://192.168.1.12:3000/api/search/"
 class SearchService {
 
 
-    static async searchCategory(phrase, category){
+    static async searchCategory(phrase, category, PostCount){
 
         return new Promise ((resolve,reject) => {
-            axios.get(url+"category/"+phrase,{params: {category}}).then((res) => {
+            axios.get(url+"category/"+phrase,{params: {category,PostCount}}).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({
@@ -47,10 +47,10 @@ class SearchService {
 
     }
 
-    static async searchTitle(phrase){
+    static async searchTitle(phrase, PostCount){
 
         return new Promise ((resolve,reject) => {
-            axios.get(url+"title/"+phrase).then((res) => {
+            axios.get(url+"title/"+phrase,{params: {PostCount}}).then((res) => {
                 const data = res.data;
                 resolve(
                     data.map(post => ({

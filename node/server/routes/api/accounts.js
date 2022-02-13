@@ -10,7 +10,7 @@ const verify = require('../../../models/verification');
 const crypto = require("crypto");
 const ObjectID = require('mongodb').ObjectID;
 const nodemailer = require('nodemailer');
-
+const profiles = require('../../../models/profiles');
 
 const router = express.Router();
 //ustawienia wysyłania emaili
@@ -22,17 +22,13 @@ var transporter = nodemailer.createTransport({
     }
   });
 
-
-
 //rejestracja
 router.post('/register', async (req,res) => {
 
-    
     const saltRounds = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, saltRounds);
-    const code = crypto.randomBytes(20).toString('hex');
+    const code = req.body.login + crypto.randomBytes(20).toString('hex');
 
-    
     try{
 
     const user = new accounts({
@@ -40,8 +36,6 @@ router.post('/register', async (req,res) => {
         loginUp: req.body.loginUp,
         password: hash,
         email: req.body.email,
-        name: req.body.name,
-        surname: req.body.surname,
         active: false,
         createdAt: new Date()
     });
@@ -50,7 +44,7 @@ router.post('/register', async (req,res) => {
 
     const {password, ...data} = await result.toJSON();
 
-    var link = 'http://localhost:3000/api/accounts/verify/'+code;
+    var link = 'http://192.168.1.12:3000/api/accounts/verify/'+code;
 
     //Opcje maila
     var mailOptions = {
@@ -104,14 +98,27 @@ router.post('/register', async (req,res) => {
             
         )
     
+        //Utworzenie profilu
+        const profile = new profiles({
+
+            Username: req.body.login,
+            profilePic: '',
+            banner: '',
+            description: ''
+
+        });
+
+        await profile.save();
+
+
         res.send("done");
+
         }catch(e){
             console.log(e);
         }
 
 
 
-    
 });
 
 //Obsługa weryfikacji
@@ -152,7 +159,7 @@ router.get('/verify/:code', async(req, res) => {
           });
                     
         res.writeHead(302, {
-            'Location': 'http://localhost:8080/#/'
+            'Location': 'http://192.168.1.12:8080/#/login'
         })
         res.end();
 
@@ -166,10 +173,6 @@ router.get('/verify/:code', async(req, res) => {
 //Logowanie
 router.post('/login', async (req, res) => {
 
-    
-    
-
-
     if(await accounts.findOne({
 
         $and: [
@@ -179,8 +182,7 @@ router.post('/login', async (req, res) => {
     
     })){
 
-    const user = await accounts.findOne({loginUp: req.body.loginUp}) // toUpercase
-    // Kopia loginu uppercase w mongo i później porównanie z loginem podanym uppercase
+    const user = await accounts.findOne({loginUp: req.body.loginUp})
 
     if(!user){
         return res.status(404).send({
@@ -225,7 +227,7 @@ router.get('/user', async (req,res) => {
 
     if(!claims){
         return res.status(401).send({
-            message: "Unauthenticated userxD!"
+            message: "Unauthenticated user!"
         })
     }
 

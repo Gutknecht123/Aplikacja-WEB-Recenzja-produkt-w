@@ -1,21 +1,12 @@
 <template>
 <div id="container">
-   <NavbarSection/>
 
-<b-container fluid class="profile-bannerpic border-bottom border-primary" height="100px" align="center" justify="center">
-<b-img class="banner-img" :src="banner" contain alt="Responsive image"></b-img>
-</b-container>
 
-<b-container fluid>
+<b-container class="mt-5">
+<b-img class="banner-img" :src="banner" fluid alt="No image"></b-img>
+<b-card text-variant="white" border-variant="dark" class="profile-card mt-2" align="center">
 
-<b-row>
-<b-col cols="1">
-</b-col>
-<b-col cols="3">
-
-<b-card text-variant="white" border-variant="dark" class="profile-card" align="center">
-
-<b-avatar size="200px" square><b-card-img :src="profilepic" alt="" class="profile-pic border-bottom border-dark"></b-card-img></b-avatar>
+<b-avatar size="150px" class="avatar"><b-card-img :src="profilepic" alt="" class="profile-pic border-bottom border-dark"></b-card-img></b-avatar>
 
 <b-card-text align="center" class="mt-3">
 
@@ -29,158 +20,30 @@
 </b-card-text>
 <b-row >
 <b-col v-if="username!=user && check==false">
-<b-button variant="secondary" size="lg" v-on:click="Follow()" >Follow</b-button>
+<b-button variant="secondary" size="md" v-on:click="Follow()" >Follow</b-button>
 </b-col>
 <b-col v-if="username!=user && check==true">
-<b-button variant="secondary" size="lg" v-on:click="Unfollow()" >Unfollow</b-button>
+<b-button variant="secondary" size="md" v-on:click="Unfollow()" >Unfollow</b-button>
 </b-col>
 </b-row>
 
 </b-card>
-</b-col>
-<b-col cols="6" align-self="start">
-<div class="posts shadow=lg p-3 mb-5 rounded">
-
-<div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<b-card text-variant="white" border-variant="dark" class="post-card">
-
-<b-card-header header-tag="header" class="post-header">
-<b-card-text align="left">
-<img class="creator-img" src="https://preview.redd.it/k1kk9xga1vw61.jpg?width=863&format=pjpg&auto=webp&s=cbae415479b2b36b7a672e9e028cfe3d1466adc1" alt="XD" @click="Gotoprofile(post.creator)"> {{post.creator}}
-</b-card-text>
-<b-card-text align="right">
-{{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()}-${post.createdAt.getDate()}`}}
-</b-card-text>
-</b-card-header>
-
-<VueSlickCarousel :adaptiveHeight="true" :swipe="false">
-<div v-bind:key = "image" v-bind:index="ix" v-for="(image, ix) in post.files">
-
-    <div v-if="image.split('.').pop()=='mp4'">
-
-    <video-player class="vjs-custom-skin" 
-                  ref="videoPlayer"
-                  :options="playerOptions[index]"
-                  :playsinline="true"
-                  >
-    </video-player>
-    </div>
-
-    <div align="center">
-    <b-card-img :src="image" class="post-media rounded-0" v-if="image.split('.').pop()!='mp4'" contain height="600px"></b-card-img>
-    </div>
-
-
-    
-</div>
-</VueSlickCarousel>
-
-<b-card-text>
-{{post.category}}
-</b-card-text>
-<b-card-text>
-{{post.text}}
-</b-card-text>
-<b-card-text>
-{{post.stars}}
-</b-card-text>
-
-
-<footer>
-
-<b-card-text align="right">
-{{post.likes}}
-</b-card-text>
-
-<b-button variant="secondary" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Show Comments</b-button>
-
-</footer>
-
-</b-card>
-
-<b-card class="comments shadow-lg p-3 mb-5 rounded" text-variant="white" border-variant="dark">
-
-
-
-<div class="comments" v-if="selected == post._id">
-
-<b-container class="bv-example-row">
-<b-row class="mb-3">
-<b-col>
-<b-form-textarea
-      id="textarea"
-      v-model="commenttext"
-      placeholder="Enter something..."
-      auto-shrink
-      no-resize
-     
-></b-form-textarea>
-</b-col>
-</b-row >
-<b-row class="mb-3">
-
-<b-col>
-<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)">Publish</b-button>
-</b-col>
-
-</b-row>
 </b-container>
 
+<b-container>
 
-<div class="comments border border-dark" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
-
-<div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
-<b-container class="comm bv-example-row">
-<b-row class="mb-3">
+<b-row>
 <b-col>
-<b-card-text align="left">
 
-{{com.creator}}
 
-</b-card-text>
-</b-col>
-
-<b-col class="mb-3">
-<b-card-text align="right">
-
-{{com.createdAt.substring(0,10)}}
-
-</b-card-text>
-</b-col>
-
-</b-row>
-
-<b-row align-v="stretch" class="mb-3">
-<b-col align-self="stretch">
-<b-card-text align="left">
-
-{{com.body}}
-
-</b-card-text>
 </b-col>
 </b-row>
 <b-row>
+<b-col>
+<div class="posts shadow=lg mb-5 rounded">
 
-<b-col class="mb-3">
-<b-button variant="secondary" size="sm" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
-</b-col>
+<Posts/>
 
-</b-row>
-
-</b-container>
-</div>
-</div>
-
-</div>
-
-<b-button class="mb-3" variant="secondary" size="sm" v-if="commsbutton==true && selected == post._id" v-on:click="hideComments()">Hide Comments</b-button>
-
-
-</b-card>
-
-<b-button variant="secondary" size="sm" v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete review</b-button>
-
-</div>
 </div>
 </b-col>
 </b-row>
@@ -195,16 +58,17 @@
 import PostService from '../PostService';
 import CommsService from '../CommsService';
 import AccountService from '../AccountService';
-import NavbarSection from './NavbarComponent';
+//import NavbarSection from './NavbarComponent';
 import ProfileService from '../ProfileService';
 import SettingsService from '../SettingsService';
-import VueSlickCarousel from 'vue-slick-carousel'
+//import VueSlickCarousel from 'vue-slick-carousel';
+import Posts from './Posts';
 
 export default {
     name: 'ProfileComponent',
    components:{
-     NavbarSection,
-     VueSlickCarousel
+     
+     Posts
      
  },
  props: [],
@@ -253,63 +117,9 @@ export default {
 
       this.user = response.data.login;
 
-      this.$store.dispatch('setAuth', true);
+      this.check = await ProfileService.Check(this.user, this.username);
 
-      //console.log(this.$store.state.authenticated);
-
-      //console.log(this.$store.state.profile);
-
-      this.check = await ProfileService.Check(this.user, this.username)
-
-      console.log(this.check);
-
-      //this.posts = await PostService.getUserPosts(this.$route.params.profile);
-
-
-      this.posts = this.$store.state.posts;
-
-
-      for(var i=0; i<this.posts.length; i++){
-
-        for(var j=0; j<this.posts[i].files.length; j++){
-
-          //console.log(this.posts[i].files[j]);
-
-          if(this.posts[i].files[j].split('.').pop()=='mp4'){
-          let arrs = {
-
-            playbackRates: [1.0, 2.0, 3.0], //Broadcasting speed
-            autoplay: false, //If true, the browser will start playing back when it is ready.
-            muted: false, // Any audio will be removed by default.
-            loop: false, // Causes the video to restart as soon as it's over.
-            preload: "auto", // It is recommended that the browser start downloading video data after < video > loading elements. auto browser selects the best behavior and starts loading the video immediately (if supported by the browser)
-            language: "zh-CN",
-            aspectRatio: "16:9", // Place the player in fluid mode and use this value when calculating the dynamic size of the player. The value should represent a scale - two numbers separated by colons (for example, "16:9" or "4:3")
-            fluid: true,
-            sources: [{
-            type: "video/mp4",
-            src: this.posts[i].files[j]
-            }],
-            poster: "",
-            notSupportedMessage: "This video can't be played temporarily. Please try again later", //Allows you to override the default information displayed when Video.js is unable to play the media source.
-              controlBar: {
-                timeDivider: true,
-                durationDisplay: true,
-                remainingTimeDisplay: false,
-                fullscreenToggle: true //Full screen button
-              }
-          }
-
-      
-          this.playerOptions[i] = arrs;
-          
-          }
-
-          
-        }
-
-      }
-
+      this.$store.dispatch('setGlobal', 2);
 
 
     }catch(error){
@@ -317,6 +127,11 @@ export default {
       
       this.error = error.message;
     }
+  },
+  mounted() {
+
+      this.scroll();
+      
   },
   methods: {
 
@@ -369,12 +184,7 @@ export default {
       await PostService.deletePost(id);
       this.posts = await PostService.getPosts();
     },
-      async Gotoprofile(profile){
 
-
-        console.log(profile);
-
-    },
       async Follow(){
 
         
@@ -386,7 +196,31 @@ export default {
 
         await ProfileService.Unfollow(this.user, this.username);
         this.check = await ProfileService.Check(this.user, this.username)
-      }
+      },
+
+      async scroll () {
+      window.onscroll = () => {
+        let bottomOfWindow = Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop) + window.innerHeight === document.documentElement.offsetHeight
+
+        if (bottomOfWindow) {
+
+          this.$store.dispatch('setPostCount', 5);
+
+          this.Loading = true;
+        
+          this.setOwnPosts();
+
+        }
+
+        }
+       },
+
+       async setOwnPosts(){
+
+          let tempposts =  await PostService.getUserPosts(this.$route.params.profile, this.$store.state.postcount)
+
+          this.$store.dispatch('setPosts',tempposts);
+       }
 
   }
 }
@@ -397,7 +231,6 @@ export default {
 #container{
 
     background-color:#222930;
- 
     margin-left: auto;
     margin-right: auto;
 
@@ -405,11 +238,16 @@ export default {
 
 .profile-pic{
 
-  
   height: 100%;
   width: 100%;
   object-fit: cover;
     
+}
+
+.posts{
+
+  width: 100%;
+  margin: auto;
 
 }
 
@@ -430,27 +268,12 @@ export default {
 
   margin: auto;
   
-
-}
-
-.post{
-  
-  background-color: #1e2935;
-  margin: auto;
-  width: 100%;
-  margin-top: 5%;
-  margin-left: 15%;
-
-}
-
-.posts {
-  display: flex;
-  flex-direction: column-reverse;
 }
 
 .profile-card{
 
-  margin-top: 13%;
+  margin: auto;
+  width: 35%;
   background-color: #1e2935;
   
 }
@@ -480,10 +303,11 @@ export default {
   width: 90%;
   margin-bottom: 5%;
   
-
 }
 .post-card{
+
   background-color: #1e2935;
+
 }
 
 #textarea {
@@ -494,13 +318,43 @@ export default {
     width: 95%;
     margin-left: auto;
     margin-right: auto;
+
 }
 .profile-bannerpic{
-  height: 300px;
+
+  height: 330px;
+
 }
 .banner-img{
+
   height: 100%;
   width: 100%;
-  object-fit: cover;
+  max-height: 329px;
+  margin: auto;
+
+}
+@media screen and (max-width: 1200px) {
+
+    .posts{
+
+      width: 85%;
+      margin: auto;
+
+    }
+}
+@media screen and (max-width: 1000px) {
+
+    .posts{
+
+      width: 100%;
+      margin: auto;
+
+    }
+    .profile-card{
+
+      width: 100%;
+     
+    }
+
 }
 </style>

@@ -11,21 +11,28 @@ const router = new Router({
 
         path: '/',
         name: 'main',
-        component: () => import('@/components/PostComponent')
+        component: () => import('../views/Posts')
+
+    },
+    {
+
+        path: '/register',
+        name: 'register',
+        component: () => import('@/components/RegisterComponent')
 
     },
     {
 
         path: '/login',
         name: 'login',
-        component: () => import('@/components/RegisterComponent')
+        component: () => import('@/components/LoginComponent')
 
     },
     {
 
         path: '/user/:profile',
         name: 'profile',
-        component: () => import('@/components/ProfileComponent')
+        component: () => import('../views/Profile')
 
     },
     {
@@ -42,36 +49,9 @@ const router = new Router({
         component: () => import('@/components/SettingsComponent')
 
     },
-    {
-
-        path: '/main',
-        name: 'mainpage',
-        component: () => import('../views/Posts')
-
-    },
-    {
-
-        path: '/usr/:profile',
-        name: 'userprofile',
-        component: () => import('../views/Profile')
-
-    },
 ]
 
 })
 
-import $eventHub from '../components/eventHub'
-
-router.beforeEach((to, from, next) => {
-    if (typeof to.matched[0]?.components.default === 'function') {
-        $eventHub.$emit('asyncComponentLoading', to) // Start progress bar
-    }
-    next()
-})
-
-router.beforeResolve((to, from, next) => {
-    $eventHub.$emit('asyncComponentLoaded') // Stop progress bar
-    next()
-})
 
 export default router;
