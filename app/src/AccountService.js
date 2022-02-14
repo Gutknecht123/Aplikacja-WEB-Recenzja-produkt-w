@@ -62,6 +62,22 @@ static Captcha(res){
 
 }
 
+static async checkLogin(login){
+
+    return await axios.get(url+"/checklogin",{
+        params:{login}
+    })
+
+}
+
+static checkEmail(email){
+
+    return axios.get(url+"/checkemail",{
+        params:{email}
+    })
+
+}
+
 static getUsername(user){
 
     return axios.get(url+"/username/"+user,{})

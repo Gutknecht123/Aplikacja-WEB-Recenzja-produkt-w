@@ -13,12 +13,14 @@ const nodemailer = require('nodemailer');
 const profiles = require('../../../models/profiles');
 const request = require("request");
 const router = express.Router();
+require('dotenv').config();
+const checkAuth = require('../../middleware/checkauth');
 //ustawienia wysyłania emaili
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'roburr24@gmail.com',
-      pass: 'kolo2424'
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS
     }
   });
 
@@ -198,17 +200,17 @@ router.post('/login', async (req, res) => {
     }
 
 
-    const token = jwt.sign({_id: user._id}, "brek");
+    const token = jwt.sign({_id: user._id}, 
+        process.env.JWT,
+        {
+            expiresIn: "1h"
+        }
+        );
 
-    res.cookie('jwt', token, {
-        httpOnly: true,
-        maxAge: 24*60*60*1000,
-
-    })
-
-    res.send({
-        message: "Success!"
-    });
+        res.status(200).json({
+            message: 'Succesfull login!',
+            token: token
+        })
     }else{
         res.send({
             message: "Błędne dane / Konto nieaktywowane!"
@@ -224,7 +226,7 @@ router.post('/captcha', async(req,res) => {
         uri: "https://www.google.com/recaptcha/api/siteverify",
         json: true,
         form: {
-            secret: '6Le8EngeAAAAAFO9exlZGCbw73hWMvOmc73lkiMy',
+            secret: process.env.SECRET_CAPTCHA,
             response: req.body.res
         }
     };
@@ -238,25 +240,15 @@ router.post('/captcha', async(req,res) => {
             return res.status(500).json({message: body["error-codes"].join(".")});
         }
 
-        res.status(201).json({message: "Congratulations! We think you are human."});
+        res.send(body.success)
 
     })
 })
 
 //get user
-router.get('/user', async (req,res) => {
+router.get('/user', checkAuth, async (req,res) => {
 
     try{
-    
-    const cookie = req.cookies['jwt'];
-
-    const claims = jwt.verify(cookie, 'brek');
-
-    if(!claims){
-        return res.status(401).send({
-            message: "Unauthenticated user!"
-        })
-    }
 
     const user = await accounts.findOne({_id: claims._id});
 
@@ -269,6 +261,28 @@ router.get('/user', async (req,res) => {
              message: "Unauthenticated user!"
         })
 }
+
+})
+
+//Sprawdz czy jest w bazie
+router.get("/checklogin", async (req,res) => {
+
+    const result = await accounts.findOne({loginUp: req.query['login'].toUpperCase()});
+    if(result){
+    const {password, ...data} = await result.toJSON();
+    res.send(data);
+    }
+
+})
+router.get("/checkemail", async (req,res) => {
+
+    let reg = new RegExp(req.query['email'], "ig");
+
+    const result = await accounts.findOne({email: reg});
+    if(result){
+    const {password, ...data} = await result.toJSON();
+    res.send(data);
+    }
 
 })
 
@@ -286,9 +300,13 @@ router.post("/logout", async (req,res) =>{
 //get ustalonego użytkownika
 router.get("/username/:user", async (req,res) => {
 
-    const usr = await accounts.findOne({loginUp: (req.params.user).toUpperCase()});
+    const result =  await accounts.findOne({loginUp: (req.params.user).toUpperCase()});
+    if(result){
+    const {password, ...data} = await result.toJSON();
+    res.send(data);
+    }
 
-    res.send(usr);
+
 
 })
 

@@ -8,9 +8,9 @@
     <b-card bg-variant="dark" text-variant="white" border-variant="info" class="mt-3">
     <b-form-group id="login-group" label="Your login" label-for="login-input">
 
-    <b-form-input id="login-input" placeholder="min. 3 signs"  v-model="login" ></b-form-input>
+    <b-form-input id="login-input" placeholder="min. 3 signs"  v-model="login"></b-form-input>
     <div class="text-danger" v-if="v$.login.$error">Login field has an error</div>
-    
+    <div class="text-danger" v-if="!v$.login.$error && loginerror.length>0">{{loginerror}}</div>
     </b-form-group>
 
     <br>
@@ -32,8 +32,10 @@
 
     <b-form-input id="email-input" placeholder="Enter e-mail" v-model="email"></b-form-input>
     <div class="text-danger" v-if="v$.email.$error">E-mail field has an error</div>
-
+    <div class="text-danger" v-if="!v$.email.$error && emailerror.length>0">{{emailerror}}</div>
     </b-form-group>
+    <vue-recaptcha ref="recaptcha" sitekey="6Le8EngeAAAAAOM4jPbe8KlBXQH38fFwWOApgyXk" @verify="onVerify"></vue-recaptcha>
+    <div class="text-danger" v-if="error.length!=0">{{error}}</div>
     <br>
     <b-button type="submit" variant="primary">Register</b-button>
     </b-card>
@@ -49,6 +51,7 @@
 
 import AccountService from '../AccountService';
 import useVuelidate from '@vuelidate/core';
+import { VueRecaptcha } from 'vue-recaptcha';
 import { required, email, minLength, maxLength, sameAs, helpers } from '@vuelidate/validators';
 
 const alpha = helpers.regex(/^[a-zA-Z0-9]*$/);
@@ -56,7 +59,7 @@ const alpha = helpers.regex(/^[a-zA-Z0-9]*$/);
 export default {
  name: 'RegisterComponent',
  components:{
-      
+      VueRecaptcha
  },
 setup: () => ({ v$: useVuelidate() }),
 data(){
@@ -67,7 +70,12 @@ data(){
          repassword: '',
          email: '',
          name: '',
-         surname: ''
+         surname: '',
+         verify: '',
+         error: '',
+         isLogin: false,
+         loginerror: '',
+         emailerror: '',
 
      }
  },
@@ -81,18 +89,73 @@ validations(){
  },
 
  methods: {
+    onVerify: function (response) {
+        this.verify = response;
+    },
 
     async Register(){
 
-        const isFormCorrect = await this.v$.$validate()
+    try{
+
+        if(!this.checkLogin()){
+            return;
+        }
+        if(!this.checkEmail()){
+            return;
+        }
+        
+        const isFormCorrect = await this.v$.$validate();
+        let response = await AccountService.Captcha(this.verify);
+        this.error = '';
+
+        if(response.data){
         if (!isFormCorrect){ 
+            this.$refs.recaptcha.reset();
             return;
         }else{
         AccountService.createAccount(this.login, this.password, this.email, this.name, this.surname);
         this.$router.go();
         }
-     }
- }
+        }else{
+            this.error = "Captcha error!"
+            this.$refs.recaptcha.reset();
+        }
+
+    }catch(e){
+        this.error = "Captcha error!";
+        this.$refs.recaptcha.reset();
+    }
+    },
+    async checkLogin(){
+
+        let isLogin = await AccountService.checkLogin(this.login)
+                
+        if(isLogin.data){
+            this.loginerror = "Login already taken!";
+            
+            return true;
+        }else{
+            this.loginerror='';
+            return false;
+        }
+        
+    },
+    async checkEmail(){
+
+        let isEmail = await AccountService.checkEmail(this.email)
+                
+        if(isEmail.data){
+            this.emailerror = "Email already in use!";
+            
+            return true;
+        }else{
+            this.emailerror='';
+            return false;
+        }
+        
+    }
+ },
+
 }
 </script>
 

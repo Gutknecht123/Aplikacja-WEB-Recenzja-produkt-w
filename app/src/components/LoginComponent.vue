@@ -16,6 +16,7 @@
     </b-form-group>
     <div class="text-danger" v-if="v$.lpassword.$error">Incorrect password!</div>
     <vue-recaptcha ref="recaptcha" sitekey="6Le8EngeAAAAAOM4jPbe8KlBXQH38fFwWOApgyXk" @verify="onVerify"></vue-recaptcha>
+    <div class="text-danger" v-if="error.length!=0">{{error}}</div>
     <br>
     <b-button type="submit" variant="primary">Login</b-button>
     </b-form>
@@ -43,7 +44,8 @@ export default {
          
          llogin: '',
          lpassword: '',
-         verify: ''
+         verify: '',
+         error: ''
      }
  },
 
@@ -60,32 +62,43 @@ export default {
         },
 
         async Login(){
-
+            
+            try{
                 const isFormCorrect = await this.v$.$validate();
 
                 let response = await AccountService.Captcha(this.verify);
-
-                console.log(response);
+                this.error = '';
+                if(response.data){
 
                 if (!isFormCorrect){
+                 this.$refs.recaptcha.reset();
                  return;
                 }else{
+                
+                let acc = await AccountService.loginAccount(this.llogin, this.lpassword);
 
-                await AccountService.loginAccount(this.llogin, this.lpassword).then((response) => {
-
-                    if(response.data.message=="Success!"){
+                if(acc.data.message=="Success!"){
 
                      this.$store.dispatch('setProfile', this.llogin);
 
                      this.$store.dispatch('setAuth', true);
 
                      this.$router.push('/');
-                    }
+                }else{
+                    this.error="Invalid login/password or account not activated!"
+                }
 
-                })
+                }
+                }else{
+                    this.error = "Captcha error!"
+                    this.$refs.recaptcha.reset();
+                }
+                }catch(e){
+                    this.error = "Captcha error!";
+                    this.$refs.recaptcha.reset();
                 }
         }
-
+        
     }
 }
 </script>
