@@ -15,10 +15,10 @@
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()+1}-${post.createdAt.getDate()}`}}
 {{`${post.createdAt.getHours()}:${post.createdAt.getMinutes()}`}}
 </b-card-text>
-<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right">
+<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="auth">
     <b-dropdown-item v-if="post.creator==user" v-on:click="editPost(post._id, post.title, post.category, post.stars, post.text)">Edit</b-dropdown-item>
     <b-dropdown-item v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete</b-dropdown-item>
-    <b-dropdown-item v-if="post.creator!=user">Zgłoś</b-dropdown-item>
+    <b-dropdown-item v-if="post.creator!=user">Report</b-dropdown-item>
 </b-dropdown>
 </b-col>
 </b-row>
@@ -168,8 +168,8 @@
 <b-col>
 <b-card-text>
 
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0">{{post.likedby.length-1}} Like</b-button>
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length > 0">{{post.likedby.length-1}} Unlike</b-button>
+<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0&& auth">{{post.likedby.length-1}} Like</b-button>
+<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length && auth> 0">{{post.likedby.length-1}} Unlike</b-button>
 
 </b-card-text>
 </b-col>
@@ -183,7 +183,7 @@
 
 <div class="comments1" v-if="selected == post._id">
 
-<b-container class="bv-example-row">
+<b-container class="bv-example-row" v-if="auth">
 <b-row class="mt-3">
 <b-col>
 <b-form-textarea
@@ -208,28 +208,26 @@
 <div class="comments2" v-bind:item="comment" v-bind:index = "index" v-bind:key="comment._id" v-for="(comment, index) in comments">
 
 <div class="comment border border-dark" v-bind:key = "com" v-for="com in comment.comments">
-<b-container class="comm bv-example-row">
+<b-container class="comm">
 <b-row class="mt-3">
-<b-col>
-<b-card-text align="left">
+<b-col align="left">
 
-{{com.creator}}
+<a :href="'#/user/'+com.creator">{{com.creator}}</a>
 
-</b-card-text>
 </b-col>
 
-<b-col class="mt-3">
-<b-card-text align="right">
+<b-col align="right">
 
 {{com.createdAt.substring(0,10)}}
-
-</b-card-text>
+<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="auth&&com.creator==user">
+    <b-dropdown-item v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete</b-dropdown-item>
+</b-dropdown>
 </b-col>
 
 </b-row>
 
-<b-row align-v="stretch" class="mt-3">
-<b-col align-self="stretch">
+<b-row class="mt-5">
+<b-col>
 <b-card-text align="left">
 
 {{com.body}}
@@ -237,14 +235,8 @@
 </b-card-text>
 </b-col>
 </b-row>
-<b-row>
-
-<b-col class="mt-3">
-<b-button variant="secondary" size="sm" v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete comment</b-button>
-</b-col>
-
+<b-row class="mt-5">
 </b-row>
-
 </b-container>
 </div>
 </div>
@@ -324,15 +316,19 @@ export default {
       pictures: [],
       Loading: true,
       editing: false,
-      oneedited: ''
+      oneedited: '',
+      auth: false
       }
   },
   async created() {
     try{
 
+      
       const response = await AccountService.getuserAccount();
+      this.$store.dispatch('setAuth', true);
       this.user = response.data.login;
-
+      this.auth = this.$store.state.authenticated;
+      
       this.posts = this.$store.state.posts.then(()=>{
           this.set();
           
@@ -620,6 +616,7 @@ export default {
       newPosts(){
           return this.$store.state.posts;
       },
+   
       player() {
         return this.$refs.videoPlayer.player
       }
@@ -631,7 +628,9 @@ export default {
         this.pictures = [];
           this.set();
           
-      }
+      },
+ 
+
   }
 }
 </script>

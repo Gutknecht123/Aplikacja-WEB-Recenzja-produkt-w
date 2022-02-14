@@ -18,14 +18,14 @@ const router = new Router({
 
         path: '/register',
         name: 'register',
-        component: () => import('@/components/RegisterComponent')
+        component: () => import('../views/Register')
 
     },
     {
 
         path: '/login',
         name: 'login',
-        component: () => import('@/components/LoginComponent')
+        component: () => import('../views/Login')
 
     },
     {
@@ -39,14 +39,14 @@ const router = new Router({
 
         path: '/search/:phrase',
         name: 'search',
-        component: () => import('@/components/SearchComponent')
+        component: () => import('../views/Search')
 
     },
     {
 
         path: '/settings',
         name: 'settings',
-        component: () => import('@/components/SettingsComponent')
+        component: () => import('../views/Settings')
 
     },
 ]

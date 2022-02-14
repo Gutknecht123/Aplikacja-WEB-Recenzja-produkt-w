@@ -22,9 +22,10 @@
              <b-button size="sm" v-on:click.stop="Search()">Search</b-button>
 
           <b-nav-item :href="'#/user/'+lUser">{{lUser}}</b-nav-item>
-          <b-nav-item  href="#/settings">Settings</b-nav-item>
+          <b-nav-item  href="#/settings" v-if="auth">Settings</b-nav-item>
           <b-nav-item  v-if="auth" @click="logout">Logout</b-nav-item>
-
+          <b-nav-item  v-if="!auth" href="#/login">Login</b-nav-item>
+          <b-nav-item  v-if="!auth" href="#/register">Register</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -44,9 +45,10 @@ export default {
     data() {
         return {
 
-            auth: '',
+           
             lUser: '',
-            sphrase: ''
+            sphrase: '',
+            auth: false
             
         }
     },
@@ -60,8 +62,6 @@ export default {
 
         this.$store.dispatch('setAuth', true);
 
-        console.log()
-
         this.auth = this.$store.state.authenticated;
       }
 
@@ -69,7 +69,7 @@ export default {
 
       }catch(e){
         this.$store.dispatch('setAuth', false);
-        console.log(e);
+        
       }
 
 

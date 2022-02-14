@@ -1,6 +1,5 @@
 <template>
 <div  class="container">
-<NavbarSection/>
 
 <div class="settings shadow-lg mt-3 rounded">
 
@@ -13,7 +12,9 @@
 <b-img :src="Cbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" align="center" v-if="Sbanner==''"></b-img>
 <b-img :src="Sbanner" class="banner-pic border-bottom border-dark" fluid alt="Failed to load" align="center" v-else></b-img>
 <div v-if="!Sbanner">
-    <input type="file" name="files" v-on:change="onBannerChange">
+    <label class="custom-file-upload">
+    <input type="file" name="files" v-on:change="onBannerChange">Upload banner image
+    </label>
 </div>
 
 <div v-else>
@@ -21,14 +22,17 @@
 </div>
 </b-col>
 </b-row>
-
+<b-row class="mt-5">
+</b-row>    
 <b-row class="mt-5">
 <b-col>
 <div class="text">Choose your profile picture:</div>
 <b-avatar size="130px" square v-if="Sprofilepic==''"><b-img :src="Cprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
 <b-avatar size="130px" square v-else><b-img :src="Sprofilepic" alt="" class="profile-pic border-bottom border-dark" align="center"></b-img></b-avatar>
 <div v-if="!Sprofilepic">
-    <input type="file" name="files" v-on:change="onProfilepicChange">
+    <label class="custom-file-upload">
+    <input type="file" name="files" v-on:change="onProfilepicChange">Upload profile pic
+    </label>
 </div>
 <div v-else>
     <button v-on:click="removeProfilepic">Remove image</button>
@@ -36,7 +40,7 @@
 </b-col>
 </b-row>
 
-<b-row class="mt-5">
+<b-row>
 <b-col>
     <div class="text">Change your description:</div>
     <b-form-textarea
@@ -66,13 +70,12 @@
 
 <script>
 import AccountService from '../AccountService';
-import NavbarSection from './NavbarComponent';
 import SettingsService from '../SettingsService';
 
 export default {
     name: 'SettingsComponent',
     components:{
-        NavbarSection
+        
     },
 
     data(){
@@ -98,7 +101,7 @@ export default {
 
         const response = await AccountService.getuserAccount();
 
-       
+        this.$store.dispatch('setAuth', true);
         
         this.user = response.data.login;
 
@@ -196,7 +199,7 @@ export default {
 
     margin-top: 2%;
     background-color:#222930;
-    height: 100vh;
+    height: 100%;
 
 }
 
@@ -248,5 +251,16 @@ export default {
   margin: auto;
     
 
+}
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    color: white;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
 </style>

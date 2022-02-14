@@ -3,7 +3,7 @@
 <div>
 <div id="container">
 
-<div class="postcreation">
+<div class="postcreation" v-if="auth==true">
 <form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
 <b-row class="mt-3">
@@ -16,7 +16,9 @@
 <b-col>
 
 <div v-if="!media">
-    <input type="file" name="files" multiple v-on:change="onFileChange">
+  <label class="custom-file-upload">
+    <input type="file" name="files" multiple v-on:change="onFileChange"> Upload image/mp4
+  </label>
   </div>
   <div v-else>
     <p><img :src="media" class="post-img" /></p>
@@ -36,7 +38,7 @@
       max-rows="8"
       no-resize
 ></b-form-textarea>
-<div class="text-danger" v-if="v$.text.$error">Wrong text! 2-24 chars!</div>
+<div class="text-danger" v-if="v$.text.$error">Wrong text! 2-512 chars!</div>
 </b-col>
 </b-row>
 <b-row class="mt-3">
@@ -61,7 +63,7 @@
 
 <b-row class="mt-5">
 <b-col>
-<b-button variant="secondary" size="sm" type="submit">Publish</b-button>
+<b-button variant="secondary" size="md" type="submit">Publish</b-button>
 </b-col>
 </b-row>
 
@@ -74,7 +76,7 @@
 
 <div class="posts shadow=lg mt-5 rounded">
 
-<b-container class="nav-buttons"> 
+<b-container class="nav-buttons" v-if="auth==true"> 
 <b-row class="mt-3">
 <b-col align="right">
 <b-button variant="secondary" class="global" size="lg" v-on:click="globalPosts()">Global</b-button>
@@ -106,7 +108,9 @@
 <b-col>
 
 <div v-if="!media">
-    <input type="file" name="files" multiple v-on:change="onFileChange">
+  <label class="custom-file-upload">
+    <input type="file" name="files" multiple v-on:change="onFileChange">Upload image/mp4
+  </label>  
   </div>
   <div v-else>
     <p><img :src="media" class="post-img" /></p>
@@ -151,7 +155,7 @@
 
 <b-row class="mt-5">
 <b-col>
-<b-button variant="secondary" size="sm" type="submit">Publish</b-button>
+<b-button variant="secondary" size="md" type="submit">Publish</b-button>
 </b-col>
 </b-row>
 <b-row>
@@ -271,6 +275,7 @@ export default {
       tothetop: false,
       pictures: [],
       Loading: true,
+      auth: ''
       
 
     }
@@ -279,7 +284,7 @@ export default {
 
      return{
         title: { required, minLength: minLength(2), maxLength: maxLength(24) },
-        text: { required, minLength: minLength(2), maxLength: maxLength(101) },
+        text: { required, minLength: minLength(2), maxLength: maxLength(512) },
         category: { required, minLength: minLength(2), maxLength: maxLength(16) },
         files: { CheckSize, CheckType },
      }
@@ -289,10 +294,16 @@ export default {
 
     try{
 
+      this.$store.dispatch('setPostCount', ((-1)*(this.$store.state.postcount-5)));
+
       const response = await AccountService.getuserAccount();
-  
+
+      this.$store.dispatch('setAuth', true);
+
       this.user = response.data.login;
-      
+
+      this.auth = this.$store.state.authenticated;
+
     }catch(error){
       this.$store.dispatch('setAuth', false);
       
@@ -406,7 +417,11 @@ export default {
               this.tothetop = false;
              
         }
+        console.log(this.$store.state.postcount);
         }
+
+        
+
        },
 
       async setPosts(){
@@ -687,6 +702,17 @@ export default {
 
 .addButton{
   width: 150px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 1200px) {

@@ -4,9 +4,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const path = require('path');
-//const fileUpload = require('express-fileupload');
 const multer = require('multer');
-//const expressBusboy = require('express-busboy');
+
 
 //Database
 
@@ -34,14 +33,8 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
     credentials: true,
-    origin: ["http://localhost:8080", "http://192.168.1.12:8080"]
+    origin: ["http://localhost:8080", "http://192.168.1.12:8080", "https://www.google.com"]
 }));
-
-//app.use(express.static('/run/desktop/mnt/host/c/Users/Robert/Desktop/Praca/node/server/public/upload'));
-
-//app.use(express.static('./server/public/upload/'));
-
-//app.use(express.static(__dirname));
 
 app.use(cookieParser())
 

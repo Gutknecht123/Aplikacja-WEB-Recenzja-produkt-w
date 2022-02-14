@@ -11,7 +11,7 @@ const crypto = require("crypto");
 const ObjectID = require('mongodb').ObjectID;
 const nodemailer = require('nodemailer');
 const profiles = require('../../../models/profiles');
-
+const request = require("request");
 const router = express.Router();
 //ustawienia wysyłania emaili
 var transporter = nodemailer.createTransport({
@@ -215,6 +215,33 @@ router.post('/login', async (req, res) => {
         });
     }
 });
+
+//captcha
+
+router.post('/captcha', async(req,res) => {
+
+    const verifyCaptchaOptions = {
+        uri: "https://www.google.com/recaptcha/api/siteverify",
+        json: true,
+        form: {
+            secret: '6Le8EngeAAAAAFO9exlZGCbw73hWMvOmc73lkiMy',
+            response: req.body.res
+        }
+    };
+
+    request.post(verifyCaptchaOptions, (err, response, body) => {
+
+        if (err) {
+            return res.status(500).json({message: "oops, something went wrong on our side"});
+        }
+        if (!body.success) {
+            return res.status(500).json({message: body["error-codes"].join(".")});
+        }
+
+        res.status(201).json({message: "Congratulations! We think you are human."});
+
+    })
+})
 
 //get user
 router.get('/user', async (req,res) => {

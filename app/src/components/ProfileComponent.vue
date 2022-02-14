@@ -101,6 +101,8 @@ export default {
 
     try{
 
+      this.$store.dispatch('setPostCount', ((-1)*(this.$store.state.postcount-5)));
+
       const userProfile = await SettingsService.getProfile(this.$route.params.profile);
 
       this.banner = userProfile.data[0].banner;
@@ -111,6 +113,8 @@ export default {
 
       const response = await AccountService.getuserAccount();
 
+      this.$store.dispatch('setAuth', true);
+
       const username = await AccountService.getUsername(this.$route.params.profile);
 
       this.username = username.data.login;
@@ -120,6 +124,7 @@ export default {
       this.check = await ProfileService.Check(this.user, this.username);
 
       this.$store.dispatch('setGlobal', 2);
+
 
 
     }catch(error){

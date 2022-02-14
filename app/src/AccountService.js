@@ -42,7 +42,7 @@ static loginAccount(login, password){
 static getuserAccount(){
 
     //return axios.get(url,{ params })
-
+    
     return axios.get(url+"user",
     {
         withCredentials: true,
@@ -50,7 +50,15 @@ static getuserAccount(){
             'Content-Type': 'application/json'
         }
     });
+    
 
+}
+
+static Captcha(res){
+
+    return axios.post(url+"/captcha",{
+        res: res
+    })
 
 }
 

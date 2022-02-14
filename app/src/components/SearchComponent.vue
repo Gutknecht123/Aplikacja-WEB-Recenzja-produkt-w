@@ -1,9 +1,13 @@
 <template>
 
 <div id="container">
-<NavbarSection/>
+
 
 <b-container class="nav-buttons mt-5">
+<b-row class="mt-5">
+<b-col>
+</b-col>
+</b-row>
 <b-row>
 <b-col>
 <b-button variant="secondary" size="lg" v-on:click="searchTitle()">Title</b-button>
@@ -30,8 +34,6 @@
 
 <script>
 import SearchService from '../SearchService';
-import AccountService from '../AccountService';
-import NavbarSection from './NavbarComponent';
 //import ProfileService from '../ProfileService'
 //import PostService from '../PostService'
 import Posts from './Posts'
@@ -39,7 +41,7 @@ export default {
 
     name: 'SearchComponent',
     components:{
-    NavbarSection,
+    
     Posts
     },
      data(){
@@ -69,12 +71,11 @@ export default {
 
 try{
 
+      this.$store.dispatch('setAuth', true);
 
-      const response = await AccountService.getuserAccount();
+      console.log(this.$store.state.authenticated);
 
-      this.user = response.data.login;
-
-      this.$store.dispatch('setPostCount', 5);
+      this.$store.dispatch('setPostCount', ((-1)*(this.$store.state.postcount-5)));
 
       let tempposts = await SearchService.searchTitle(this.$route.params.phrase, 5);
 
@@ -89,11 +90,11 @@ try{
         this.options.push({ value: this.categories.data[i], text: this.categories.data[i] });
 
       }
-      
+
       console.log(this.categories);
 
     }catch(error){
-      this.error = error.message;
+      //this.error = error.message;
     }
 
 
@@ -143,10 +144,9 @@ try{
 
       },
 
-
       async PostsByCat(){
 
-        this.global = 3;
+        this.global = 4;
 
         this.$store.dispatch('setGlobal', this.global);
 
@@ -157,11 +157,6 @@ try{
         this.posts = this.$store.state.posts;
 
       },
-
-
-
-
-
 
     async searchTitle(){
 
@@ -214,7 +209,7 @@ try{
 }
 .comments {
   
-  background-color: #181d22;
+  background-color: #222930;
 
 }
 .comment {
@@ -317,6 +312,12 @@ a {
   margin-left: auto;
   margin-right: auto;
 
+}
+
+.nav-buttons{
+  margin: auto;
+  padding-top: 2%;
+  width: 40%;
 }
 
 .no-posts{

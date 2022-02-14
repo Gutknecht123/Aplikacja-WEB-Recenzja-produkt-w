@@ -4,8 +4,8 @@
     <b-form id="register-form" @submit.prevent="Register">
     
     <div class="register-section">
-    
-    <b-card bg-variant="dark" text-variant="white" border-variant="info">
+    <h3 align="center"> Already have an account? <a href="#/login">Log in!</a></h3>
+    <b-card bg-variant="dark" text-variant="white" border-variant="info" class="mt-3">
     <b-form-group id="login-group" label="Your login" label-for="login-input">
 
     <b-form-input id="login-input" placeholder="min. 3 signs"  v-model="login" ></b-form-input>
@@ -30,7 +30,7 @@
     <br>
     <b-form-group id="email-group" label="Your E-mail" label-for="email-input">
 
-    <b-form-input id="email-input" placeholder="Enter e-mail" type="email"  v-model="email"></b-form-input>
+    <b-form-input id="email-input" placeholder="Enter e-mail" v-model="email"></b-form-input>
     <div class="text-danger" v-if="v$.email.$error">E-mail field has an error</div>
 
     </b-form-group>
@@ -103,7 +103,7 @@ validations(){
 
 <style scoped>
 
-h2{
+h3{
     color: white;
 }
 
@@ -111,9 +111,7 @@ h2{
 
 #container{
 
-    background-color: #2e363f;
-    height: 100vh;
-    width: 80%;
+    
     margin-left: auto;
     margin-right: auto;
 }
@@ -125,9 +123,10 @@ h2{
     justify-content: center;
     align-items: center;
     color: white;
-
-    
-    
+    height: 100vh;
+    width: 80%;
+    margin: auto;
+    background-color: #1e2935;
 }
 
 </style>
