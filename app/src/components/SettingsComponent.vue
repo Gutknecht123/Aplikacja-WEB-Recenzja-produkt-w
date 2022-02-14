@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import AccountService from '../AccountService';
+//import AccountService from '../AccountService';
 import SettingsService from '../SettingsService';
 
 export default {
@@ -96,14 +96,8 @@ export default {
         }
     },
     async created(){
-
         
-
-        const response = await AccountService.getuserAccount();
-
-        this.$store.dispatch('setAuth', true);
-        
-        this.user = response.data.login;
+        this.user = this.$store.state.user;
 
         const userProfile = await SettingsService.getProfile(this.user);
 

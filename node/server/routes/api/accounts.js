@@ -175,16 +175,20 @@ router.get('/verify/:code', async(req, res) => {
 //Logowanie
 router.post('/login', async (req, res) => {
 
+    let reg = new RegExp(req.body.login, "ig");
+
     if(await accounts.findOne({
 
         $and: [
-            {loginUp: req.body.loginUp},
+            {login: reg},
             {active: true}
         ]
     
     })){
 
-    const user = await accounts.findOne({loginUp: req.body.loginUp})
+    const user = await accounts.findOne({login: reg})
+
+    console.log(user);
 
     if(!user){
         return res.status(404).send({
@@ -209,6 +213,7 @@ router.post('/login', async (req, res) => {
 
         res.status(200).json({
             message: 'Succesfull login!',
+            login: user.login,
             token: token
         })
     }else{
@@ -250,7 +255,9 @@ router.get('/user', checkAuth, async (req,res) => {
 
     try{
 
-    const user = await accounts.findOne({_id: claims._id});
+    console.log(req.query["user"]);
+
+    const user = await accounts.findOne({login: req.query["user"]});
 
     const {password, ...data} = await user.toJSON();
 

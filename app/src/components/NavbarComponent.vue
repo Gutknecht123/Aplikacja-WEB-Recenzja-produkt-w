@@ -21,11 +21,11 @@
             
              <b-button size="sm" v-on:click.stop="Search()">Search</b-button>
 
-          <b-nav-item :href="'#/user/'+lUser">{{lUser}}</b-nav-item>
-          <b-nav-item  href="#/settings" v-if="auth">Settings</b-nav-item>
-          <b-nav-item  v-if="auth" @click="logout">Logout</b-nav-item>
-          <b-nav-item  v-if="!auth" href="#/login">Login</b-nav-item>
-          <b-nav-item  v-if="!auth" href="#/register">Register</b-nav-item>
+          <b-nav-item :href="'#/user/'+getUser" v-if="isLoggedIn">{{getUser}}</b-nav-item>
+          <b-nav-item  v-if="isLoggedIn" href='#/settings'>Settings</b-nav-item>
+          <b-nav-item  v-if="isLoggedIn" @click="logout">Logout</b-nav-item>
+          <b-nav-item  v-if="!isLoggedIn" href="#/login">Login</b-nav-item>
+          <b-nav-item  v-if="!isLoggedIn" href="#/register">Register</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -34,7 +34,7 @@
 
 <script>
 import AccountService from '../AccountService';
-
+import { mapGetters } from "vuex";
 export default { 
      name: 'NavbarSection',
 
@@ -45,8 +45,6 @@ export default {
     data() {
         return {
 
-           
-            lUser: '',
             sphrase: '',
             auth: false
             
@@ -56,17 +54,14 @@ export default {
 
       try{
 
-      const response = await AccountService.getuserAccount();
+      const response = await AccountService.getuserAccount(this.$store.state.user, this.$store.state.token);
 
       if(response){
-
-        this.$store.dispatch('setAuth', true);
-
-        this.auth = this.$store.state.authenticated;
+      this.$store.dispatch('setUser', response.data.login);
+      }else{
+        this.$store.dispatch('setUser', null);
+        this.$store.dispatch('setToken', null);
       }
-
-      this.lUser = response.data.login;
-
       }catch(e){
         this.$store.dispatch('setAuth', false);
         
@@ -83,8 +78,9 @@ export default {
         console.log(auth);
         return auth;
 
-        }
-
+        },
+        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["getUser"])
     },
     watch: {
 
@@ -95,7 +91,9 @@ export default {
         async logout(){
 
             await AccountService.logoutAccount();
-            this.$store.dispatch('setAuth', false);
+            this.$store.dispatch('setUser', null);
+            this.$store.dispatch('setToken', null);
+            sessionStorage.clear();
             this.$router.push('/login');
         },
         async Search(){

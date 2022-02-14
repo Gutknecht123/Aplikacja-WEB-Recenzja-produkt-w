@@ -19,10 +19,10 @@
 
 </b-card-text>
 <b-row >
-<b-col v-if="username!=user && check==false">
+<b-col v-if="username!=user && check==false && isLoggedIn">
 <b-button variant="secondary" size="md" v-on:click="Follow()" >Follow</b-button>
 </b-col>
-<b-col v-if="username!=user && check==true">
+<b-col v-if="username!=user && check==true && isLoggedIn">
 <b-button variant="secondary" size="md" v-on:click="Unfollow()" >Unfollow</b-button>
 </b-col>
 </b-row>
@@ -63,7 +63,7 @@ import ProfileService from '../ProfileService';
 import SettingsService from '../SettingsService';
 //import VueSlickCarousel from 'vue-slick-carousel';
 import Posts from './Posts';
-
+import { mapGetters } from "vuex";
 export default {
     name: 'ProfileComponent',
    components:{
@@ -95,6 +95,10 @@ export default {
       description: ''
       }
   },
+  computed:{
+        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["getUser"])
+  },
   async created(){
 
     
@@ -111,15 +115,13 @@ export default {
 
       this.description = userProfile.data[0].description;
 
-      const response = await AccountService.getuserAccount();
-
       this.$store.dispatch('setAuth', true);
 
       const username = await AccountService.getUsername(this.$route.params.profile);
 
       this.username = username.data.login;
 
-      this.user = response.data.login;
+      this.user = this.$store.state.user;
 
       this.check = await ProfileService.Check(this.user, this.username);
 

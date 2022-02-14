@@ -33,7 +33,9 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 app.use(cors({
     credentials: true,
-    origin: ["http://localhost:8080", "http://192.168.1.12:8080", "https://www.google.com"]
+    origin: ["http://localhost:8080", "http://192.168.1.12:8080", "https://www.google.com"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE']
 }));
 
 app.use(cookieParser())

@@ -77,11 +77,13 @@ export default {
                 
                 let acc = await AccountService.loginAccount(this.llogin, this.lpassword);
 
-                if(acc.data.message=="Success!"){
+                console.log(acc);
 
-                     this.$store.dispatch('setProfile', this.llogin);
+                if(acc){
 
-                     this.$store.dispatch('setAuth', true);
+                     this.$store.dispatch('setUser', acc.data.login);
+
+                     this.$store.dispatch('setToken', acc.data.token);
 
                      this.$router.push('/');
                 }else{

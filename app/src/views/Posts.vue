@@ -24,11 +24,7 @@ export default {
     },
     async created(){
 
-        this.$store.dispatch('setAuth', true);
-
         this.posts = await PostService.getPosts(5);
-
-        console.log(this.posts);
 
         this.$store.dispatch('setPosts', this.posts);
 

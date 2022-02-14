@@ -15,7 +15,7 @@
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()+1}-${post.createdAt.getDate()}`}}
 {{`${post.createdAt.getHours()}:${post.createdAt.getMinutes()}`}}
 </b-card-text>
-<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="auth">
+<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="isLoggedIn">
     <b-dropdown-item v-if="post.creator==user" v-on:click="editPost(post._id, post.title, post.category, post.stars, post.text)">Edit</b-dropdown-item>
     <b-dropdown-item v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete</b-dropdown-item>
     <b-dropdown-item v-if="post.creator!=user">Report</b-dropdown-item>
@@ -168,8 +168,8 @@
 <b-col>
 <b-card-text>
 
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0&& auth">{{post.likedby.length-1}} Like</b-button>
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length && auth> 0">{{post.likedby.length-1}} Unlike</b-button>
+<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0&& isLoggedIn">{{post.likedby.length-1}} Like</b-button>
+<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length && isLoggedIn> 0">{{post.likedby.length-1}} Unlike</b-button>
 
 </b-card-text>
 </b-col>
@@ -183,7 +183,7 @@
 
 <div class="comments1" v-if="selected == post._id">
 
-<b-container class="bv-example-row" v-if="auth">
+<b-container class="bv-example-row" v-if="isLoggedIn">
 <b-row class="mt-3">
 <b-col>
 <b-form-textarea
@@ -219,7 +219,7 @@
 <b-col align="right">
 
 {{com.createdAt.substring(0,10)}}
-<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="auth&&com.creator==user">
+<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="isLoggedIn&&com.creator==user">
     <b-dropdown-item v-if="com.creator==user" v-on:click="deleteComment(comment._id, com._id, selected)">Delete</b-dropdown-item>
 </b-dropdown>
 </b-col>
@@ -254,7 +254,7 @@
 
 import PostService from '../PostService';
 import CommsService from '../CommsService';
-import AccountService from '../AccountService';
+//import AccountService from '../AccountService';
 import StarRating from 'vue-star-rating'
 import VueSlickCarousel from 'vue-slick-carousel'
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
@@ -262,6 +262,7 @@ import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import SettingsService from '../SettingsService';
 import ProfileService from '../ProfileService';
+import { mapGetters } from "vuex";
 export default {
     
     components:{
@@ -317,17 +318,17 @@ export default {
       Loading: true,
       editing: false,
       oneedited: '',
-      auth: false
+      
       }
   },
   async created() {
     try{
 
       
-      const response = await AccountService.getuserAccount();
-      this.$store.dispatch('setAuth', true);
-      this.user = response.data.login;
-      this.auth = this.$store.state.authenticated;
+      
+      
+      this.user = this.$store.state.user;
+      
       
       this.posts = this.$store.state.posts.then(()=>{
           this.set();
@@ -335,7 +336,6 @@ export default {
       });
       
     }catch(error){
-      this.$store.dispatch('setAuth', false);
       
       this.error = error.message;
     }
@@ -619,7 +619,9 @@ export default {
    
       player() {
         return this.$refs.videoPlayer.player
-      }
+      },
+        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["getUser"])
   },
   watch: {
       newPosts() {

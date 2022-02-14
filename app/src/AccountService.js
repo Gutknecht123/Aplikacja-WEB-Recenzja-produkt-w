@@ -26,11 +26,9 @@ static loginAccount(login, password){
 
     //return axios.get(url,{ params })
 
-    let loginUp = login.toUpperCase();
-
     return axios.post(url+"login",{
 
-        loginUp,
+        login,
         password
 
     },{
@@ -39,15 +37,20 @@ static loginAccount(login, password){
 
 }
 
-static getuserAccount(){
+static getuserAccount(user, token){
 
     //return axios.get(url,{ params })
-    
+    console.log(token);
+    console.log(user);
     return axios.get(url+"user",
     {
-        withCredentials: true,
+        params:{user, token}
+    },
+    {
         headers:{
-            'Content-Type': 'application/json'
+
+            "Authorization": `Bearer ${token}`
+            
         }
     });
     

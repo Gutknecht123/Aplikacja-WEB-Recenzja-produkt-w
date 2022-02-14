@@ -3,7 +3,7 @@
 <div>
 <div id="container">
 
-<div class="postcreation" v-if="auth==true">
+<div class="postcreation" v-if="isLoggedIn">
 <form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
 <b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
 <b-row class="mt-3">
@@ -76,7 +76,7 @@
 
 <div class="posts shadow=lg mt-5 rounded">
 
-<b-container class="nav-buttons" v-if="auth==true"> 
+<b-container class="nav-buttons" v-if="isLoggedIn"> 
 <b-row class="mt-3">
 <b-col align="right">
 <b-button variant="secondary" class="global" size="lg" v-on:click="globalPosts()">Global</b-button>
@@ -92,7 +92,7 @@
 </div>
 </div>
 
-<div class="pagefooter shadow-lg p-3 mt-5 rounded">
+<div class="pagefooter shadow-lg p-3 mt-5 rounded" v-if="isLoggedIn">
 <b-navbar toggleable="md" type="dark" variant="dark" fixed="bottom" v-if="tothetop==true">
 <b-button class="addButton" variant="secondary" size="lg" v-on:click="create=!create" v-if="!create">+</b-button>
 <div class="postcreation" v-if="create">
@@ -177,7 +177,6 @@
 
 <script>
 import PostService from '../PostService';
-import AccountService from '../AccountService';
 import 'vue-slick-carousel/dist/vue-slick-carousel.css'
 import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import StarRating from 'vue-star-rating'
@@ -185,7 +184,7 @@ import ProfileService from '../ProfileService';
 import useVuelidate from '@vuelidate/core';
 import { required, minLength, maxLength } from '@vuelidate/validators'
 import Posts from './Posts';
-
+import { mapGetters } from "vuex";
 const CheckSize = (value) =>  {
   if (!value) {
     return true;
@@ -296,13 +295,7 @@ export default {
 
       this.$store.dispatch('setPostCount', ((-1)*(this.$store.state.postcount-5)));
 
-      const response = await AccountService.getuserAccount();
-
-      this.$store.dispatch('setAuth', true);
-
-      this.user = response.data.login;
-
-      this.auth = this.$store.state.authenticated;
+      this.user = this.$store.state.user;
 
     }catch(error){
       this.$store.dispatch('setAuth', false);
@@ -319,7 +312,9 @@ export default {
     computed: {
       player() {
         return this.$refs.videoPlayer.player
-      }
+      },
+        ...mapGetters(["isLoggedIn"]),
+        ...mapGetters(["getUser"])
     },
 
   methods: {
