@@ -57,6 +57,26 @@ static getuserAccount(user, token){
 
 }
 
+static getAccounts(token){
+
+    return new Promise ((resolve,reject) => {
+        axios.get(url+"users",{params: {token}}).then((res) => {
+            const data = res.data;
+            resolve(
+                data.map(acc => ({
+                    ...acc,
+                    createdAt: new Date(acc.createdAt)
+                }))
+            );
+        })
+        .catch((error)=> {
+            reject(error);
+        })
+        
+    });
+
+}
+
 static Captcha(res){
 
     return axios.post(url+"/captcha",{
@@ -84,20 +104,6 @@ static checkEmail(email){
 static getUsername(user){
 
     return axios.get(url+"/username/"+user,{})
-
-}
-
-static logoutAccount(){
-
-    return axios(url+'logout',
-    {
-        method: 'POST',
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json',
-          },
-        credentials: 'include'
-    });
 
 }
 

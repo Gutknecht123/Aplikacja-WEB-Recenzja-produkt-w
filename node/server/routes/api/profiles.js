@@ -7,6 +7,7 @@ const comments = require('../../../models/comments');
 const multer = require('multer');
 const fileUpload = require('express-fileupload');
 const router = express.Router();
+const checkAuth = require('../../middleware/checkauth');
 const ObjectID = require('mongodb').ObjectID;
 
 
@@ -34,16 +35,12 @@ const storage = multer.diskStorage({
     }
   });
 
-  router.post('/update', upload.array('files', 2),async (req,res,next) => {
-
+router.post('/update', upload.array('files', 2),async (req,res,next) => {
+  try{
     var pic1 ='', pic2 = ''
-
     const url = req.protocol + '://' + req.get('host')
-
     console.log(req.files)
-
     if (req.body.sending=='') {
-    
       await profiles.updateOne(
         {Username: req.body.username},
         {
@@ -54,12 +51,9 @@ const storage = multer.diskStorage({
         },
         {upsert: true}
     );
-
     }
-
     if (req.files[0] && req.body.sending=='profilepic') {
         pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
-
         await profiles.updateOne(
             {Username: req.body.username},
             {
@@ -71,13 +65,9 @@ const storage = multer.diskStorage({
             },
             {upsert: true}
         );
-        
         }
-
      if (req.files[0] && req.body.sending=='banner') {
-
         pic2 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
-
         await profiles.updateOne(
             {Username: req.body.username},
             {
@@ -89,14 +79,10 @@ const storage = multer.diskStorage({
             },
             {upsert: true}
         );
-    
     }
-
       if (req.files[0] && req.files[1] && req.body.sending=='both') {
-
       pic1 = url + '/api/profiles/upload/' + req.files[0].filename.toLowerCase().split(' ').join('-');
       pic2 = url + '/api/profiles/upload/' + req.files[1].filename.toLowerCase().split(' ').join('-');
-
       await profiles.updateOne(
           {Username: req.body.username},
           {
@@ -109,15 +95,11 @@ const storage = multer.diskStorage({
           },
           {upsert: true}
       );
-  
   }
-    
-    console.log(pic1)
-    console.log(pic2)
-
     res.send("done");
-
-
+  }catch(e){
+    res.send({message: "Something went wrong"});
+  }
   });
 
   router.get("/upload/:image", (req, res, next) => {

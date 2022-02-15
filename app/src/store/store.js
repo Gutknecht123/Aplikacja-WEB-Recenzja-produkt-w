@@ -14,7 +14,9 @@ export default new Vuex.Store({
         postcount: 5,
         posts: [],
         global: 0,
-        token: null
+        token: null,
+        accs: [],
+        pora: 0
     },
     mutations:{
         SET_AUTH (state, auth){
@@ -37,6 +39,12 @@ export default new Vuex.Store({
         },
         SET_TOKEN (state, token){
             state.token = token;
+        },
+        SET_ACCS (state, accs){
+            state.accs = accs;
+        },
+        SET_PORA (state, pora){
+            state.pora = pora;
         }
     },
     actions:{
@@ -61,6 +69,12 @@ export default new Vuex.Store({
         setToken (context, token) {
             context.commit('SET_TOKEN', token);
         },
+        setAccs (context, accs) {
+            context.commit('SET_ACCS', accs);
+        },
+        setPorA (context, pora) {
+            context.commit('SET_PORA', pora);
+        },
     },
     getters: {
         isLoggedIn(state) {
@@ -69,6 +83,9 @@ export default new Vuex.Store({
         },
         getUser(state){
             return state.user;
+        },
+        getPorA(state){
+            return state.pora;
         }
       },
     modules:{}

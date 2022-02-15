@@ -26,5 +26,8 @@
     "multer": "^1.4.4",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.14"
+  },
+  "devDependencies": {
+    "cypress": "^9.4.1"
   }
 }

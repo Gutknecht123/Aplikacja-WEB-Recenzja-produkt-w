@@ -9,14 +9,12 @@ const router = new Router({
     routes:[
         
     {
-
         path: '/',
         name: 'main',
         component: () => import('../views/Posts'),
         meta: { requiresAuth: false }
     },
     {
-
         path: '/register',
         name: 'register',
         component: () => import('../views/Register'),
@@ -54,7 +52,7 @@ const router = new Router({
 
         path: '/administration',
         name: 'administration',
-        component: () => import('@/components/Admin'),
+        component: () => import('../views/Admin'),
         meta: { requiresAuth: true }
     },
 ]

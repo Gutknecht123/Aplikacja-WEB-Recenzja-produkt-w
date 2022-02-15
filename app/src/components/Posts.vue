@@ -1,9 +1,9 @@
 <template>
 <div width="100vw">
 <div class="post" v-bind:item="post" v-bind:index = "index" v-bind:key="post._id" v-for="(post, index) in posts">
-<b-card text-variant="white" border-variant="dark" class="post-card">
+<b-card text-variant="white" border-variant="dark" class="post-card" data-cy='post'>
 
-<b-card-header header-tag="header" class="post-header">
+<b-card-header header-tag="header" class="post-header" >
 <b-row>
 <b-col>
 <b-card-text align="left">
@@ -15,10 +15,9 @@
 {{`${post.createdAt.getFullYear()}-${post.createdAt.getMonth()+1}-${post.createdAt.getDate()}`}}
 {{`${post.createdAt.getHours()}:${post.createdAt.getMinutes()}`}}
 </b-card-text>
-<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="isLoggedIn">
-    <b-dropdown-item v-if="post.creator==user" v-on:click="editPost(post._id, post.title, post.category, post.stars, post.text)">Edit</b-dropdown-item>
-    <b-dropdown-item v-if="post.creator==user" v-on:click="deletePost(post._id)">Delete</b-dropdown-item>
-    <b-dropdown-item v-if="post.creator!=user">Report</b-dropdown-item>
+<b-dropdown id="dropdown-dropleft" dropleft text="..." class="m-md-2" size="sm" align="right" v-if="isLoggedIn" :data-cy="post.title+'-options'">
+    <b-dropdown-item v-if="post.creator==user" v-on:click="editPost(post._id, post.title, post.category, post.stars, post.text)" :data-cy="post.title+'-edit'">Edit</b-dropdown-item>
+    <b-dropdown-item v-if="post.creator==user" v-on:click="deletePost(post._id)" :data-cy="post.title+'-delete'">Delete</b-dropdown-item>
 </b-dropdown>
 </b-col>
 </b-row>
@@ -29,12 +28,15 @@
 <form @submit.prevent="Edit(post._id)" method="post" enctype="multipart/form-data">
 <b-row>
 <b-col>
-    <b-form-input v-model="title"  class="Etitle"></b-form-input>
+    <b-form-input v-model="title" :data-cy="post.title+'-title'"  class="Etitle"></b-form-input>
 </b-col>        
 </b-row>
 <b-row class="mt-3">
 <b-col>
   <div v-if="!media">
+    <label class="custom-file-upload">
+    <input type="file" name="files" multiple v-on:change="onFileChange">Upload image/mp4
+    </label> 
     <input type="file" name="files" multiple v-on:change="onFileChange">
   </div>
   <div v-else>
@@ -52,12 +54,13 @@
       rows="4"
       max-rows="8"
       no-resize
+      :data-cy="post.title+'-text'"
     ></b-form-textarea>
 </b-col>        
 </b-row>
 <b-row class="mt-3">
 <b-col>
-   <b-form-input v-model="category" class="Ecategory"></b-form-input>
+   <b-form-input v-model="category" class="Ecategory" :data-cy="post.title+'-category'"></b-form-input>
 </b-col>        
 </b-row>
 <b-row class="mt-3">
@@ -76,14 +79,14 @@
 <b-button variant="secondary" size="sm" v-on:click="editing=false">Cancel</b-button>
 </b-col>
 <b-col>
-<b-button variant="secondary" size="sm" type="submit">Edit</b-button>
+<b-button variant="secondary" size="sm" type="submit" :data-cy="post.title+'-submit'">Edit</b-button>
 </b-col>
 </b-row>
 </form>
 </b-container>
 
 
-<div class="title" align="center">{{post.title}}</div>
+<div class="title" align="center" data-cy='post-title'>{{post.title}}</div>
 
 <div class="media-container">  
 
@@ -163,13 +166,13 @@
 
 <b-row class="com-likes">
 <b-col>
-<b-button align="left" variant="secondary" size="sm" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)">Comments</b-button>
+<b-button align="left" variant="secondary" size="sm" v-if="commsbutton==false || (commsbutton==true && selected != post._id)" v-on:click="showComments(post._id)" data-cy='post-showcomments'>Comments</b-button>
 </b-col> 
 <b-col>
 <b-card-text>
 
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0&& isLoggedIn">{{post.likedby.length-1}} Like</b-button>
-<b-button variant="secondary" size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length && isLoggedIn> 0">{{post.likedby.length-1}} Unlike</b-button>
+<b-button variant="secondary" data-cy='post-like' size="sm" :disabled="isDisabled" v-on:click="likePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length == 0&& isLoggedIn">{{post.likedby.length-1}} Like</b-button>
+<b-button variant="secondary" data-cy='post-unlike' size="sm" :disabled="isDisabled" v-on:click="unlikePost(post._id, index)" v-if="post.likedby.filter(e => e.username === user).length && isLoggedIn> 0">{{post.likedby.length-1}} Unlike</b-button>
 
 </b-card-text>
 </b-col>
@@ -179,7 +182,7 @@
 
 </b-card>
 
-<b-card class="comments shadow-lg rounded" text-variant="white" border-variant="dark" v-if="selected == post._id">
+<b-card class="comments shadow-lg rounded" text-variant="white" border-variant="dark" v-if="selected == post._id" data-cy='comments'>
 
 <div class="comments1" v-if="selected == post._id">
 
@@ -192,14 +195,14 @@
       placeholder="Enter something..."
       auto-shrink
       no-resize
-     
+     data-cy='post-commenttext'
 ></b-form-textarea>
 </b-col>
 </b-row >
 <b-row class="mt-3">
 
 <b-col>
-<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)">Publish</b-button>
+<b-button  variant="secondary" size="sm" v-on:click="addComment(selected)" data-cy='post-publishcomment'>Publish</b-button>
 </b-col>
 
 </b-row>
@@ -860,6 +863,16 @@ export default {
   position: relative;
   height: 100%;
 
+}
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 1200px) {

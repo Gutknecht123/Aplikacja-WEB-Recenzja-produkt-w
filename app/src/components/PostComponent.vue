@@ -3,12 +3,12 @@
 <div>
 <div id="container">
 
-<div class="postcreation" v-if="isLoggedIn">
-<form @submit.prevent="createPost" method="post" enctype="multipart/form-data">
+<div class="postcreation" v-if="isLoggedIn" data-cy='post-create'>
+<form @submit.prevent="createPost" method="post" enctype="multipart/form-data" data-cy='post-create-form'>
 <b-card class="createpost shadow-lg p-3 mt-5 rounded" text-variant="white" border-variant="dark">
 <b-row class="mt-3">
 <b-col>
-<b-form-input v-model="title" placeholder="Enter title" class="title"></b-form-input>
+<b-form-input data-cy='post-create-title' v-model="title" placeholder="Enter title" class="title"></b-form-input>
 <div class="text-danger" v-if="v$.title.$error">Wrong title! 2-101 chars!</div>
 </b-col>
 </b-row>
@@ -37,13 +37,14 @@
       rows="4"
       max-rows="8"
       no-resize
+      data-cy='post-create-text'
 ></b-form-textarea>
 <div class="text-danger" v-if="v$.text.$error">Wrong text! 2-512 chars!</div>
 </b-col>
 </b-row>
 <b-row class="mt-3">
 <b-col>
-<b-form-input v-model="category" placeholder="Enter category" id = "category"></b-form-input>
+<b-form-input v-model="category" placeholder="Enter category" id = "category" data-cy='post-create-category'></b-form-input>
 <div class="text-danger" v-if="v$.category.$error">Wrong category! 2-16 chars!</div>
 </b-col>
 </b-row>
@@ -55,7 +56,7 @@
              active-color="#ffcc66"
              v-bind:rating="stars"
              v-bind:show-rating="false"
-             v-bind:star-size="40" v-model="stars"  @rating-selected="setRating"></star-rating>
+             v-bind:star-size="40" v-model="stars"  @rating-selected="setRating" data-cy='post-create-stars'></star-rating>
 
 </b-col>
 
@@ -63,7 +64,7 @@
 
 <b-row class="mt-5">
 <b-col>
-<b-button variant="secondary" size="md" type="submit">Publish</b-button>
+<b-button variant="secondary" size="md" type="submit" data-cy='post-create-publish'>Publish</b-button>
 </b-col>
 </b-row>
 
@@ -76,13 +77,13 @@
 
 <div class="posts shadow=lg mt-5 rounded">
 
-<b-container class="nav-buttons" v-if="isLoggedIn"> 
+<b-container class="nav-buttons" v-if="isLoggedIn" data-cy='post-navigation'> 
 <b-row class="mt-3">
 <b-col align="right">
-<b-button variant="secondary" class="global" size="lg" v-on:click="globalPosts()">Global</b-button>
+<b-button variant="secondary" class="global" size="lg" data-cy='post-global' v-on:click="globalPosts()">Global</b-button>
 </b-col>
 <b-col align="left">
-<b-button variant="secondary" class="follows" size="lg" v-on:click="followsPosts()">Follows</b-button>
+<b-button variant="secondary" class="follows" size="lg" data-cy='post-follow' v-on:click="followsPosts()">Follows</b-button>
 </b-col>
 </b-row>
 </b-container>
@@ -92,7 +93,7 @@
 </div>
 </div>
 
-<div class="pagefooter shadow-lg p-3 mt-5 rounded" v-if="isLoggedIn">
+<div class="pagefooter shadow-lg p-3 mt-5 rounded" v-if="isLoggedIn" data-cy='post-create2'>
 <b-navbar toggleable="md" type="dark" variant="dark" fixed="bottom" v-if="tothetop==true">
 <b-button class="addButton" variant="secondary" size="lg" v-on:click="create=!create" v-if="!create">+</b-button>
 <div class="postcreation" v-if="create">
@@ -327,7 +328,7 @@ export default {
         }else{
 
       const formData = new FormData();
-      const f = [];
+      
 
       formData.append('creator', this.user);
       formData.append('title', this.title);
@@ -339,7 +340,6 @@ export default {
 
        for (const i of Object.keys(this.files)) {
             formData.append('files', this.files[i])
-            f.push(this.files[i].name)
           }
       }
       await PostService.createPost(formData);

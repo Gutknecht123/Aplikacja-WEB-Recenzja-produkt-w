@@ -26,13 +26,10 @@ var transporter = nodemailer.createTransport({
 
 //rejestracja
 router.post('/register', async (req,res) => {
-
     const saltRounds = await bcrypt.genSalt(10);
     const hash = await bcrypt.hash(req.body.password, saltRounds);
     const code = req.body.login + crypto.randomBytes(20).toString('hex');
-
     try{
-
     const user = new accounts({
         login: req.body.login,
         loginUp: req.body.loginUp,
@@ -41,31 +38,22 @@ router.post('/register', async (req,res) => {
         active: false,
         createdAt: new Date()
     });
-
     const result = await user.save();
-
     const {password, ...data} = await result.toJSON();
-
     var link = 'http://192.168.1.12:3000/api/accounts/verify/'+code;
-
     //Opcje maila
     var mailOptions = {
-        from: 'roburr24@gmail.com',
+        from: process.env.EMAIL,
         to: req.body.email,
         subject: 'Vue app Verification',
         text: 'Verify your account, click the link: ' + link,
-    
       };
-
     const ver = new verify({
-
         userID: data._id,
         code: code
 
     })
-
     await ver.save();
-
     //Wysłanie maila z linkiem weryfikacyjnym
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
@@ -74,12 +62,9 @@ router.post('/register', async (req,res) => {
           console.log('Email sent: ' + info.response);
         }
     });
-
-
     //Utworzenie followów
     await follows.updateOne(
             { Username: req.body.login },
-    
             { 
                 $set:{
                     Username: req.body.login
@@ -95,50 +80,30 @@ router.post('/register', async (req,res) => {
                 }
                 }
             },
-    
             {upsert: true}
-            
         )
-    
         //Utworzenie profilu
         const profile = new profiles({
-
             Username: req.body.login,
             profilePic: '',
             banner: '',
             description: ''
 
         });
-
         await profile.save();
-
-
         res.send("done");
-
         }catch(e){
-            console.log(e);
+            res.send({message: "Something went wrong"});
         }
-
-
 
 });
 
 //Obsługa weryfikacji
 
 router.get('/verify/:code', async(req, res) => {
-
-    var ID;
-
     try{
-
         await verify.findOne({code: req.params.code}, (err, check) => {
-
             if(check){
-
-                ID = check._id;
-                console.log(req.params.code);
-                console.log(check.userID);
-    
                 accounts.updateOne(
                     {_id: ObjectID(check.userID)},
                     {
@@ -153,9 +118,7 @@ router.get('/verify/:code', async(req, res) => {
             }else{
                 res.send(err);
             }
-
         })
-
         await verify.deleteOne({code: req.params.code}, (err, obj ) => {
             if (err) throw err;
           });
@@ -164,11 +127,9 @@ router.get('/verify/:code', async(req, res) => {
             'Location': 'http://192.168.1.12:8080/#/login'
         })
         res.end();
-
     }catch(e){
         console.log(e);
     }
-
 })
 
 
@@ -185,32 +146,23 @@ router.post('/login', async (req, res) => {
         ]
     
     })){
-
     const user = await accounts.findOne({login: reg})
-
-    console.log(user);
-
     if(!user){
         return res.status(404).send({
             message: "There is no user with this login!"
         })
     }
-    
-    
     if(!await bcrypt.compare(req.body.password, user.password)){
         return res.status(400).send({
             message: "Invalid password!"
         })
     }
-
-
     const token = jwt.sign({_id: user._id}, 
         process.env.JWT,
         {
             expiresIn: "1h"
         }
         );
-
         res.status(200).json({
             message: 'Succesfull login!',
             login: user.login,
@@ -309,7 +261,7 @@ router.get("/username/:user", async (req,res) => {
 
     const result =  await accounts.findOne({loginUp: (req.params.user).toUpperCase()});
     if(result){
-    const {password, ...data} = await result.toJSON();
+    const {password,email,active,createdAt,__v, ...data} = await result.toJSON();
     res.send(data);
     }
 
@@ -317,5 +269,12 @@ router.get("/username/:user", async (req,res) => {
 
 })
 
+router.get("/users", checkAuth ,async (req,res) => {
+
+    res.send(await accounts.find({}));
+
+   
+
+})
 
 module.exports = router;

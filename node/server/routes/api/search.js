@@ -4,17 +4,17 @@ const mongodb = require('mongodb');
 const mongoose = require('mongoose');
 const posts = require('../../../models/posts');
 const comments = require('../../../models/comments');
-
+const checkAuth = require('../../middleware/checkauth');
 const router = express.Router();
 
 //search by category
 router.get('/category/:phrase', async (req, res) => {
-
+    try{
     let reg = new RegExp(req.params.phrase, "ig");
-    console.log(req.params.phrase);
-    console.log(req.query["category"]);
     res.send(await posts.find({ title: reg, category: req.query["category"] }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
-
+    }catch(e){
+        res.send({message: "Something went wrong"});
+    }
 });
 
 
@@ -29,11 +29,12 @@ router.get('/creator/:phrase', async (req, res) => {
 //search by title
 
 router.get('/title/:phrase', async (req, res) => {
-
+    try{
     let reg = new RegExp(req.params.phrase, "ig");
-
     res.send(await posts.find({ title: reg }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
-
+    }catch(e){
+        res.send({message: "Something went wrong"});
+    }
 });
 
 //get categories

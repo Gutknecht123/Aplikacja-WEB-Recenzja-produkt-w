@@ -27,6 +27,7 @@ class PostService{
         return new Promise ((resolve,reject) => {
             axios.get(url+"get/"+user,{params: {PostCount}}).then((res) => {
                 const data = res.data;
+                console.log(data);
                 resolve(
                     data.map(post => ({
                         ...post,
@@ -71,41 +72,8 @@ class PostService{
 //create
 
 static async createPost(formData){
-
-    //const filename = Date.now() + '-' + Math.round(Math.random() * 1E9)
-
-    //formData.append('filename', filename);
-    //console.log(formData.get('files'));
-   // console.log(formData.get('creator'));
-
-   /*
-  return axios({
-    method: 'post',
-    url: 'http://localhost:3000/api/upload',
-    data: formData,
-    headers: {
-        "Content-Type": "multipart/form-data"
-    }
-    }).then((res) => {
-    console.log(res)
-
-        axios.post(url+'add-post', {
-
-        creator,
-        text,
-        category,
-        stars,
-        media,
-        likes: '0',
-        filename,
-        files
-
-         })
-
-    }); 
-    */
-
-    const res = await axios({
+    
+    await axios({
         method: 'post',
         url: url+'add-post',
         data: formData,
@@ -113,12 +81,11 @@ static async createPost(formData){
             "Content-Type": "multipart/form-data"
         }
     });
-    console.log(res); 
+    
 }
 
 static async editPost(postid, formData){
-
-    const res = await axios({
+    await axios({
         method: 'post',
         url: url+'editpost/'+postid,
         data: formData,
@@ -126,8 +93,6 @@ static async editPost(postid, formData){
             "Content-Type": "multipart/form-data"
         }
     });
-    console.log(res); 
-
 }
 
 //delete
@@ -157,8 +122,26 @@ static GetLikes(postid){
     return axios.get(url+"likes/"+postid);                
 }
 
+static getAdminPosts(PostCount){
+
+    return new Promise ((resolve,reject) => {
+        axios.get(url+'/admin',{params: {PostCount}}).then((res) => {
+            const data = res.data;
+            resolve(
+                data.map(post => ({
+                    ...post,
+                    createdAt: new Date(post.createdAt)
+                }))
+            );
+        })
+        .catch((error)=> {
+            reject(error);
+        })
+        
+    });
 }
 
 
+}
 
 export default PostService;

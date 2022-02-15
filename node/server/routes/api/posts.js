@@ -6,6 +6,7 @@ const likes = require('../../../models/likes');
 const comments = require('../../../models/comments');
 const multer = require('multer');
 const fileUpload = require('express-fileupload');
+const checkauth = require('../../middleware/checkauth');
 const router = express.Router();
 const ObjectID = require('mongodb').ObjectID;
 
@@ -67,7 +68,7 @@ router.post('/like/:postid', async(req,res) => {
 
 
 //dislike post
-router.post('/dislike/:postid', async(req,res) => {
+router.post('/dislike/:postid',  async(req,res) => {
 
   await posts.updateOne(
     { _id: ObjectID(req.params.postid) },
@@ -99,49 +100,37 @@ router.get('/likes/:postid', async(req, res) => {
 //getposts - global
 
 router.get('/', async (req, res) => {
-
+  try{
     res.send(await posts.find({}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
-
+  }catch(e){
+    res.send({message: "Something went wrong"})
+  }
 });
 
 //getposts - own
 
 router.get('/get/:user', async (req, res) => {
-
+  try{
     res.send(await posts.find({creator: req.params.user}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
-
+  }catch(e){
+    res.send({message: "Something went wrong"});
+  }
 });
 
 //getposts - followings
 
 router.get('/followings', async (req, res) => {
-
   var arr = [];
-
-  //console.log(req.query["follows"]);
-
   console.log('xD');
-
   var p = [];
-   
-  
-
   for(var i=0; i<req.query["follows"].length; i++){
-
     arr = JSON.parse(req.query["follows"][i]);
-
     console.log("TO ARR:");
     console.log(arr.Following);
-
     p.push({"creator": arr.Following});
 
   }
-
-  
-  console.log(p);
-
   res.send(await posts.find({$or: p}).sort({createdAt: -1}).limit(parseInt(req.query.PostCount)));
-
 });
 
 //addposts
@@ -173,41 +162,16 @@ const storage = multer.diskStorage({
 
 router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
 
-  //console.log(req.body);
-  //console.log(req.files);
-  //console.log(req.files.length);
-  console.log(__dirname);
-    
     if (!req.files) {
         res.send("File was not found");
         return;
     }
-
     const reqFiles = []
-
     const url = req.protocol + '://' + req.get('host')
-
     for (var i = 0; i < req.files.length; i++) {
-      
       reqFiles.push(url + '/api/posts/upload/' + req.files[i].filename.toLowerCase().split(' ').join('-'));
     }
-     
-    
-   /*
-    await posts.insertOne({
-        text: req.body.text,
-        category: req.body.category,
-        likes: req.body.likes,
-        //comms: 0,
-        media: req.body.media,
-        stars: req.body.stars,
-        creator: req.body.creator,
-        createdAt: new Date()
-    });
-    */
-
     const post = new posts({
-
         title: req.body.title,
         text: req.body.text,
         category: req.body.category,
@@ -221,7 +185,6 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
         createdAt: new Date()
 
     });
-
     const result = await post.save().then(result => {
         console.log(result);
         res.status(201).json({
@@ -233,7 +196,6 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
             error: err
           });
       });
-
 });
 
 //edit post
@@ -241,29 +203,22 @@ router.post('/add-post', upload.array('files', 5),async (req,res,next) => {
 router.post('/editpost/:postid', upload.array('files', 5), async(req,res) => {
 
   try{
-
     const reqFiles = []
-
     const url = req.protocol + '://' + req.get('host')
-
     for (var i = 0; i < req.files.length; i++) {
       
       reqFiles.push(url + '/api/posts/upload/' + req.files[i].filename.toLowerCase().split(' ').join('-'));
     }
-
     if(req.files[0]){
       posts.updateOne(
         { _id: ObjectID(req.params.postid) },
-        
         {
           $set: {
-          
            files: reqFiles,
            title: req.body.title,
            text: req.body.text,
            category: req.body.category,
            stars: req.body.stars
- 
           }
         },
         (err, res) => {
@@ -272,39 +227,35 @@ router.post('/editpost/:postid', upload.array('files', 5), async(req,res) => {
     }else{
     posts.updateOne(
        { _id: ObjectID(req.params.postid) },
-       
        {
          $set: {
-
           title: req.body.title,
           text: req.body.text,
           category: req.body.category,
           stars: req.body.stars
-
          }
        },
        (err, res) => {
          if (err) throw err;
        })
     }
-
-
-
-
       res.status(201).json({
         message: "Done upload!"
       })
     }catch(e){
-        console.log(e);
+        res.send({message: "Something went wrong"})
     }
-
 });
 
 //delposts
 
 router.delete('/:id', async (req,res) =>{
+  try{
     await posts.deleteOne({_id: new mongodb.ObjectID(req.params.id)});
     res.status(200).send();
+  }catch(e){
+    res.send({message: "Something went wrong"})
+  }
 });
 
 router.get("/upload/:image", (req, res, next) => {

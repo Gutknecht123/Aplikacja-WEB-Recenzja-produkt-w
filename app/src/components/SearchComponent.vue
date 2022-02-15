@@ -10,7 +10,7 @@
 </b-row>
 <b-row>
 <b-col>
-<b-button variant="secondary" size="lg" v-on:click="searchTitle()">Title</b-button>
+<b-button variant="secondary" size="lg" width="95%" v-on:click="searchTitle()">{{phrase}}</b-button>
 </b-col>
 </b-row>
 <b-row>
@@ -63,13 +63,16 @@ export default {
       categories: [],
       options: [],
       Loading: false,
-      global: 3
+      global: 3,
+      phrase: ''
 
      }
  },
     async created(){
 
 try{
+
+      this.phrase = this.$route.params.phrase;
 
       this.$store.dispatch('setAuth', true);
 

@@ -5,14 +5,14 @@
     <div class="login-section">
     <h3 align="center"> Don't have an account? <a href="#/register">Register here!</a></h3>
     <b-card bg-variant="dark" text-variant="white" border-variant="info" class="mt-3">
-    <b-form id="login-form" @submit.prevent="Login">
+    <b-form id="login-form"  @submit.prevent="Login">
     <b-form-group id="login-group2" label="Login" label-for="login-input2">
-    <b-form-input id="login-input2" placeholder="Enter login"  v-model="llogin" ></b-form-input>
+    <b-form-input id="login-input2" placeholder="Enter login" name="username" v-model="llogin" ></b-form-input>
     </b-form-group>
     <div class="text-danger" v-if="v$.llogin.$error">Incorrect login!</div>
     <br>
     <b-form-group id="password-group2" label="Password" label-for="password-input2">
-    <b-form-input id="password-input2" placeholder="Enter password" type="password"  v-model="lpassword"></b-form-input>
+    <b-form-input id="password-input2" name="password" placeholder="Enter password" type="password"  v-model="lpassword"></b-form-input>
     </b-form-group>
     <div class="text-danger" v-if="v$.lpassword.$error">Incorrect password!</div>
     <vue-recaptcha ref="recaptcha" sitekey="6Le8EngeAAAAAOM4jPbe8KlBXQH38fFwWOApgyXk" @verify="onVerify"></vue-recaptcha>
@@ -84,6 +84,10 @@ export default {
                      this.$store.dispatch('setUser', acc.data.login);
 
                      this.$store.dispatch('setToken', acc.data.token);
+
+                     localStorage.setItem('jwt', acc.data.token);
+
+                     localStorage.setItem('user', acc.data.login);
 
                      this.$router.push('/');
                 }else{
