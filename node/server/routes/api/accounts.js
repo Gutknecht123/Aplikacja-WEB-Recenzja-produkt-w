@@ -36,6 +36,7 @@ router.post('/register', async (req,res) => {
         password: hash,
         email: req.body.email,
         active: false,
+        role: 'normal',
         createdAt: new Date()
     });
     const result = await user.save();
@@ -178,7 +179,6 @@ router.post('/login', async (req, res) => {
 //captcha
 
 router.post('/captcha', async(req,res) => {
-
     const verifyCaptchaOptions = {
         uri: "https://www.google.com/recaptcha/api/siteverify",
         json: true,
@@ -187,18 +187,14 @@ router.post('/captcha', async(req,res) => {
             response: req.body.res
         }
     };
-
     request.post(verifyCaptchaOptions, (err, response, body) => {
-
         if (err) {
             return res.status(500).json({message: "oops, something went wrong on our side"});
         }
         if (!body.success) {
             return res.status(500).json({message: body["error-codes"].join(".")});
         }
-
         res.send(body.success)
-
     })
 })
 
@@ -225,24 +221,27 @@ router.get('/user', checkAuth, async (req,res) => {
 
 //Sprawdz czy jest w bazie
 router.get("/checklogin", async (req,res) => {
-
+    try{
     const result = await accounts.findOne({loginUp: req.query['login'].toUpperCase()});
     if(result){
     const {password, ...data} = await result.toJSON();
     res.send(data);
     }
-
+    }catch(e){
+        res.send({message: "Something went wrong"});
+    }
 })
 router.get("/checkemail", async (req,res) => {
-
+    try{
     let reg = new RegExp(req.query['email'], "ig");
-
     const result = await accounts.findOne({email: reg});
     if(result){
     const {password, ...data} = await result.toJSON();
     res.send(data);
     }
-
+    }catch(e){
+        res.send({message: "Something went wrong"});
+    }
 })
 
 //Wylogowanie

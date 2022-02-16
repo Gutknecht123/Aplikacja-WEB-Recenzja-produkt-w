@@ -1,0 +1,172 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 2,
+    "pending": 0,
+    "failures": 2,
+    "start": "2022-02-15T23:30:31.645Z",
+    "end": "2022-02-15T23:30:40.898Z",
+    "duration": 9253,
+    "testsRegistered": 4,
+    "passPercent": 50,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "e18da260-3506-4f20-b151-d508ba06fba0",
+      "title": "",
+      "fullFile": "cypress/integration/mainpage.js",
+      "file": "cypress/integration/mainpage.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "0d38fab9-1337-41ba-b9f0-72bf5dd0cda7",
+          "title": "Tests main page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Tests the login",
+              "fullTitle": "Tests main page Tests the login",
+              "timedOut": null,
+              "duration": 2902,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const login = \"testowekonto\";\nconst password = \"12345678\";\ncy.request('POST', '192.168.1.12:3000/api/accounts/login', {\n  login,\n  password\n}).as('respond');\ncy.get('@respond').should(response => {\n  localStorage.setItem('jwt', response.body.token);\n  localStorage.setItem('user', response.body.login);\n});\ncy.visit('/');\ncy.get('[data-cy=navbar-username]').should('contain', 'testowekonto');",
+              "err": {},
+              "uuid": "c9bdea13-1689-4c28-8fbc-749bad9ddb10",
+              "parentUUID": "0d38fab9-1337-41ba-b9f0-72bf5dd0cda7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Tests reviews adding",
+              "fullTitle": "Tests main page Tests reviews adding",
+              "timedOut": null,
+              "duration": 1558,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('[data-cy=post-create]').should('be.visible');\ncy.get('[data-cy=post-create-title]').type(title);\ncy.get('[data-cy=post-create-text]').type(title);\ncy.get('[data-cy=post-create-category]').type(title);\ncy.get('[data-cy=post-create-publish]').contains('Publish').click();\ncy.get('[data-cy=post-global]').click();\ncy.get('[data-cy=post-title]').contains(title).should('be.visible');",
+              "err": {},
+              "uuid": "fed24d32-31bd-4376-bb88-1bc0d442a55b",
+              "parentUUID": "0d38fab9-1337-41ba-b9f0-72bf5dd0cda7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Tests reviews editing",
+              "fullTitle": "Tests main page Tests reviews editing",
+              "timedOut": null,
+              "duration": 318,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('[data-cy=' + title + '-options]').should('be.visible').click();\ncy.get('[data-cy=' + title + '-edit]').should('be.visible').click();\ncy.get('[data-cy=' + title + '-title]').type(titleedit);\ncy.get('[data-cy=' + title + '-text]').type(titleedit);\ncy.get('[data-cy=' + title + '-category]').type(titleedit);\ncy.get('[data-cy=' + title + '-submit]').click();\ncy.get('[data-cy=post-global]').click();\ncy.get('[data-cy=post-title]').contains(title + titleedit).should('be.visible');",
+              "err": {
+                "message": "TypeError: The following error originated from your application code, not from Cypress. It was caused by an unhandled promise rejection.\n\n  > Cannot read properties of undefined (reading 'profilePic')\n\nWhen Cypress detects uncaught errors originating from your application it will automatically fail the current test.\n\nThis behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.\n\nhttps://on.cypress.io/uncaught-exception-from-application",
+                "estack": "TypeError: The following error originated from your application code, not from Cypress. It was caused by an unhandled promise rejection.\n\n  > Cannot read properties of undefined (reading 'profilePic')\n\nWhen Cypress detects uncaught errors originating from your application it will automatically fail the current test.\n\nThis behavior is configurable, and you can choose to turn this off by listening to the `uncaught:exception` event.\n\nhttps://on.cypress.io/uncaught-exception-from-application\n    at _callee12$ (webpack-internal:///./node_modules/cache-loader/dist/cjs.js?!./node_modules/babel-loader/lib/index.js!./node_modules/cache-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./src/components/Posts.vue?vue&type=script&lang=js&:728:51)\n    at tryCatch (webpack-internal:///./node_modules/regenerator-runtime/runtime.js:63:40)\n    at Generator.invoke [as _invoke] (webpack-internal:///./node_modules/regenerator-runtime/runtime.js:293:22)\n    at Generator.eval [as next] (webpack-internal:///./node_modules/regenerator-runtime/runtime.js:118:21)\n    at asyncGeneratorStep (webpack-internal:///./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js:9:24)\n    at _next (webpack-internal:///./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js:31:9)",
+                "diff": null
+              },
+              "uuid": "adb3e1b2-285a-4cc1-86d4-41a8b23fec90",
+              "parentUUID": "0d38fab9-1337-41ba-b9f0-72bf5dd0cda7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Tests reviews deleting",
+              "fullTitle": "Tests main page Tests reviews deleting",
+              "timedOut": null,
+              "duration": 4280,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('[data-cy=' + title + titleedit + '-options]').should('be.visible').click();\ncy.get('[data-cy=' + title + titleedit + '-delete]').should('be.visible').click();\ncy.get('[data-cy=post-global]').click();",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `[data-cy=TestEdited-options]`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `[data-cy=TestEdited-options]`, but never found it.\n    at Context.eval (http://192.168.1.12:8080/__cypress/tests?p=cypress\\integration\\mainpage.js:141:59)",
+                "diff": null
+              },
+              "uuid": "72cd7c28-d3bf-4ff6-8a43-697aef159a4f",
+              "parentUUID": "0d38fab9-1337-41ba-b9f0-72bf5dd0cda7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "c9bdea13-1689-4c28-8fbc-749bad9ddb10",
+            "fed24d32-31bd-4376-bb88-1bc0d442a55b"
+          ],
+          "failures": [
+            "adb3e1b2-285a-4cc1-86d4-41a8b23fec90",
+            "72cd7c28-d3bf-4ff6-8a43-697aef159a4f"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 9058,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.0.1"
+    },
+    "marge": {
+      "options": {
+        "charts": true,
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/report/mochawesome-report"
+      },
+      "version": "6.0.1"
+    }
+  }
+}

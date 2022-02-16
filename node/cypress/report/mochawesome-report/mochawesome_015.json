@@ -1,0 +1,110 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2022-02-15T23:34:04.150Z",
+    "end": "2022-02-15T23:34:13.162Z",
+    "duration": 9012,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "1a8b27a8-1975-489b-823a-0ee9633430bb",
+      "title": "",
+      "fullFile": "cypress/integration/test1.js",
+      "file": "cypress/integration/test1.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b4975f8b-a324-4334-b2d1-6d70478ae692",
+          "title": "Login",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Tests the login",
+              "fullTitle": "Login Tests the login",
+              "timedOut": null,
+              "duration": 8938,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "const username = \"testowekonto\";\nconst password = \"12345678\";\ncy.visit('/#/login');\ncy.confirmCaptcha();\ncy.get('input[name=username]').type(username);\ncy.get('input[name=password]').type(`${password}`);\ncy.get('#login-form').submit();\ncy.url().should('include', '/#/');\ncy.get('[data-cy=navbar-username]').contains(username);\ncy.get('[data-cy=navbar-settings]').should('be.visible');\ncy.get('[data-cy=navbar-logout]').should('be.visible');",
+              "err": {
+                "message": "CypressError: Timed out retrying after 4000ms: `cy.type()` failed because this element:\n\n`<input data-v-dcfd9078=\"\" id=\"password-input2\" name=\"password\" type=\"password\" placeholder=\"Enter password\" class=\"form-control\">`\n\nis being covered by another element:\n\n`<iframe title=\"recaptcha challenge expires in two minutes\" src=\"https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=BycHQdSIhzR_1EcOLw2mOzYQ&amp;k=6Le8EngeAAAAAOM4jPbe8KlBXQH38fFwWOApgyXk\" name=\"c-5q34ujoomeu5\" frameborder=\"0\" scrolling=\"no\" sandbox=\"allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox\" style=\"width: 400px; height: 580px;\"></iframe>`\n\nFix this problem, or use {force: true} to disable error checking.\n\nhttps://on.cypress.io/element-cannot-be-interacted-with",
+                "estack": "CypressError: Timed out retrying after 4000ms: `cy.type()` failed because this element:\n\n`<input data-v-dcfd9078=\"\" id=\"password-input2\" name=\"password\" type=\"password\" placeholder=\"Enter password\" class=\"form-control\">`\n\nis being covered by another element:\n\n`<iframe title=\"recaptcha challenge expires in two minutes\" src=\"https://www.google.com/recaptcha/api2/bframe?hl=en&amp;v=BycHQdSIhzR_1EcOLw2mOzYQ&amp;k=6Le8EngeAAAAAOM4jPbe8KlBXQH38fFwWOApgyXk\" name=\"c-5q34ujoomeu5\" frameborder=\"0\" scrolling=\"no\" sandbox=\"allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox\" style=\"width: 400px; height: 580px;\"></iframe>`\n\nFix this problem, or use {force: true} to disable error checking.\n\nhttps://on.cypress.io/element-cannot-be-interacted-with\n    at $Cy.ensureDescendents (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:163971:78)\n    at ensureDescendents (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:150316:8)\n    at ensureDescendentsAndScroll (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:150323:14)\n    at ensureElIsNotCovered (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:150455:5)\n    at runAllChecks (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:150645:52)\n    at retryActionability (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:150669:16)\n    at tryCatcher (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:13196:23)\n    at Function.Promise.attempt.Promise.try (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:10470:29)\n    at whenStable (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:168695:63)\n    at http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:168192:14\n    at tryCatcher (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:13196:23)\n    at Promise._settlePromiseFromHandler (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:11131:31)\n    at Promise._settlePromise (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:11188:18)\n    at Promise._settlePromise0 (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:11233:10)\n    at Promise._settlePromises (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:11313:18)\n    at Promise._fulfill (http://192.168.1.12:8080/__cypress/runner/cypress_runner.js:11257:18)\nFrom Your Spec Code:\n    at Context.eval (http://192.168.1.12:8080/__cypress/tests?p=cypress\\integration\\test1.js:111:36)",
+                "diff": null
+              },
+              "uuid": "bb36aa51-210e-4c1c-bfda-c08866d86c16",
+              "parentUUID": "b4975f8b-a324-4334-b2d1-6d70478ae692",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "bb36aa51-210e-4c1c-bfda-c08866d86c16"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 8938,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.0.1"
+    },
+    "marge": {
+      "options": {
+        "charts": true,
+        "overwrite": false,
+        "html": false,
+        "json": true,
+        "reportDir": "cypress/report/mochawesome-report"
+      },
+      "version": "6.0.1"
+    }
+  }
+}
