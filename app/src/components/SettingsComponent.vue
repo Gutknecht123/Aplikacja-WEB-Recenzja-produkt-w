@@ -20,6 +20,7 @@
 <div v-else>
     <button v-on:click="removeBanner">Remove image</button>
 </div>
+<div class="text-danger" v-if="v$.banner.$error">Unsuporrted file! Jpeg, jpg, png file only!</div>
 </b-col>
 </b-row>
 <b-row class="mt-5">
@@ -37,6 +38,7 @@
 <div v-else>
     <button v-on:click="removeProfilepic">Remove image</button>
 </div>
+<div class="text-danger" v-if="v$.profilepic.$error">Unsuporrted file! Jpeg, jpg, png file only!</div>
 </b-col>
 </b-row>
 
@@ -52,6 +54,7 @@
       no-resize
       
 ></b-form-textarea>
+<div class="text-danger" v-if="v$.description.$error">Max length - 101 chars</div>
 </b-col>
 </b-row>
 
@@ -71,13 +74,42 @@
 <script>
 //import AccountService from '../AccountService';
 import SettingsService from '../SettingsService';
+import useVuelidate from '@vuelidate/core';
+import { maxLength } from '@vuelidate/validators'
+
+const CheckSize = (value) =>  {
+  if (!value) {
+    return true;
+  }
+  let file = value;
+  
+    if(file.size < 10485760){
+      return (file.size < 10485760)
+    }
+  
+  console.log("Zbyt duży plik!");
+  return false;
+};
+const CheckType = (value) => {
+  if (!value) {
+    return true;
+    }
+    let file = value;
+    
+      if(file.type.startsWith('image')){
+        return true;
+      }
+    
+    console.log("Nieprawidłowy plik!");
+    return false;
+}
 
 export default {
     name: 'SettingsComponent',
     components:{
         
     },
-
+    setup: () => ({ v$: useVuelidate() }),
     data(){
         return{
             
@@ -95,6 +127,15 @@ export default {
 
         }
     },
+    validations(){
+
+     return{
+        profilepic: { CheckSize, CheckType },
+        banner: { CheckSize, CheckType },
+        description: { maxLength: maxLength(101) }
+     }
+
+    },
     async created(){
         
         this.user = this.$store.state.user;
@@ -111,6 +152,11 @@ export default {
     methods: {
 
     async updateProfile(){
+
+        const isFormCorrect = await this.v$.$validate()
+        if (!isFormCorrect){ 
+          return;
+        }else{
 
         const formData = new FormData();
 
@@ -131,21 +177,41 @@ export default {
         await SettingsService.updateProfile(formData);
 
         this.data = await SettingsService.getProfile(this.user);
-
+        }
     },
 
     async onProfilepicChange(e) {
-        this.profilepic = e.target.files[0];
-        
+         
         var files = e.target.files || e.dataTransfer.files;
+
+        this.profilepic = files[0];
+
+        this.$v.profilepic.$touch();
+
+        if (this.$v.profilepic.$error) {
+        console.log("Zły plik")
+        this.profilepic = '';
+        return;	
+        }
+
         if (!files.length)
             return;
         this.createProfilepic(files[0]);
     },
     async onBannerChange(e) {
-        this.banner = e.target.files[0];
         
         var files = e.target.files || e.dataTransfer.files;
+
+        this.banner = files[0];
+
+        this.$v.banner.$touch();
+
+        if (this.$v.banner.$error) {
+        console.log("Zły plik")
+        this.banner = '';
+        return;	
+        }
+
         if (!files.length)
             return;
         this.createBanner(files[0]);
@@ -193,15 +259,13 @@ export default {
 
     margin-top: 2%;
     background-color:#222930;
-    height: 100%;
+    height: 100vh;
 
 }
 
 .settings {
 
     background-color: #1e2935;
-    
-    
 
 }
 
@@ -256,5 +320,10 @@ input[type="file"] {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+}
+@media screen and (max-width: 1000px) {
+    .container{
+        height: 100%;
+    }
 }
 </style>

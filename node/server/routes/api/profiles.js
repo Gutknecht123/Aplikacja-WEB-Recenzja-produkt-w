@@ -39,7 +39,7 @@ router.post('/update', upload.array('files', 2),async (req,res,next) => {
   try{
     var pic1 ='', pic2 = ''
     const url = req.protocol + '://' + req.get('host')
-    console.log(req.files)
+    
     if (req.body.sending=='') {
       await profiles.updateOne(
         {Username: req.body.username},

@@ -21,11 +21,11 @@
             
              <b-button size="sm" v-on:click.stop="Search()">Search</b-button>
 
-          <b-nav-item data-cy='navbar-username' :href="'#/user/'+getUser" v-if="isLoggedIn">{{getUser}}</b-nav-item>
-          <b-nav-item data-cy='navbar-settings' v-if="isLoggedIn" href='#/settings'>Settings</b-nav-item>
-          <b-nav-item data-cy='navbar-logout' v-if="isLoggedIn" @click="logout">Logout</b-nav-item>
-          <b-nav-item data-cy='navbar-login' v-if="!isLoggedIn" href="#/login">Login</b-nav-item>
-          <b-nav-item data-cy='navbar-register' v-if="!isLoggedIn" href="#/register">Register</b-nav-item>
+          <b-nav-item data-cy='navbar-username' :href="'#/user/'+getUser" v-if="isLoggedIn"><div class="item">{{getUser}}</div></b-nav-item>
+          <b-nav-item data-cy='navbar-settings' v-if="isLoggedIn" href='#/settings'><div class="item">Settings</div></b-nav-item>
+          <b-nav-item data-cy='navbar-logout' v-if="isLoggedIn" @click="logout"><div class="item">Logout</div></b-nav-item>
+          <b-nav-item data-cy='navbar-login' v-if="!isLoggedIn" href="#/login"><div class="item">Login</div></b-nav-item>
+          <b-nav-item data-cy='navbar-register' v-if="!isLoggedIn" href="#/register"><div class="item">Register</div></b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
@@ -116,6 +116,10 @@ this.$router.push('/login');
   width: 100vw;
   background-color: #1e2935!important;
   
+  
+}
+.item{
+  color: white;
 }
 
 </style>

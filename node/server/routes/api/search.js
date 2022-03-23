@@ -6,31 +6,26 @@ const posts = require('../../../models/posts');
 const comments = require('../../../models/comments');
 const checkAuth = require('../../middleware/checkauth');
 const router = express.Router();
+var sanitize = require('mongo-sanitize');
 
 //search by category
 router.get('/category/:phrase', async (req, res) => {
     try{
-    let reg = new RegExp(req.params.phrase, "ig");
-    res.send(await posts.find({ title: reg, category: req.query["category"] }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
+    var phrase = sanitize(req.params.phrase);
+    var category = sanitize(req.query["category"]);
+    let reg = new RegExp(phrase, "ig");
+    res.send(await posts.find({ title: reg, category: category }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
     }catch(e){
         res.send({message: "Something went wrong"});
     }
-});
-
-
-//search by creator
-
-router.get('/creator/:phrase', async (req, res) => {
-
-    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
-
 });
 
 //search by title
 
 router.get('/title/:phrase', async (req, res) => {
     try{
-    let reg = new RegExp(req.params.phrase, "ig");
+    var phrase = sanitize(req.params.phrase);
+    let reg = new RegExp(phrase, "ig");
     res.send(await posts.find({ title: reg }).sort({createdAt: -1}).limit(parseInt(req.query["PostCount"])));
     }catch(e){
         res.send({message: "Something went wrong"});
@@ -41,12 +36,15 @@ router.get('/title/:phrase', async (req, res) => {
 
 router.get('/categories/:phrase', async (req, res) => {
 
-    let reg = new RegExp(req.params.phrase, "ig");
+    var phrase = sanitize(req.params.phrase);
+    let reg = new RegExp(phrase, "ig");
 
     res.send(await posts.find({ title: reg }, {category: 1, _id: 0}).distinct('category'));
 
 });
 
+//////
+  
 router.get("/username/:phrase", async (req,res) => {
 
     const usr = await accounts.find({loginUp: (req.params.phrase).toUpperCase()});
@@ -56,5 +54,13 @@ router.get("/username/:phrase", async (req,res) => {
     res.send(data);
 
 })
+
+//search by creator
+
+router.get('/creator/:phrase', async (req, res) => {
+
+    res.send(await posts.find({ $text: { $search: req.params.phrase } }));
+
+});
 
 module.exports = router;

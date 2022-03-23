@@ -14,14 +14,6 @@ import VueVideoPlayer from 'vue-video-player'
 import 'video.js/dist/video-js.css'
 Vue.config.productionTip = false
 
-
-
-new Vue({
-  render: h => h(App),
-  router,
-  store
-}).$mount('#app')
-
 Vue.use(VueVideoPlayer,)
 
 Vue.use(BootstrapVue)
@@ -31,3 +23,10 @@ Vue.use(IconsPlugin)
 Vue.use(VueCompositionAPI)
 
 Vue.use(Vuelidate)
+
+new Vue({
+  render: h => h(App),
+  router,
+  store
+}).$mount('#app')
+

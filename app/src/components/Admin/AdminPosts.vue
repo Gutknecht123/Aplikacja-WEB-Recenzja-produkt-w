@@ -354,4 +354,7 @@ background-color: #273442;
   overflow: hidden;
   object-fit: cover;
 }
+a{
+    color: white;
+}
 </style>

@@ -33,7 +33,7 @@
 <b-form-textarea
       id="textarea"
       v-model="text"
-      placeholder="Enter something..."
+      placeholder="Enter yor review.."
       rows="4"
       max-rows="8"
       no-resize
@@ -191,9 +191,6 @@ const CheckSize = (value) =>  {
     return true;
   }
   let file = value;
-
-  console.log(file[0].size)
-
   for(var i=0; i<file.length; i++){
     if(file[i].size < 10485760){
       return (file[i].size < 10485760)
@@ -202,14 +199,11 @@ const CheckSize = (value) =>  {
   console.log("Zbyt duży plik!");
   return false;
 };
-
 const CheckType = (value) => {
   if (!value) {
     return true;
     }
-    
     let file = value;
-
     for(var i=0; i<file.length; i++){
       if(file[i].type.startsWith('image')||file[i].type.startsWith('video')){
         return true;
@@ -324,6 +318,7 @@ export default {
 
       const isFormCorrect = await this.v$.$validate()
         if (!isFormCorrect){ 
+          console.log("bląd")
             return;
         }else{
 
@@ -387,6 +382,7 @@ export default {
     },
     removeImage:async function () {
       this.media = '';
+      this.files = '';
     },
 
     async scroll () {
@@ -708,6 +704,19 @@ input[type="file"] {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
 }
 
 @media screen and (max-width: 1200px) {

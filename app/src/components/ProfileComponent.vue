@@ -240,7 +240,7 @@ export default {
     background-color:#222930;
     margin-left: auto;
     margin-right: auto;
-
+   
 }
 
 .profile-pic{

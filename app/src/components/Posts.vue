@@ -28,7 +28,8 @@
 <form @submit.prevent="Edit(post._id)" method="post" enctype="multipart/form-data">
 <b-row>
 <b-col>
-    <b-form-input v-model="title" :data-cy="post.title+'-title'"  class="Etitle"></b-form-input>
+    <b-form-input v-model="etitle" :data-cy="post.title+'-title'" placeholder="Enter title" class="Etitle"></b-form-input>
+    
 </b-col>        
 </b-row>
 <b-row class="mt-3">
@@ -43,24 +44,27 @@
     <p><img :src="media" class="post-img" /></p>
     <button v-on:click="removeImage">Remove image</button>
   </div>
+  
 </b-col>        
 </b-row>
 <b-row class="mt-3">
 <b-col>
     <b-form-textarea
       id="textarea"
-      v-model="text"
-      :placeholder="post.text"
+      v-model="etext"
+      placeholder="Enter your review..."
       rows="4"
       max-rows="8"
       no-resize
       :data-cy="post.title+'-text'"
     ></b-form-textarea>
+   
 </b-col>        
 </b-row>
 <b-row class="mt-3">
 <b-col>
-   <b-form-input v-model="category" class="Ecategory" :data-cy="post.title+'-category'"></b-form-input>
+   <b-form-input v-model="ecategory" class="Ecategory" placeholder="Enter category" :data-cy="post.title+'-category'"></b-form-input>
+   
 </b-col>        
 </b-row>
 <b-row class="mt-3">
@@ -69,9 +73,9 @@
              v-bind:max-rating="5"
              inactive-color="#0099cc"
              active-color="#ffcc66"
-             v-bind:rating="stars"
+             v-bind:rating="estars"
              v-bind:show-rating="false"
-             v-bind:star-size="40" v-model="stars"  @rating-selected="setRating"></star-rating>
+             v-bind:star-size="40" v-model="estars"  @rating-selected="setRating"></star-rating>
 </b-col>        
 </b-row>
 <b-row class="mt-5">
@@ -266,26 +270,56 @@ import 'vue-slick-carousel/dist/vue-slick-carousel-theme.css'
 import SettingsService from '../SettingsService';
 import ProfileService from '../ProfileService';
 import { mapGetters } from "vuex";
+import { required, minLength, maxLength } from '@vuelidate/validators'
+
+const CheckSize = (value) =>  {
+  if (!value) {
+    return true;
+  }
+  let file = value;
+  for(var i=0; i<file.length; i++){
+    if(file[i].size < 10485760){
+      return (file[i].size < 10485760)
+    }
+  }
+  console.log("Zbyt duży plik!");
+  return false;
+};
+const CheckType = (value) => {
+  if (!value) {
+    return true;
+    }
+    let file = value;
+    for(var i=0; i<file.length; i++){
+      if(file[i].type.startsWith('image')||file[i].type.startsWith('video')){
+        return true;
+      }
+    }
+    console.log("Nieprawidłowy plik!");
+    return false;
+}
+
 export default {
     
     components:{
         VueSlickCarousel,
         StarRating,
     },
+    
     data(){
       return {
       posts: [],
       likes: [],
       comments: [],
       error: '',
-      title: '',
-      text: '',
+      etitle: '',
+      etext: '',
       media: '',
-      category: '',
-      stars: 1,
+      ecategory: '',
+      estars: 1,
       user: '',
       isDisabled: false,
-      files: null,
+      efiles: null,
       commsbutton: false,
       selected: '',
       commenttext: '',
@@ -324,14 +358,23 @@ export default {
       
       }
   },
+  
+  validations(){
+
+     return{
+       
+        etitle: { required, minLength: minLength(2), maxLength: maxLength(24) },
+        etext: { required, minLength: minLength(2), maxLength: maxLength(512) },
+        ecategory: { required, minLength: minLength(2), maxLength: maxLength(16) },
+        efiles: { CheckSize, CheckType },
+       
+     }
+  },
+
   async created() {
     try{
 
-      
-      
-      
       this.user = this.$store.state.user;
-      
       
       this.posts = this.$store.state.posts.then(()=>{
           this.set();
@@ -550,25 +593,31 @@ export default {
 
       },
 
-      editPost(postid, title, category, stars, text){
+      async editPost(postid, title, category, stars, text){
 
         this.editing = true;
         this.oneedited = postid;
 
-        this.title = title;
-        this.category = category;
-        this.stars = stars;
-        this.text = text;
+        this.etitle = title;
+        this.ecategory = category;
+        this.estars = stars;
+        this.etext = text;
 
       },
     setRating: function(rating){
-        this.stars= rating;
+        this.estars= rating;
     },
     async onFileChange(e){
 
         var files = e.target.files || e.dataTransfer.files;
-        this.files = files;
+        this.efiles = files;
 
+        this.$v.efiles.$touch();
+
+        if (this.$v.efiles.$error) {
+        console.log("Zły plik")
+        return;	
+        }
 
         this.createImage(files[0]);
     },
@@ -583,22 +632,23 @@ export default {
     },
     removeImage:async function () {
       this.media = '';
+      this.efiles = '';
     },
     async Edit(postid){
 
-        const formData = new FormData();
+
+      const formData = new FormData();
         
-
       formData.append('creator', this.user);
-      formData.append('title', this.title);
-      formData.append('text', this.text);
-      formData.append('category', this.category);
-      formData.append('stars', this.stars);
+      formData.append('title', this.etitle);
+      formData.append('text', this.etext);
+      formData.append('category', this.ecategory);
+      formData.append('stars', this.estars);
 
-      if(this.files != null){
+      if(this.efiles != null){
 
-       for (const i of Object.keys(this.files)) {
-            formData.append('files', this.files[i])
+       for (const i of Object.keys(this.efiles)) {
+            formData.append('files', this.efiles[i])
           }
       }
       await PostService.editPost(postid, formData).then(()=>{
@@ -607,13 +657,13 @@ export default {
       
       this.editing = false;
       this.media='';
-      this.title='';
-      this.category='';
-      this.files=null;
-      this.text='';
-      this.stars=1;
-
-    }
+      this.etitle='';
+      this.ecategory='';
+      this.efiles=null;
+      this.etext='';
+      this.estars=1;
+      }
+    
   },
   computed: {
       newPosts(){
@@ -874,7 +924,18 @@ input[type="file"] {
     padding: 6px 12px;
     cursor: pointer;
 }
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
 
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
 @media screen and (max-width: 1200px) {
 
     .post{

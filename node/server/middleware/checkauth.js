@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
 
     try{
- 
+    
+    
     const token = req.query["token"];
     console.log("To token!");
     console.log(token);

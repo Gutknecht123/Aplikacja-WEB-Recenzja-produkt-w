@@ -19,8 +19,8 @@ const checkAuth = require('../../middleware/checkauth');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASS
+      user: "roburr24@gmail.com",//process.env.EMAIL,
+      pass: "kolo2424"//process.env.EMAIL_PASS
     }
   });
 
@@ -86,8 +86,8 @@ router.post('/register', async (req,res) => {
         //Utworzenie profilu
         const profile = new profiles({
             Username: req.body.login,
-            profilePic: '',
-            banner: '',
+            profilePic: 'https://i.imgur.com/znz3NQo.png',
+            banner: 'https://i.imgur.com/b6dGhBa.png',
             description: ''
 
         });
