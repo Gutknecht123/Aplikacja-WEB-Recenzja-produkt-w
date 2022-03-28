@@ -61,7 +61,7 @@ const router = new Router({
 
 router.beforeEach((to,from, next) => {
  
-    if (to.name==="settings" && to.meta.requiresAuth) {
+    if (to.name==="settings" || to.name==="administration" && to.meta.requiresAuth) {
         console.log(store.state.token);
     
     if(store.state.token==null){
