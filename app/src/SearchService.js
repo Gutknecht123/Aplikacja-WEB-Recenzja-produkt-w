@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-//const url = "http://localhost:3000/api/search/";
-const url = "http://192.168.1.12:3000/api/search/"
+const url = "http://localhost:3000/api/search/";
+
 
 
 class SearchService {

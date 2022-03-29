@@ -41,7 +41,7 @@ router.post('/register', async (req,res) => {
     });
     const result = await user.save();
     const {password, ...data} = await result.toJSON();
-    var link = 'http://192.168.1.12:3000/api/accounts/verify/'+code;
+    var link = 'http://localhost:3000/api/accounts/verify/'+code;
     //Opcje maila
     var mailOptions = {
         from: process.env.EMAIL,
@@ -125,7 +125,7 @@ router.get('/verify/:code', async(req, res) => {
           });
                     
         res.writeHead(302, {
-            'Location': 'http://192.168.1.12:8080/#/login'
+            'Location': 'http://localhost:8080/#/login'
         })
         res.end();
     }catch(e){

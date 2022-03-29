@@ -29,7 +29,12 @@ services:
   
     server-database:
         image: mongo
+        container_name: "mongo"
         restart: always
+        volumes:
+            - './dockervolume/mongodb:/data/db'
+        ports:
+            - 27017:27017
     
 volumes:
     upload:
